@@ -10,7 +10,7 @@ router.post(
     check('Nombre_Usuario')
       .notEmpty()
       .withMessage('El nombre de usuario es obligatorio'),
-    check('Contraseña')
+    check('contraseña')
       .isLength({ min: 6 })
       .withMessage('La contraseña debe tener al menos 6 caracteres')
   ],
@@ -24,7 +24,7 @@ router.post(
     check('Nombre_Usuario')
       .notEmpty()
       .withMessage('El nombre de usuario es obligatorio'),
-    check('Contraseña')
+    check('contraseña')
       .notEmpty()
       .withMessage('La contraseña es obligatoria')
   ],

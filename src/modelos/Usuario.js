@@ -12,13 +12,21 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false,
     unique: true
   },
-  Contraseña: {
+  contraseña: {
     type: DataTypes.STRING,
     allowNull: false
   },
+  estado:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   idPersona: {
     type: DataTypes.INTEGER,
-    allowNull: true  // Lo dejaremos sin relación por ahora
+    allowNull: false  // Lo dejaremos sin relación por ahora
+  },
+  idrol:{
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
 }, {
   tableName: 'usuario',

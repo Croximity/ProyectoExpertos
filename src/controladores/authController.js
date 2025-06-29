@@ -10,7 +10,7 @@ exports.registrar = async (req, res) => {
     return res.status(400).json({ errores: errores.array() });
   }
 
-  const { Nombre_Usuario, Contraseña } = req.body;
+  const { Nombre_Usuario, contraseña } = req.body;
 
   try {
     const existeUsuario = await Usuario.findOne({ where: { Nombre_Usuario } });
@@ -18,12 +18,13 @@ exports.registrar = async (req, res) => {
       return res.status(400).json({ mensaje: 'El nombre de usuario ya está en uso' });
     }
 
-    const hash = await bcrypt.hash(Contraseña, 10);
+    const hash = await bcrypt.hash(contraseña, 10);
 
     const nuevoUsuario = await Usuario.create({
       Nombre_Usuario,
-      Contraseña: hash,
-      idPersona: null  // Se omite por ahora
+      contraseña: hash,
+      idPersona,
+      idrol
     });
 
     res.status(201).json({ mensaje: 'Usuario registrado exitosamente', usuario: nuevoUsuario });
@@ -38,7 +39,7 @@ exports.registrar = async (req, res) => {
     };
 
 exports.iniciarSesion = async (req, res) => {
-  const { Nombre_Usuario, Contraseña } = req.body;
+  const { Nombre_Usuario, contraseña } = req.body;
 
   try {
     const usuario = await Usuario.findOne({ where: { Nombre_Usuario } });
@@ -46,9 +47,9 @@ exports.iniciarSesion = async (req, res) => {
       return res.status(400).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    const contraseñaValida = await bcrypt.compare(Contraseña, usuario.Contraseña);
+    const contraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
     if (!contraseñaValida) {
-      return res.status(400).json({ mensaje: 'Contraseña incorrecta' });
+      return res.status(400).json({ mensaje: 'contraseña incorrecta' });
     }
 
     const payload = { idUsuario: usuario.idUsuario, Nombre_Usuario: usuario.Nombre_Usuario };
