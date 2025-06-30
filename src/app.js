@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const db = require('./configuraciones/db');
 const authRoutes = require('./rutas/authRoutes');
+const personaRutas = require('./rutas/personaRutas');
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(passport.initialize());
 
 // Rutas
 app.use('/api/optica/auth', authRoutes);
+app.use('/api/optica', personaRutas);
 
 // Sincronizar base de datos
 db.sync()
