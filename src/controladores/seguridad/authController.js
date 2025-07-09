@@ -10,7 +10,7 @@ exports.registrar = async (req, res) => {
     return res.status(400).json({ errores: errores.array() });
   }
 
-  const { Nombre_Usuario, contraseña } = req.body;
+  const { Nombre_Usuario, contraseña, idPersona, idrol } = req.body;
 
   try {
     const existeUsuario = await Usuario.findOne({ where: { Nombre_Usuario } });
@@ -22,23 +22,28 @@ exports.registrar = async (req, res) => {
 
     const nuevoUsuario = await Usuario.create({
       Nombre_Usuario,
-      contraseña: hash,
+      Contraseña: hash, 
       idPersona,
-      idrol
+      idRol
     });
 
     res.status(201).json({ mensaje: 'Usuario registrado exitosamente', usuario: nuevoUsuario });
-    } catch (error) {
-    console.error('🔥 ERROR DETALLADO:', error); // 🔍 esto mostrará los errores Sequelize
+  } catch (error) {
+    console.error(' ERROR DETALLADO:', error);
     res.status(500).json({
-        mensaje: 'Error en el servidor',
-        error: error.message,
-        detalles: error.errors || null
+      mensaje: 'Error en el servidor',
+      error: error.message,
+      detalles: error.errors || null
     });
-    }
-    };
+  }
+};
 
 exports.iniciarSesion = async (req, res) => {
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
+
   const { Nombre_Usuario, contraseña } = req.body;
 
   try {
@@ -47,9 +52,9 @@ exports.iniciarSesion = async (req, res) => {
       return res.status(400).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    const contraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
+    const contraseñaValida = await bcrypt.compare(contraseña, usuario.Contraseña);
     if (!contraseñaValida) {
-      return res.status(400).json({ mensaje: 'contraseña incorrecta' });
+      return res.status(400).json({ mensaje: 'Contraseña incorrecta' });
     }
 
     const payload = { idUsuario: usuario.idUsuario, Nombre_Usuario: usuario.Nombre_Usuario };
