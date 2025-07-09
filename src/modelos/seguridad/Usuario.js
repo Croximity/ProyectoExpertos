@@ -24,7 +24,7 @@ const Usuario = sequelize.define('Usuario', {
   },
   idPersona: {
     type: DataTypes.INTEGER,
-    allowNull: false  // Lo dejaremos sin relación por ahora
+    allowNull: false 
   },
   idrol:{
     type: DataTypes.INTEGER,

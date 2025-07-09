@@ -22,9 +22,9 @@ exports.registrar = async (req, res) => {
 
     const nuevoUsuario = await Usuario.create({
       Nombre_Usuario,
-      Contraseña: hash, 
+      contraseña: hash, 
       idPersona,
-      idRol
+      idrol
     });
 
     res.status(201).json({ mensaje: 'Usuario registrado exitosamente', usuario: nuevoUsuario });

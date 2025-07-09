@@ -9,7 +9,7 @@ const Rol = sequelize.define('Rol', {
   },
   nombre: {
     type: DataTypes.STRING(45),
-    allowNull: true
+    allowNull: false
   },
   descripcion: {
     type: DataTypes.STRING(45),

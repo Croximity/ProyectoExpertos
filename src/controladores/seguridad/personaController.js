@@ -3,13 +3,21 @@ const Persona = require('../../modelos/seguridad/Persona');
 
 // === VALIDACIONES PERSONALIZADAS ===
 const reglasCrear = [
-  body('nombre')
-    .notEmpty().withMessage('El nombre es obligatorio')
-    .isAlpha('es-ES', { ignore: ' ' }).withMessage('El nombre solo puede contener letras'),
+  body('Pnombre')
+    .notEmpty().withMessage('El primer nombre es obligatorio')
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/).withMessage('Solo se permiten letras en el primer nombre'),
 
-  body('apellido')
-    .notEmpty().withMessage('El apellido es obligatorio')
-    .isAlpha('es-ES', { ignore: ' ' }).withMessage('El apellido solo puede contener letras'),
+  body('Snombre')
+    .optional()
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/).withMessage('Solo se permiten letras en el segundo nombre'),
+
+  body('Papellido')
+    .optional()
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/).withMessage('Solo se permiten letras en el primer apellido'),
+
+  body('Sapellido')
+    .optional()
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/).withMessage('Solo se permiten letras en el segundo apellido'),
 
   body('correo')
     .optional()
@@ -19,32 +27,20 @@ const reglasCrear = [
     .optional()
     .matches(/^[0-9]{8}$/).withMessage('El teléfono debe tener 8 dígitos'),
 
-  body('dni')
-    .notEmpty().withMessage('El DNI es obligatorio')
-    .isLength({ min: 13, max: 13 }).withMessage('El DNI debe tener exactamente 13 caracteres')
+  body('DNI')
+    .optional()
+    .isLength({ min: 13, max: 13 }).withMessage('El DNI debe tener exactamente 13 caracteres'),
+
+  body('fechaNacimiento')
+    .optional()
+    .isISO8601().toDate().withMessage('Fecha de nacimiento no válida'),
+
+  body('genero')
+    .notEmpty().withMessage('El género es obligatorio')
+    .isIn(['M', 'F']).withMessage('El género debe ser "M" o "F"')
 ];
 
-const reglasEditar = [
-  body('nombre')
-    .optional()
-    .isAlpha('es-ES', { ignore: ' ' }).withMessage('El nombre solo puede contener letras'),
-
-  body('apellido')
-    .optional()
-    .isAlpha('es-ES', { ignore: ' ' }).withMessage('El apellido solo puede contener letras'),
-
-  body('correo')
-    .optional()
-    .isEmail().withMessage('El correo no tiene un formato válido'),
-
-  body('telefono')
-    .optional()
-    .matches(/^[0-9]{8}$/).withMessage('El teléfono debe tener 8 dígitos'),
-
-  body('dni')
-    .optional()
-    .isLength({ min: 13, max: 13 }).withMessage('El DNI debe tener exactamente 13 caracteres')
-];
+const reglasEditar = [...reglasCrear.map(r => r.optional())];
 
 // === CONTROLADORES ===
 
@@ -107,7 +103,7 @@ const eliminarPersona = async (req, res) => {
   }
 };
 
-// Crear varias personas con validaciones por cada objeto
+// Crear múltiples personas con validaciones manuales
 const crearMultiplesPersonas = async (req, res) => {
   const personas = req.body;
 
@@ -120,12 +116,20 @@ const crearMultiplesPersonas = async (req, res) => {
   personas.forEach((p, index) => {
     const errores = [];
 
-    if (!p.nombre || !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(p.nombre)) {
-      errores.push('El nombre es obligatorio y solo puede contener letras');
+    if (!p.Pnombre || !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(p.Pnombre)) {
+      errores.push('El primer nombre es obligatorio y debe tener solo letras');
     }
 
-    if (!p.apellido || !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(p.apellido)) {
-      errores.push('El apellido es obligatorio y solo puede contener letras');
+    if (p.Snombre && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(p.Snombre)) {
+      errores.push('El segundo nombre solo puede contener letras');
+    }
+
+    if (p.Papellido && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(p.Papellido)) {
+      errores.push('El primer apellido solo puede contener letras');
+    }
+
+    if (p.Sapellido && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(p.Sapellido)) {
+      errores.push('El segundo apellido solo puede contener letras');
     }
 
     if (p.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.correo)) {
@@ -136,8 +140,12 @@ const crearMultiplesPersonas = async (req, res) => {
       errores.push('El teléfono debe tener 8 dígitos');
     }
 
-    if (!p.dni || p.dni.length !== 13) {
-      errores.push('El DNI debe tener exactamente 13 caracteres');
+    if (p.DNI && p.DNI.length !== 13) {
+      errores.push('El DNI debe tener 13 caracteres');
+    }
+
+    if (!p.genero || !['M', 'F'].includes(p.genero)) {
+      errores.push('El género es obligatorio y debe ser "M" o "F"');
     }
 
     if (errores.length > 0) {
@@ -158,7 +166,7 @@ const crearMultiplesPersonas = async (req, res) => {
   }
 };
 
-// === EXPORTAR TODO JUNTO ===
+// === EXPORTAR ===
 module.exports = {
   crearPersona,
   editarPersona,
