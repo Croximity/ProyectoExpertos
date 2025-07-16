@@ -16,7 +16,7 @@ const app = express();
 // Middlewares
 app.use(morgan('dev'));
 app.use(express.json());
-require('./middlewares/passport')(passport);
+
 
 // Middleware para validar factura
 
