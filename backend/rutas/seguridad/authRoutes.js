@@ -2,7 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 const router = express.Router();
 const authController = require('../../controladores/seguridad/authController');
-
+//prueba
 // Ruta: Registro de usuario
 router.post(
   '/registro',
