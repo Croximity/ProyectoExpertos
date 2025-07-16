@@ -7,7 +7,7 @@ const db = new sequelize(
     process.env.ContrasenaBase,
 {
     host: 'localhost',
-    port: 3307,
+    port: process.env.PuertoBase || 3306,
     dialect: 'mysql',
     logging: false,
     pool: {
