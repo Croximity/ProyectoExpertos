@@ -1,129 +1,144 @@
-Perfecto, aquí tienes el contenido **completo y listo para copiar y pegar en tu `README.md`**:
+# API-Optica
 
----
+Sistema de gestión integral para ópticas y consultorios oftalmológicos desarrollado con Node.js y Express.
 
-````markdown
-# ProyectoExpertos - Sistema de Gestión para Óptica
+## 📌 Descripción
 
-Sistema de gestión integral para ópticas desarrollado con Node.js y Express, que incluye autenticación JWT y funcionalidades específicas para el manejo de datos de óptica.
+API-Optica es una API REST completa diseñada para gestionar las operaciones de una óptica o consultorio oftalmológico. El sistema maneja desde la gestión de pacientes y empleados hasta el control de inventario, facturación y consultas médicas.
 
-## Características Principales
+## 🚀 Características Principales
 
-- **Sistema de Autenticación JWT**: Registro e inicio de sesión seguro con validación de entrada
-- **API RESTful**: Endpoints estructurados para manejo de datos
-- **Validación de Datos**: Implementación con express-validator para entrada segura
-- **Base de Datos MySQL**: Integración con Sequelize ORM
+- ✅ Gestión de usuarios y autenticación JWT
+- ✅ Registro y administración de clientes
+- ✅ Consultas médicas y exámenes oftalmológicos
+- ✅ Control de inventario de productos ópticos
+- ✅ Sistema completo de facturación con descuentos
+- ✅ Generación de archivos PDF de facturas
+- ✅ Documentación interactiva con Swagger UI
 
-## Tecnologías Utilizadas
+## 🛠️ Tecnologías Utilizadas
 
-### Backend
+- Backend: Node.js con Express 5.1.0
+- Base de Datos: MySQL con Sequelize ORM
+- Autenticación: JWT con Passport
+- Seguridad: bcrypt para hash de contraseñas
+- Validación: express-validator
+- Archivos: Multer para uploads
+- PDF: PDFKit para generar facturas
+- Documentación: Swagger UI
 
-- Node.js con Express.js
-- JWT para autenticación (jsonwebtoken, passport-jwt)
-- MySQL con Sequelize ORM
-- bcrypt para encriptación de contraseñas
-- Swagger para documentación de API
+## 📦 Instalación
 
-## Instalación y Configuración
+1. Clona el repositorio:
 
-### Prerrequisitos
+   git clone https://github.com/Javiera02383/expertosPruebas.git
+   cd expertosPruebas
 
-- Node.js (versión recomendada: LTS)
-- MySQL Server
-- npm o yarn
+2. Instala las dependencias:
 
-### Pasos de Instalación
-
-1. Clonar el repositorio:
-
-   ```bash
-   git clone https://github.com/Croximity/ProyectoExpertos.git
-   cd ProyectoExpertos
-````
-
-2. Instalar dependencias:
-
-   ```bash
    npm install
-   ```
 
-3. Configurar variables de entorno:
+3. Configura las variables de entorno en un archivo `.env`:
 
-   * Crear un archivo `.env` en la raíz del proyecto con las siguientes variables:
-
-   ```
-   DB_HOST=localhost
+   JWT_SECRET=tu_jwt_secret_aqui  
+   DB_HOST=localhost  
    DB_PORT=3306
-   DB_USER=usuario
-   DB_PASSWORD=contraseña
-   DB_NAME=nombre_basedatos
-   JWT_SECRET=tu_jwt_secreto
+   DB_NAME=nombre_base_datos  
+   DB_USER=usuario_db  
+   DB_PASSWORD=contraseña_db  
    puerto=3000
-   ```
 
-4. Ejecutar la aplicación:
+4. Ejecuta el servidor:
 
-   ```bash
-   # Modo desarrollo
    npm run dev
 
-   # Modo producción
-   npm start
-   ```
+## 🗂️ Estructura del Proyecto
 
-## Estructura del Proyecto
+src/
+├── app.js                  # Archivo principal  
+├── configuraciones/        # DB, Swagger, y entorno  
+├── controladores/          # Lógica de negocio  
+│   ├── seguridad/          
+│   ├── gestion_cliente/
+│   ├── productos/
+│   ├── consulta_examenes/
+│   └── facturacion/
+├── modelos/                # Modelos Sequelize  
+├── rutas/                  # Endpoints de la API  
+└── middlewares/            # Middlewares personalizados
 
-```
-backend/
-├── app.js                    # Punto de entrada principal
-├── rutas/
-│   └── seguridad/
-│       └── authRoutes.js     # Rutas de autenticación
-├── controladores/
-│   └── seguridad/
-│       └── authController.js # Lógica de autenticación
-├── modelos/                  # Modelos Sequelize
-├── middlewares/              # Middleware de validaciones y autenticación
-├── configuraciones/          # Conexión a BD, Swagger
-└── package.json              # Dependencias y scripts
-```
+## 📚 Módulos del Sistema
 
-## API Endpoints
+### 1. Seguridad y Autenticación
 
-### Autenticación
+- Registro y login
+- Autenticación JWT
+- Roles de acceso
 
-* `POST /api/optica/auth/registro` → Registro de usuario
-* `POST /api/optica/auth/login` → Inicio de sesión
+### 2. Gestión de Clientes
 
-## Validaciones
+- Registro de pacientes y empleados
+- Información de contacto
+- Historial
 
-* **Registro**: Nombre de usuario obligatorio, contraseña mínima de 6 caracteres
-* **Login**: Nombre de usuario y contraseña obligatorios
+### 3. Consultas Médicas
 
-## Scripts Disponibles
+- Exámenes de vista
+- Diagnóstico y recetas
 
-* `npm start` → Ejecuta el servidor en producción
-* `npm run dev` → Ejecuta el servidor con nodemon en desarrollo
+### 4. Productos
 
-## Contribución
+- Inventario óptico
+- Categorías y stock
 
-1. Haz fork del proyecto
-2. Crea una nueva rama:
-   `git checkout -b feature/nueva-funcionalidad`
-3. Realiza los commits:
-   `git commit -am 'Agregar nueva funcionalidad'`
-4. Sube los cambios:
-   `git push origin feature/nueva-funcionalidad`
+### 5. Facturación
+
+- Facturas con detalle y descuentos
+- Formas de pago
+- Generación de factura en PDF
+
+## 📘 Documentación de la API
+
+Accede a la documentación en Swagger UI:
+
+   http://localhost:3000/api-docs
+
+## 🔐 Autenticación
+
+Para acceder a rutas protegidas usa el siguiente encabezado:
+
+   Authorization: Bearer <tu_jwt_token>
+
+## 🛠️ Scripts Disponibles
+
+- npm run dev – Inicia el servidor en desarrollo
+- npm test – Ejecuta pruebas (por implementar)
+
+## 🗃️ Base de Datos
+
+MySQL + Sequelize. Los modelos se sincronizan automáticamente al arrancar el proyecto.
+
+## 📤 Generar PDF de Factura
+
+La API permite descargar archivos PDF de cada factura. Ejemplo:
+
+   GET /api/optica/factura/12/pdf
+
+Esto descargará el archivo factura_12.pdf si existe en la carpeta uploads.
+
+## 🤝 Contribución
+
+1. Haz un fork del proyecto
+2. Crea tu rama: git checkout -b feature/miFeature
+3. Haz commit: git commit -m "Añadir miFeature"
+4. Haz push: git push origin feature/miFeature
 5. Abre un Pull Request
 
-## Licencia
+## 📬 Contacto
+
+Para soporte técnico, escribe a:  
+desofiwfacturacion@gmail.com
+
+## 🪪 Licencia
 
 Este proyecto está bajo la licencia ISC.
-
-```
-
----
-
-📌 **Solo cópialo y pégalo en tu archivo `README.md` en la raíz del proyecto.**  
-¿Quieres también un ejemplo de cómo se vería renderizado en GitHub?
-```
