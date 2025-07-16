@@ -31,7 +31,7 @@ API-Optica es una API REST completa diseñada para gestionar las operaciones de 
 
 1. Clona el repositorio:
 
-   git clone https://github.com/Javiera02383/expertosPruebas.git
+   git clone https://github.com/Croximity/ProyectoExpertos.git
    cd expertosPruebas
 
 2. Instala las dependencias:
@@ -40,13 +40,12 @@ API-Optica es una API REST completa diseñada para gestionar las operaciones de 
 
 3. Configura las variables de entorno en un archivo `.env`:
 
-   JWT_SECRET=tu_jwt_secret_aqui  
-   DB_HOST=localhost  
-   DB_PORT=3306
-   DB_NAME=nombre_base_datos  
-   DB_USER=usuario_db  
-   DB_PASSWORD=contraseña_db  
-   puerto=3000
+    PuertoBase=tupuertobase
+    puerto=tuPuerto
+    NombreBase=tunombreBD
+    UsuarioBase=tuusuario
+    ContrasenaBase=tucontraseña
+    JWT_SECRET=tu_jwt_secret_aqui  
 
 4. Ejecuta el servidor:
 
@@ -54,18 +53,23 @@ API-Optica es una API REST completa diseñada para gestionar las operaciones de 
 
 ## 🗂️ Estructura del Proyecto
 
-src/
-├── app.js                  # Archivo principal  
-├── configuraciones/        # DB, Swagger, y entorno  
-├── controladores/          # Lógica de negocio  
-│   ├── seguridad/          
-│   ├── gestion_cliente/
-│   ├── productos/
-│   ├── consulta_examenes/
-│   └── facturacion/
-├── modelos/                # Modelos Sequelize  
-├── rutas/                  # Endpoints de la API  
-└── middlewares/            # Middlewares personalizados
+## Estructura del Proyecto
+
+- `ProyectoExpertos/`
+  - `backend/`
+    - `app.js` – Archivo principal
+    - `configuraciones/` – Configuraciones de base de datos, Swagger y entorno
+    - `controladores/` – Lógica de negocio
+        - `seguridad/`
+        - `gestion_cliente/`
+        - `productos/`
+        - `consulta_examenes/`
+        - `facturacion/`
+    - `modelos/` – Modelos de datos con Sequelize
+    - `rutas/` – Endpoints de la API
+    - `middlewares/` – Middlewares personalizados
+  - `frontend/`
+
 
 ## 📚 Módulos del Sistema
 
