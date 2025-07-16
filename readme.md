@@ -31,8 +31,9 @@ API-Optica es una API REST completa diseñada para gestionar las operaciones de 
 
 1. Clona el repositorio:
 
-   git clone https://github.com/Croximity/ProyectoExpertos.git
-   cd expertosPruebas
+    cd expertosPruebas
+    git clone https://github.com/Croximity/ProyectoExpertos.git
+   
 
 2. Instala las dependencias:
 
