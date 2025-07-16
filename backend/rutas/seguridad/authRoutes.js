@@ -2,6 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 const router = express.Router();
 const authController = require('../../controladores/seguridad/authController');
+const {verificarUsuario} = require('../../middlewares/passport');
 //prueba
 // Ruta: Registro de usuario
 router.post(
@@ -13,7 +14,7 @@ router.post(
     check('contraseña')
       .isLength({ min: 6 })
       .withMessage('La contraseña debe tener al menos 6 caracteres')
-  ],
+  ],verificarUsuario,
   authController.registrar
 );
 
