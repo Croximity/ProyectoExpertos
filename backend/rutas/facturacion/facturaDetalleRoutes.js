@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const facturaDetalleController = require('../../controladores/facturacion/facturaDetalleController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -46,7 +47,7 @@ const facturaDetalleController = require('../../controladores/facturacion/factur
  *       400:
  *         description: Error de validación o datos incompletos
  */
-router.post('/factura-detalle', facturaDetalleController.validarCrearDetalle, facturaDetalleController.crearDetalle);
+router.post('/factura-detalle', verificarUsuario, facturaDetalleController.validarCrearDetalle, facturaDetalleController.crearDetalle);
 
 /**
  * @swagger
@@ -58,7 +59,7 @@ router.post('/factura-detalle', facturaDetalleController.validarCrearDetalle, fa
  *       200:
  *         description: Lista de detalles de factura
  */
-router.get('/factura-detalles', facturaDetalleController.obtenerDetalles);
+router.get('/factura-detalles', verificarUsuario, facturaDetalleController.obtenerDetalles);
 
 /**
  * @swagger
@@ -79,7 +80,7 @@ router.get('/factura-detalles', facturaDetalleController.obtenerDetalles);
  *       404:
  *         description: Detalle no encontrado
  */
-router.get('/factura-detalle/:id', facturaDetalleController.obtenerDetallePorId);
+router.get('/factura-detalle/:id', verificarUsuario, facturaDetalleController.obtenerDetallePorId);
 
 /**
  * @swagger
@@ -113,7 +114,7 @@ router.get('/factura-detalle/:id', facturaDetalleController.obtenerDetallePorId)
  *       404:
  *         description: Detalle no encontrado
  */
-router.put('/factura-detalle/:id', facturaDetalleController.validarEditarDetalle, facturaDetalleController.editarDetalle);
+router.put('/factura-detalle/:id', verificarUsuario, facturaDetalleController.validarEditarDetalle, facturaDetalleController.editarDetalle);
 
 /**
  * @swagger
@@ -134,7 +135,7 @@ router.put('/factura-detalle/:id', facturaDetalleController.validarEditarDetalle
  *       404:
  *         description: Detalle no encontrado
  */
-router.delete('/factura-detalle/:id', facturaDetalleController.eliminarDetalle);
+router.delete('/factura-detalle/:id', verificarUsuario, facturaDetalleController.eliminarDetalle);
 
 module.exports = router;
 

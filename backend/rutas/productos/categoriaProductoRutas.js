@@ -2,6 +2,7 @@ const express = require('express');
 const { body, param, query } = require('express-validator');
 const router = express.Router();
 const categoriaController = require('../../controladores/productos/CategoriaProductoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -237,7 +238,7 @@ router.get(
     query('nombre').optional().isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 caracteres'),
     query('marca').optional().isLength({ min: 3 }).withMessage('La marca debe tener al menos 3 caracteres'),
     query('descripcion').optional().isLength({ min: 3 }).withMessage('La descripción debe tener al menos 3 caracteres'),
-  ],
+  ],verificarUsuario,
   categoriaController.buscarCategorias
 );
 
@@ -246,14 +247,14 @@ router.post(
   '/categoria',
   body('nombre')
     .isLength({ min: 3, max: 50 })
-    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),
+    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),verificarUsuario,
   categoriaController.crearCategoria
 );
 
 // Obtener categoría por ID
 router.get(
   '/categoria/:id',
-  param('id').isInt().withMessage('El ID debe ser un número entero'),
+  param('id').isInt().withMessage('El ID debe ser un número entero'),verificarUsuario,
   categoriaController.obtenerCategoriaPorId
 );
 
@@ -263,7 +264,7 @@ router.put(
   param('id').isInt().withMessage('El ID debe ser un número entero'),
   body('nombre')
     .isLength({ min: 3, max: 50 })
-    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),
+    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),verificarUsuario,
   categoriaController.actualizarCategoria
 );
 
@@ -271,6 +272,7 @@ router.put(
 router.delete(
   '/categoria/:id',
   param('id').isInt().withMessage('El ID debe ser un número entero'),
+  verificarUsuario,
   categoriaController.eliminarCategoria
 );
 

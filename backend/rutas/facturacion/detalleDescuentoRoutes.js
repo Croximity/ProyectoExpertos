@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const detalleDescuentoController = require('../../controladores/facturacion/detalleDescuentoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -44,7 +45,7 @@ const detalleDescuentoController = require('../../controladores/facturacion/deta
  *       400:
  *         description: Datos inválidos o faltantes
  */
-router.post('/detalle-descuento',
+router.post('/detalle-descuento', verificarUsuario,
     detalleDescuentoController.validarCrearDetalleDescuento,
     detalleDescuentoController.crearDetalleDescuento
 );
@@ -58,7 +59,7 @@ router.post('/detalle-descuento',
  *       200:
  *         description: Lista de detalles de descuentos
  */
-router.get('/detalles-descuento', detalleDescuentoController.obtenerDetalles);
+router.get('/detalles-descuento', verificarUsuario, detalleDescuentoController.obtenerDetalles);
 
 /**
  * @swagger
@@ -85,7 +86,7 @@ router.get('/detalles-descuento', detalleDescuentoController.obtenerDetalles);
  *       404:
  *         description: Detalle no encontrado
  */
-router.delete('/detalle-descuento/:idFactura/:idDescuento',
+router.delete('/detalle-descuento/:idFactura/:idDescuento', verificarUsuario,
   detalleDescuentoController.validarEliminarDetalleDescuento,
   detalleDescuentoController.manejarErrores,
   detalleDescuentoController.eliminarDetalleDescuento

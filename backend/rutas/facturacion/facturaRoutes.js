@@ -4,6 +4,7 @@ const facturaController = require('../../controladores/facturacion/facturaContro
 const fs = require('fs');
 const path = require('path');
 const Factura = require('../../modelos/facturacion/Factura');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -79,7 +80,7 @@ const Factura = require('../../modelos/facturacion/Factura');
  *       400:
  *         description: Error de validación o datos incompletos
  */
-router.post('/factura', facturaController.crearFactura);
+router.post('/factura', verificarUsuario, facturaController.crearFactura);
 
 /**
  * @swagger
@@ -189,7 +190,7 @@ router.post('/factura', facturaController.crearFactura);
  *       500:
  *         description: Error del servidor
  */
-router.post('/factura-completa', facturaController.validarCrearFacturaCompleta,
+router.post('/factura-completa', verificarUsuario, facturaController.validarCrearFacturaCompleta,
   facturaController.manejarErrores, facturaController.crearFacturaCompleta);
 
 /**
@@ -202,7 +203,7 @@ router.post('/factura-completa', facturaController.validarCrearFacturaCompleta,
  *       200:
  *         description: Lista de facturas
  */
-router.get('/facturas', facturaController.obtenerFacturas);
+router.get('/facturas', verificarUsuario, facturaController.obtenerFacturas);
 
 /**
  * @swagger
@@ -223,7 +224,7 @@ router.get('/facturas', facturaController.obtenerFacturas);
  *       404:
  *         description: Factura no encontrada
  */
-router.get('/factura/:id', facturaController.obtenerFacturaPorId);
+router.get('/factura/:id', verificarUsuario, facturaController.obtenerFacturaPorId);
 
 /**
  * @swagger
@@ -250,7 +251,7 @@ router.get('/factura/:id', facturaController.obtenerFacturaPorId);
  *                   type: string
  *                   example: Las facturas no pueden ser modificadas según la regulación de la SAR.
  */
-router.put('/facturas/:id', facturaController.editarFactura);
+router.put('/facturas/:id', verificarUsuario, facturaController.editarFactura);
 
 /**
  * @swagger
@@ -283,7 +284,7 @@ router.put('/facturas/:id', facturaController.editarFactura);
  *       500:
  *         description: Error al anular la factura
  */
-router.patch('/facturas/:id/anular', facturaController.anularFactura);
+router.patch('/facturas/:id/anular', verificarUsuario, facturaController.anularFactura);
 
 
 /**
@@ -322,7 +323,7 @@ router.patch('/facturas/:id/anular', facturaController.anularFactura);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/factura/:id/pdf', async (req, res) => {  
+router.get('/factura/:id/pdf',  async (req, res) => {  
   try {  
     const factura = await Factura.findByPk(req.params.id);  
     if (!factura || !factura.archivo_pdf) {  

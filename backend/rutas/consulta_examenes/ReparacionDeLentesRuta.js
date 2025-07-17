@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const reparacionDeLentesController = require('../../controladores/consulta_examenes/ReparacionDeLentesController');
-
-router.post('/reparacion-lentes', reparacionDeLentesController.guardarReparacionDeLentes);
+const { verificarUsuario } = require('../../configuraciones/passport');
+router.post('/reparacion-lentes', verificarUsuario, reparacionDeLentesController.guardarReparacionDeLentes);
 /**
  * @swagger
  * /reparacion-lentes/listar:
@@ -143,10 +143,10 @@ router.post('/reparacion-lentes', reparacionDeLentesController.guardarReparacion
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/reparacion-lentes/listar', reparacionDeLentesController.listarReparacionDeLentes);
-router.post('/reparacion-lentes/guardar', reparacionDeLentesController.guardarReparacionDeLentes);
-router.put('/reparacion-lentes/editar/:id', reparacionDeLentesController.editarReparacionDeLentes);
-router.delete('/reparacion-lentes/eliminar/:id', reparacionDeLentesController.eliminarReparacionDeLentes);
-router.get('/reparacion-lentes/obtener/:id', reparacionDeLentesController.obtenerReparacionDeLentesPorId);
+router.get('/reparacion-lentes/listar', verificarUsuario, reparacionDeLentesController.listarReparacionDeLentes);
+router.post('/reparacion-lentes/guardar', verificarUsuario, reparacionDeLentesController.guardarReparacionDeLentes);
+router.put('/reparacion-lentes/editar/:id', verificarUsuario, reparacionDeLentesController.editarReparacionDeLentes);
+router.delete('/reparacion-lentes/eliminar/:id', verificarUsuario, reparacionDeLentesController.eliminarReparacionDeLentes);
+router.get('/reparacion-lentes/obtener/:id', verificarUsuario, reparacionDeLentesController.obtenerReparacionDeLentesPorId);
 
 module.exports = router;

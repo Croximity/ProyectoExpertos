@@ -2,6 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 const router = express.Router();
 const authController = require('../../controladores/seguridad/authController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -16,6 +17,8 @@ const authController = require('../../controladores/seguridad/authController');
  *   post:
  *     summary: Registrar un nuevo usuario
  *     tags: [Autenticación]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -40,6 +43,7 @@ const authController = require('../../controladores/seguridad/authController');
  */
 router.post(
   '/registro',
+  
   [
     check('Nombre_Usuario')
       .notEmpty()
@@ -57,6 +61,8 @@ router.post(
  *   post:
  *     summary: Iniciar sesión de un usuario
  *     tags: [Autenticación]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -104,6 +110,11 @@ router.post(
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     RegistroInput:
  *       type: object

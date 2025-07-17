@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const recetaController = require('../../controladores/consulta_examenes/RecetaController');
-
+const { verificarUsuario } = require('../../configuraciones/passport');
 /**
  * @swagger
  * /receta/listar:
@@ -147,10 +147,10 @@ const recetaController = require('../../controladores/consulta_examenes/RecetaCo
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/receta/listar', recetaController.listarReceta);
-router.post('/receta/guardar', recetaController.guardarReceta);
-router.put('/receta/editar/:id', recetaController.editarReceta);
-router.delete('/receta/eliminar/:id', recetaController.eliminarReceta);
-router.get('/receta/obtener/:id', recetaController.obtenerRecetaPorId);
+router.get('/receta/listar', verificarUsuario, recetaController.listarReceta);
+router.post('/receta/guardar', verificarUsuario, recetaController.guardarReceta);
+router.put('/receta/editar/:id', verificarUsuario, recetaController.editarReceta);
+router.delete('/receta/eliminar/:id', verificarUsuario, recetaController.eliminarReceta);
+router.get('/receta/obtener/:id', verificarUsuario, recetaController.obtenerRecetaPorId);
 
 module.exports = router;

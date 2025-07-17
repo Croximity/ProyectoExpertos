@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const personaController = require('../../controladores/seguridad/personaController');
+const {verificarUsuario} = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -33,7 +34,7 @@ const personaController = require('../../controladores/seguridad/personaControll
  *       500:
  *         description: Error del servidor
  */
-router.post('/persona', personaController.crearPersona);
+router.post('/persona', verificarUsuario, personaController.crearPersona);
 
 /**
  * @swagger
@@ -66,7 +67,7 @@ router.post('/persona', personaController.crearPersona);
  *       500:
  *         description: Error del servidor
  */
-router.put('/persona/:id', personaController.editarPersona);
+router.put('/persona/:id', verificarUsuario, personaController.editarPersona);
 
 /**
  * @swagger
@@ -97,7 +98,7 @@ router.put('/persona/:id', personaController.editarPersona);
  *       500:
  *         description: Error del servidor
  */
-router.delete('/persona/:id', personaController.eliminarPersona);
+router.delete('/persona/:id', verificarUsuario, personaController.eliminarPersona);
 
 /**
  * @swagger
@@ -133,7 +134,7 @@ router.delete('/persona/:id', personaController.eliminarPersona);
  *       500:
  *         description: Error del servidor
  */
-router.post('/personas', personaController.crearMultiplesPersonas);
+router.post('/personas', verificarUsuario, personaController.crearMultiplesPersonas);
 
 /**
  * @swagger

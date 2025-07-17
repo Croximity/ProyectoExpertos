@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('express-validator');
 const imagenProductoController = require('../../controladores/productos/imagenProductoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -48,7 +49,7 @@ const imagenProductoController = require('../../controladores/productos/imagenPr
 
 router.put(
   '/imagen',
-  query('id').isInt().withMessage('El id debe ser un número entero'),
+  query('id').isInt().withMessage('El id debe ser un número entero'),verificarUsuario,
   imagenProductoController.validarImagenProducto,
   imagenProductoController.actualizarImagenProducto
 );

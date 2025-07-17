@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const examenVistaController = require('../../controladores/consulta_examenes/Examen_VistaController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -142,10 +143,10 @@ const examenVistaController = require('../../controladores/consulta_examenes/Exa
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/examen-vista/listar', examenVistaController.listarExamenVista);
-router.post('/examen-vista/guardar', examenVistaController.guardarExamenVista);
-router.put('/examen-vista/editar/:id', examenVistaController.editarExamenVista);
-router.delete('/examen-vista/eliminar/:id', examenVistaController.eliminarExamenVista);
-router.get('/examen-vista/obtener/:id', examenVistaController.obtenerExamenVistaPorId);
+router.get('/examen-vista/listar', verificarUsuario, examenVistaController.listarExamenVista);
+router.post('/examen-vista/guardar', verificarUsuario, examenVistaController.guardarExamenVista);
+router.put('/examen-vista/editar/:id', verificarUsuario, examenVistaController.editarExamenVista);
+router.delete('/examen-vista/eliminar/:id', verificarUsuario, examenVistaController.eliminarExamenVista);
+router.get('/examen-vista/obtener/:id', verificarUsuario, examenVistaController.obtenerExamenVistaPorId);
 
 module.exports = router;
