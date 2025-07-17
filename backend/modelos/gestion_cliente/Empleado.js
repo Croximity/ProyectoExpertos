@@ -24,6 +24,6 @@ const Empleado = db.define('Empleado', {
 });
 
 // Relaciones
-Empleado.belongsTo(Persona, { foreignKey: 'idPersona'});
+Empleado.belongsTo(Persona, { foreignKey: 'idPersona', as: 'Persona' });
 Persona.hasOne(Empleado,{foreignKey: "idPersona", sourceKey:"idPersona"})
 module.exports = Empleado;
