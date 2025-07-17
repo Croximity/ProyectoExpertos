@@ -2,6 +2,7 @@ const express = require('express');
 const { body, param } = require('express-validator');
 const router = express.Router();
 const productoAtributoController = require('../../controladores/productos/productoAtributoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -222,7 +223,7 @@ const productoAtributoController = require('../../controladores/productos/produc
  */
 
 
-router.get('/producto-atributo/buscar', productoAtributoController.buscarAsignaciones);
+router.get('/producto-atributo/buscar',verificarUsuario, productoAtributoController.buscarAsignaciones);
 
 // Crear asignación - validamos que idProducto e idAtributo sean enteros, y stock un entero positivo
 router.post(
@@ -235,19 +236,19 @@ router.post(
     .withMessage('idAtributo debe ser un número entero positivo'),
   body('stock')
     .isInt({ min: 0 })
-    .withMessage('stock debe ser un número entero igual o mayor a cero'),
+    .withMessage('stock debe ser un número entero igual o mayor a cero'),verificarUsuario,
   productoAtributoController.crearAsignacion
 );
 
 // Obtener todas las asignaciones (sin validaciones)
-router.get('/producto-atributo', productoAtributoController.obtenerAsignaciones);
+router.get('/producto-atributo',verificarUsuario, productoAtributoController.obtenerAsignaciones);
 
 // Obtener asignaciones por producto - validar idProducto como entero positivo
 router.get(
   '/producto-atributo/producto/:idProducto',
   param('idProducto')
     .isInt({ gt: 0 })
-    .withMessage('idProducto debe ser un número entero positivo'),
+    .withMessage('idProducto debe ser un número entero positivo'),verificarUsuario,
   productoAtributoController.obtenerAsignacionesPorProducto
 );
 
@@ -259,7 +260,7 @@ router.put(
     .withMessage('El id debe ser un número entero positivo'),
   body('stock')
     .isInt({ min: 0 })
-    .withMessage('stock debe ser un número entero igual o mayor a cero'),
+    .withMessage('stock debe ser un número entero igual o mayor a cero'),verificarUsuario,
   productoAtributoController.actualizarStock
 );
 
@@ -268,7 +269,7 @@ router.delete(
   '/producto-atributo/:id',
   param('id')
     .isInt({ gt: 0 })
-    .withMessage('El id debe ser un número entero positivo'),
+    .withMessage('El id debe ser un número entero positivo'),verificarUsuario,
   productoAtributoController.eliminarAsignacion
 );
 

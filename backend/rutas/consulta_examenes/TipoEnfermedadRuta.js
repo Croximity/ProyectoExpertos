@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const tipoEnfermedadController = require('../../controladores/consulta_examenes/TipoEnfermedadController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
-router.post('/tipo-enfermedad', tipoEnfermedadController.guardarTipoEnfermedad);
+router.post('/tipo-enfermedad', verificarUsuario, tipoEnfermedadController.guardarTipoEnfermedad);
 /**
  * @swagger
  * /tipo-enfermedad/listar:
@@ -126,10 +127,10 @@ router.post('/tipo-enfermedad', tipoEnfermedadController.guardarTipoEnfermedad);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/tipo-enfermedad/listar', tipoEnfermedadController.listarTipoEnfermedad);
-router.post('/tipo-enfermedad/guardar', tipoEnfermedadController.guardarTipoEnfermedad);
-router.put('/tipo-enfermedad/editar/:id', tipoEnfermedadController.editarTipoEnfermedad);
-router.delete('/tipo-enfermedad/eliminar/:id', tipoEnfermedadController.eliminarTipoEnfermedad);
-router.get('/tipo-enfermedad/obtener/:id', tipoEnfermedadController.obtenerTipoEnfermedadPorId);
+router.get('/tipo-enfermedad/listar', verificarUsuario, tipoEnfermedadController.listarTipoEnfermedad);
+router.post('/tipo-enfermedad/guardar', verificarUsuario, tipoEnfermedadController.guardarTipoEnfermedad);
+router.put('/tipo-enfermedad/editar/:id', verificarUsuario, tipoEnfermedadController.editarTipoEnfermedad);
+router.delete('/tipo-enfermedad/eliminar/:id', verificarUsuario, tipoEnfermedadController.eliminarTipoEnfermedad);
+router.get('/tipo-enfermedad/obtener/:id', verificarUsuario, tipoEnfermedadController.obtenerTipoEnfermedadPorId);
 
 module.exports = router;

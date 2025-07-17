@@ -2,6 +2,7 @@ const express = require('express');
 const { body, param } = require('express-validator');
 const router = express.Router();
 const atributoController = require('../../controladores/productos/AtributoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -201,7 +202,7 @@ const atributoController = require('../../controladores/productos/AtributoContro
  */
 
 
-router.get('/atributos/buscar', atributoController.buscarAtributos);
+router.get('/atributos/buscar',verificarUsuario, atributoController.buscarAtributos);
 
 // CREAR atributo
 router.post(
@@ -213,13 +214,13 @@ router.post(
 );
 
 // LISTAR todos
-router.get('/atributos', atributoController.obtenerAtributos);
+router.get('/atributos', verificarUsuario, atributoController.obtenerAtributos);
 
 // OBTENER por ID
 router.get(
   '/atributos/:id',
   param('id')
-    .isInt().withMessage('El ID debe ser un número entero'),
+    .isInt().withMessage('El ID debe ser un número entero'),verificarUsuario,
   atributoController.obtenerAtributoPorId
 );
 
@@ -230,7 +231,7 @@ router.put(
     .isInt().withMessage('El ID debe ser un número entero'),
   body('nombre')
     .isLength({ min: 3, max: 50 })
-    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),
+    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),verificarUsuario,
   atributoController.actualizarAtributo
 );
 
@@ -238,7 +239,7 @@ router.put(
 router.delete(
   '/atributos/:id',
   param('id')
-    .isInt().withMessage('El ID debe ser un número entero'),
+    .isInt().withMessage('El ID debe ser un número entero'),verificarUsuario,
   atributoController.eliminarAtributo
 );
 

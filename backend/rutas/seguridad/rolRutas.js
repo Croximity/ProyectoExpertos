@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const rolController = require('../../controladores/seguridad/rolController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -33,7 +34,7 @@ const rolController = require('../../controladores/seguridad/rolController');
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/rol', rolController.crearRol);
+router.post('/rol', verificarUsuario, rolController.crearRol);
 
 /**
  * @swagger
@@ -53,7 +54,7 @@ router.post('/rol', rolController.crearRol);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/roles', rolController.obtenerRoles);
+router.get('/roles', verificarUsuario, rolController.obtenerRoles);
 
 /**
  * @swagger
@@ -86,7 +87,7 @@ router.get('/roles', rolController.obtenerRoles);
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/rol/:id', rolController.editarRol);
+router.put('/rol/:id', verificarUsuario, rolController.editarRol);
 
 /**
  * @swagger
@@ -117,7 +118,7 @@ router.put('/rol/:id', rolController.editarRol);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete('/rol/:id', rolController.eliminarRol);
+router.delete('/rol/:id', verificarUsuario, rolController.eliminarRol);
 
 /**
  * @swagger

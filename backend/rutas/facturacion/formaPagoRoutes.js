@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const formaPagoController = require('../../controladores/facturacion/formaPagoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -20,7 +21,7 @@ const formaPagoController = require('../../controladores/facturacion/formaPagoCo
  *       200:
  *         description: Lista de formas de pago
  */
-router.get('/formas-pago', formaPagoController.obtenerFormasPago);
+router.get('/formas-pago', verificarUsuario, formaPagoController.obtenerFormasPago);
 
 /**
  * @swagger
@@ -41,7 +42,7 @@ router.get('/formas-pago', formaPagoController.obtenerFormasPago);
  *       404:
  *         description: No encontrado
  */
-router.get('/forma-pago/:id', formaPagoController.obtenerFormaPagoPorId);
+router.get('/forma-pago/:id', verificarUsuario, formaPagoController.obtenerFormaPagoPorId);
 
 /**
  * @swagger
@@ -73,7 +74,7 @@ router.get('/forma-pago/:id', formaPagoController.obtenerFormaPagoPorId);
  *       400:
  *         description: Error de validación
  */
-router.post('/forma-pago', formaPagoController.validarCrear, formaPagoController.crearFormaPago);
+router.post('/forma-pago', verificarUsuario, formaPagoController.validarCrear, formaPagoController.crearFormaPago);
 
 /**
  * @swagger
@@ -106,7 +107,7 @@ router.post('/forma-pago', formaPagoController.validarCrear, formaPagoController
  *       404:
  *         description: No encontrada
  */
-router.put('/forma-pago/:id', formaPagoController.validarEditar, formaPagoController.actualizarFormaPago);
+router.put('/forma-pago/:id', verificarUsuario, formaPagoController.validarEditar, formaPagoController.actualizarFormaPago);
 
 /**
  * @swagger
@@ -149,7 +150,7 @@ router.put('/forma-pago/:id', formaPagoController.validarEditar, formaPagoContro
  *       500:
  *         description: Error al inactivar forma de pago
  */
-router.patch('/forma-pago/:id/inactivar', formaPagoController.inactivarFormaPago);
+router.patch('/forma-pago/:id/inactivar', verificarUsuario, formaPagoController.inactivarFormaPago);
 
 
 module.exports = router;

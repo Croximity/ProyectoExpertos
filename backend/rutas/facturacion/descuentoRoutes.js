@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const descuentoController = require('../../controladores/facturacion/descuentoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -19,7 +20,7 @@ const descuentoController = require('../../controladores/facturacion/descuentoCo
  *       200:
  *         description: Lista de descuentos
  */
-router.get('/descuentos', descuentoController.obtenerDescuentos);
+router.get('/descuentos', verificarUsuario, descuentoController.obtenerDescuentos);
 
 /**
  * @swagger
@@ -40,7 +41,7 @@ router.get('/descuentos', descuentoController.obtenerDescuentos);
  *       404:
  *         description: Descuento no encontrado
  */
-router.get('/descuento/:id', descuentoController.obtenerDescuentoPorId);
+router.get('/descuento/:id', verificarUsuario, descuentoController.obtenerDescuentoPorId);
 
 /**
  * @swagger
@@ -80,7 +81,7 @@ router.get('/descuento/:id', descuentoController.obtenerDescuentoPorId);
  *       400:
  *         description: Error de validación
  */
-router.post('/descuento', descuentoController.validarCrear, descuentoController.crearDescuento);
+router.post('/descuento', verificarUsuario, descuentoController.validarCrear, descuentoController.crearDescuento);
 
 /**
  * @swagger
@@ -127,7 +128,7 @@ router.post('/descuento', descuentoController.validarCrear, descuentoController.
  *       404:
  *         description: Descuento no encontrado
  */
-router.put('/descuento/:id', descuentoController.validarEditar, descuentoController.actualizarDescuento);
+router.put('/descuento/:id', verificarUsuario, descuentoController.validarEditar, descuentoController.actualizarDescuento);
 
 /**
  * @swagger
@@ -149,6 +150,6 @@ router.put('/descuento/:id', descuentoController.validarEditar, descuentoControl
  *       404:
  *         description: Descuento no encontrado
  */
-router.delete('/descuento/:id', descuentoController.eliminarDescuento);
+router.delete('/descuento/:id', verificarUsuario, descuentoController.eliminarDescuento);
 
 module.exports = router;

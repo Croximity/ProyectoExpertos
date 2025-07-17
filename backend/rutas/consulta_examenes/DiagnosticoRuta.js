@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const diagnosticoController = require('../../controladores/consulta_examenes/DiagnosticoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 
 /**
  * @swagger
@@ -119,10 +120,10 @@ const diagnosticoController = require('../../controladores/consulta_examenes/Dia
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/diagnostico/listar', diagnosticoController.listarDiagnostico);
-router.post('/diagnostico/guardar', diagnosticoController.guardarDiagnostico);
-router.put('/diagnostico/editar/:id', diagnosticoController.editarDiagnostico);
-router.delete('/diagnostico/eliminar/:id', diagnosticoController.eliminarDiagnostico);
-router.get('/diagnostico/obtener/:id', diagnosticoController.obtenerDiagnosticoPorId);
+router.get('/diagnostico/listar', verificarUsuario, diagnosticoController.listarDiagnostico);
+router.post('/diagnostico/guardar', verificarUsuario, diagnosticoController.guardarDiagnostico);
+router.put('/diagnostico/editar/:id', verificarUsuario, diagnosticoController.editarDiagnostico);
+router.delete('/diagnostico/eliminar/:id', verificarUsuario, diagnosticoController.eliminarDiagnostico);
+router.get('/diagnostico/obtener/:id', verificarUsuario, diagnosticoController.obtenerDiagnosticoPorId);
 
 module.exports = router;
