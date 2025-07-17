@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, query } = require('express-validator');
 const Receta = require('../../modelos/consulta_examenes/Receta');
 
 // === VALIDACIONES ===
@@ -92,8 +92,16 @@ const reglasEditar = [
 
 // === CONTROLADORES ===
 
+const validarFiltrosReceta = [
+  query('idCliente').optional().isInt().withMessage('idCliente debe ser un número entero'),
+  query('idEmpleado').optional().isInt().withMessage('idEmpleado debe ser un número entero'),
+  query('tipoLente').optional().isString().withMessage('tipoLente debe ser texto'),
+  query('fechaInicio').optional().isISO8601().withMessage('fechaInicio debe tener formato YYYY-MM-DD'),
+  query('fechaFin').optional().isISO8601().withMessage('fechaFin debe tener formato YYYY-MM-DD'),
+];
+
 // Crear receta
-const crearReceta = [
+const guardarReceta = [
   ...reglasCrear,
   async (req, res) => {
     const errores = validationResult(req);
@@ -109,15 +117,32 @@ const crearReceta = [
   }
 ];
 
-// Obtener todas las recetas
-const obtenerRecetas = async (req, res) => {
-  try {
-    const recetas = await Receta.findAll();
-    res.json(recetas);
-  } catch (error) {
-    res.status(500).json({ mensaje: 'Error al obtener recetas', error: error.message });
+// Obtener todas las recetas con filtros
+const listarReceta = [
+  ...validarFiltrosReceta,
+  async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+      return res.status(400).json({ errores: errores.array() });
+    }
+    const { idCliente, idEmpleado, tipoLente, fechaInicio, fechaFin } = req.query;
+    const where = {};
+    if (idCliente) where.idCliente = idCliente;
+    if (idEmpleado) where.idEmpleado = idEmpleado;
+    if (tipoLente) where.Tipo_Lente = tipoLente;
+    if (fechaInicio || fechaFin) {
+      where.Fecha = {};
+      if (fechaInicio) where.Fecha['$gte'] = fechaInicio;
+      if (fechaFin) where.Fecha['$lte'] = fechaFin;
+    }
+    try {
+      const recetas = await Receta.findAll({ where });
+      res.json(recetas);
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al obtener recetas', error: error.message });
+    }
   }
-};
+];
 
 // Obtener receta por ID
 const obtenerRecetaPorId = async (req, res) => {
@@ -166,8 +191,8 @@ const eliminarReceta = async (req, res) => {
 
 // === EXPORTAR ===
 module.exports = {
-  crearReceta,
-  obtenerRecetas,
+  guardarReceta,
+  listarReceta,
   obtenerRecetaPorId,
   editarReceta,
   eliminarReceta

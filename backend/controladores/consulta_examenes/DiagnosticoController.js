@@ -23,7 +23,7 @@ const reglasEditar = [
 // === CONTROLADORES ===
 
 // Crear diagnóstico
-const crearDiagnostico = [
+const guardarDiagnostico = [
   ...reglasCrear,
   async (req, res) => {
     const errores = validationResult(req);
@@ -40,7 +40,7 @@ const crearDiagnostico = [
 ];
 
 // Obtener todos los diagnósticos
-const obtenerDiagnosticos = async (req, res) => {
+const listarDiagnostico = async (req, res) => {
   try {
     const diagnosticos = await Diagnostico.findAll();
     res.json(diagnosticos);
@@ -96,8 +96,8 @@ const eliminarDiagnostico = async (req, res) => {
 
 // === EXPORTAR ===
 module.exports = {
-  crearDiagnostico,
-  obtenerDiagnosticos,
+  guardarDiagnostico,
+  listarDiagnostico,
   obtenerDiagnosticoPorId,
   editarDiagnostico,
   eliminarDiagnostico

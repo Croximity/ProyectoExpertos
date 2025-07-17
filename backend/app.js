@@ -32,6 +32,8 @@ const productoRutas = require('./rutas/productos/productoRutas');
 const categoriaProductoRutas = require('./rutas/productos/categoriaProductoRutas');
 const atributoRutas = require('./rutas/productos/atributoRutas');
 const productoAtributoRutas = require('./rutas/productos/productoAtributoRutas');
+const imagenProductoRutas = require('./rutas/productos/imagenProductoRutas');
+
 
 /* ========== RUTAS DE GESTIÓN CLIENTE ========== */
 const clienteRuta = require('./rutas/gestion_cliente/ClienteRuta');
@@ -93,6 +95,8 @@ app.use('/api/optica/productos', productoRutas);
 app.use('/api/optica/categorias', categoriaProductoRutas);
 app.use('/api/optica/atributos', atributoRutas);
 app.use('/api/optica/asignaciones', productoAtributoRutas);
+app.use('/api/optica/productos', imagenProductoRutas);
+
 
 /* ========== MODELOS A SINCRONIZAR (si querés controlar uno a uno) ========== */
 const Persona = require('./modelos/seguridad/Persona');
@@ -120,13 +124,14 @@ const FacturaDetalle = require('./modelos/facturacion/FacturaDetalle');
 const FormaPago = require('./modelos/facturacion/FormaPago');
 const Descuento = require('./modelos/facturacion/Descuento');
 const DetalleDescuento = require('./modelos/facturacion/DetalleDescuento');
+const Atributo = require('./modelos/productos/Atributo');
 
-// También podés sincronizar modelos de productos si querés individualmente:
-// const Producto = require('./modelos/productos/ProductoModel');
-// const CategoriaProducto = require('./modelos/productos/CategoriaProducto');
-// etc.
+//modelos de productos
+const Producto = require('./modelos/productos/ProductoModel');
+const CategoriaProducto = require('./modelos/productos/CategoriaProducto');
+const ProductoAtributo = require('./modelos/productos/ProductoAtributo');
 
-// Iniciar servidor y sincronizar base de datos
+
 const startServer = async () => {
   try {
     await db.authenticate();
@@ -153,8 +158,11 @@ const startServer = async () => {
     console.log('✅ Modelos de consulta exámenes sincronizados.');
 
     // Sincronizar el resto (productos, etc.)
-    await db.sync({ alter: true });
-    console.log('🔄 Modelos de productos/inventario sincronizados.');
+    await Atributo.sync();
+    await Producto.sync();
+    await CategoriaProducto.sync();
+    await ProductoAtributo.sync();
+    console.log('✅ Modelos de productos/inventario sincronizados.');
 
         // Sincronizar modelos de Fcaturacion
     await Descuento.sync();

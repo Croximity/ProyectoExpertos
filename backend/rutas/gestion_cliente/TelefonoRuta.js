@@ -3,6 +3,83 @@ const { body, param, validationResult } = require('express-validator');
 const telefonoController = require('../../controladores/gestion_cliente/TelefonoController');
 const router = express.Router();
 
+
+/**
+ * @swagger
+ * /telefono:
+ *   post:
+ *     summary: Crear un nuevo teléfono
+ *     tags: [Telefonos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - idPersona
+ *               - Numero
+ *               - Estado
+ *             properties:
+ *               idPersona:
+ *                 type: integer
+ *                 description: ID de la persona asociada al teléfono
+ *                 example: 1
+ *               Numero:
+ *                 type: string
+ *                 description: Número de teléfono (7 a 15 dígitos, debe empezar por 2 si es fax)
+ *                 example: "123456789"
+ *               Estado:
+ *                 type: string
+ *                 enum: [movil, fijo, fax]
+ *                 description: Tipo de teléfono
+ *                 example: "movil"
+ *     responses:
+ *       201:
+ *         description: Teléfono creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Teléfono creado
+ *                 telefono:
+ *                   $ref: '#/components/schemas/Telefono'
+ *       400:
+ *         description: Error de validación o número/persona no válida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: La persona asociada no existe
+ *                 errores:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       msg:
+ *                         type: string
+ *                         example: El número debe tener entre 7 y 15 dígitos
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Error al crear teléfono
+ *                 error:
+ *                   type: string
+ *                   example: Mensaje de error
+ */
+
 // Validaciones para crear y editar teléfono
 const validarTelefono = [
   body('idPersona').isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo'),
@@ -44,6 +121,80 @@ router.post('/telefono',
 );
 const { query } = require('express-validator');
 
+/**
+ * @swagger
+ * /telefono:
+ *   get:
+ *     summary: Obtener todos los teléfonos con filtros opcionales
+ *     tags: [Telefonos]
+ *     parameters:
+ *       - in: query
+ *         name: numero
+ *         schema:
+ *           type: string
+ *           minLength: 7
+ *         required: false
+ *         description: Número de teléfono para filtrar (mínimo 7 dígitos)
+ *         example: "1234567"
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [movil, fijo, fax]
+ *         required: false
+ *         description: Tipo de teléfono para filtrar
+ *         example: "movil"
+ *       - in: query
+ *         name: idPersona
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: ID de la persona para filtrar
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Lista de teléfonos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Telefono'
+ *       400:
+ *         description: Error de validación o falta de filtros
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Debe enviar al menos uno de los filtros: numero, tipo o idPersona
+ *                 errores:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       msg:
+ *                         type: string
+ *                         example: El número debe tener al menos 7 dígitos
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Error al obtener teléfonos
+ *                 error:
+ *                   type: string
+ *                   example: Mensaje de error
+ */
+
+
 router.get('/telefono',
   [
     query('numero').optional().isLength({ min: 7 }).withMessage('El número debe tener al menos 7 dígitos'),
@@ -62,10 +213,149 @@ router.get('/telefono',
   ],
   telefonoController.obtenerTelefonos
 );
+
+/**
+ * @swagger
+ * /telefono/{id}:
+ *   get:
+ *     summary: Obtener un teléfono por ID
+ *     tags: [Telefonos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del teléfono
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Teléfono encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Telefono'
+ *       404:
+ *         description: Teléfono no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Teléfono no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Error al obtener teléfono
+ *                 error:
+ *                   type: string
+ *                   example: Mensaje de error
+ */
+
 router.get('/telefono/:id',
   param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo'),
   telefonoController.obtenerTelefonoPorId
 );
+
+/**
+ * @swagger
+ * /telefono/{id}:
+ *   put:
+ *     summary: Actualizar un teléfono existente
+ *     tags: [Telefonos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del teléfono
+ *         example: 1
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               idPersona:
+ *                 type: integer
+ *                 description: ID de la persona asociada al teléfono (opcional)
+ *                 example: 1
+ *               Numero:
+ *                 type: string
+ *                 description: Número de teléfono (opcional, 7 a 15 dígitos, debe empezar por 2 si es fax)
+ *                 example: "123456789"
+ *               Estado:
+ *                 type: string
+ *                 enum: [movil, fijo, fax]
+ *                 description: Tipo de teléfono (opcional)
+ *                 example: "movil"
+ *     responses:
+ *       200:
+ *         description: Teléfono actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Teléfono actualizado
+ *                 telefono:
+ *                   $ref: '#/components/schemas/Telefono'
+ *       400:
+ *         description: Error de validación o número/persona no válida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: La Persona asociada no existe
+ *                 errores:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       msg:
+ *                         type: string
+ *                         example: El número debe tener entre 7 y 15 dígitos
+ *       404:
+ *         description: Teléfono no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Teléfono no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Error al editar teléfono
+ *                 error:
+ *                   type: string
+ *                   example: Mensaje de error
+ */
 router.put('/telefono/:id',
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
@@ -103,6 +393,56 @@ router.put('/telefono/:id',
   ],
   telefonoController.editarTelefono
 );
+/**
+ * @swagger
+ * /telefono/{id}:
+ *   delete:
+ *     summary: Eliminar un teléfono
+ *     tags: [Telefonos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del teléfono
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Teléfono eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Teléfono eliminado
+ *       404:
+ *         description: Teléfono no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Teléfono no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Error al eliminar teléfono
+ *                 error:
+ *                   type: string
+ *                   example: Mensaje de error
+ */
 router.delete('/telefono/:id',
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
@@ -115,5 +455,31 @@ router.delete('/telefono/:id',
   ],
   telefonoController.eliminarTelefono
 );
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Telefono:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID del teléfono
+ *           example: 1
+ *         idPersona:
+ *           type: integer
+ *           description: ID de la persona asociada
+ *           example: 1
+ *         Numero:
+ *           type: string
+ *           description: Número de teléfono
+ *           example: "123456789"
+ *         Estado:
+ *           type: string
+ *           enum: [movil, fijo, fax]
+ *           description: Tipo de teléfono
+ *           example: "movil"
+ */
 
 module.exports = router;
