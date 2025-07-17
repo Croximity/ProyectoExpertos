@@ -14,7 +14,7 @@ router.post(
     check('contraseña')
       .isLength({ min: 6 })
       .withMessage('La contraseña debe tener al menos 6 caracteres')
-  ],verificarUsuario,
+  ],
   authController.registrar
 );
 

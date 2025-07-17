@@ -24,11 +24,11 @@ const Usuario = sequelize.define('Usuario', {
   },
   idPersona: {
     type: DataTypes.INTEGER,
-    allowNull: false  // Lo dejaremos sin relación por ahora
+    allowNull: true  // Lo dejaremos sin relación por ahora
   },
   idrol:{
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   }
 }, {
   tableName: 'usuario',
