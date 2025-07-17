@@ -11,7 +11,7 @@ const personaController = require('../../controladores/seguridad/personaControll
 
 /**
  * @swagger
- * /persona:
+ * /personas/persona:
  *   post:
  *     summary: Crear una persona
  *     tags: [Personas]
@@ -37,7 +37,7 @@ router.post('/persona', personaController.crearPersona);
 
 /**
  * @swagger
- * /persona/{id}:
+ * /personas/persona/{id}:
  *   put:
  *     summary: Editar una persona por ID
  *     tags: [Personas]
@@ -70,7 +70,7 @@ router.put('/persona/:id', personaController.editarPersona);
 
 /**
  * @swagger
- * /persona/{id}:
+ * /personas/persona/{id}:
  *   delete:
  *     summary: Eliminar una persona por ID
  *     tags: [Personas]
@@ -101,7 +101,7 @@ router.delete('/persona/:id', personaController.eliminarPersona);
 
 /**
  * @swagger
- * /personas:
+ * /personas/personas:
  *   post:
  *     summary: Crear múltiples personas
  *     tags: [Personas]
@@ -162,7 +162,7 @@ router.post('/personas', personaController.crearMultiplesPersonas);
  *           example: Col. Kennedy
  *         DNI:
  *           type: string
- *           example: 0801199012345
+ *           example: 08011990123452
  *         correo:
  *           type: string
  *           example: juan.carlos@example.com
@@ -196,7 +196,7 @@ router.post('/personas', personaController.crearMultiplesPersonas);
  *           example: Col. Kennedy
  *         DNI:
  *           type: string
- *           example: 0801199012345
+ *           example: 08011990123452
  *         correo:
  *           type: string
  *           example: juan.carlos@example.com
