@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const clave = 'Unah123.';
 const moment = require("moment");
 const expiracion = moment.duration(1, "days").asSeconds();
-const Usuario = require('../modelos/seguridad/usuario');
+const Usuario = require('../modelos/seguridad/Usuario');
 
 exports.getToken = (data) => {
   return jwt.sign(data, clave, { expiresIn: expiracion });
