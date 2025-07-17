@@ -142,7 +142,7 @@ Esto descargará el archivo factura_12.pdf si existe en la carpeta uploads.
 ## 📬 Contacto
 
 Para soporte técnico, escribe a:  
-desofiwfacturacion@gmail.com
+ajgamez02@gmail.com
 
 ## 🪪 Licencia
 

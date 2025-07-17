@@ -82,7 +82,6 @@ const Factura = require('../../modelos/facturacion/Factura');
 router.post('/factura', facturaController.crearFactura);
 
 /**
-/**
  * @swagger
  * /factura-completa:
  *   post:
@@ -107,30 +106,31 @@ router.post('/factura', facturaController.crearFactura);
  *                   - Fecha
  *                   - Total_Facturado
  *                   - Tipo_documento
+ *                   - estadoFactura
  *                 properties:
+ *                   idFactura:
+ *                     type: integer
+ *                     example: 17
  *                   Fecha:
  *                     type: string
  *                     format: date-time
- *                     example: "2025-07-15T20:09:17.000Z"
+ *                     example: "2025-07-17T15:30:00.000Z"
  *                   Total_Facturado:
  *                     type: number
  *                     format: double
- *                     example: 850.00
+ *                     example: 862.50
  *                   Tipo_documento:
  *                     type: string
  *                     example: "Factura"
  *                   idCliente:
  *                     type: integer
- *                     example: 1
+ *                     example: 2
  *                   idFormaPago:
  *                     type: integer
  *                     example: 1
  *                   idEmpleado:
  *                     type: integer
- *                     example: 1
- *                   archivo_pdf:
- *                     type: string
- *                     example: "factura12.pdf"
+ *                     example: 2
  *                   estadoFactura:
  *                     type: string
  *                     example: "activa"
@@ -141,18 +141,13 @@ router.post('/factura', facturaController.crearFactura);
  *                   required:
  *                     - idProducto
  *                     - cantidad
- *                     - precioUnitario
  *                   properties:
  *                     idProducto:
  *                       type: integer
- *                       example: 2
+ *                       example: 1
  *                     cantidad:
  *                       type: integer
  *                       example: 2
- *                     precioUnitario:
- *                       type: number
- *                       format: double
- *                       example: 199.99
  *               descuentos:
  *                 type: array
  *                 items:
@@ -170,32 +165,22 @@ router.post('/factura', facturaController.crearFactura);
  *                       example: 25.00
  *           example:
  *             factura:
- *               idFactura: 20
- *               Fecha: "2025-07-15T20:09:17.000Z"
- *               Total_Facturado: 850
+ *               idFactura: 17
+ *               Fecha: "2025-07-17T15:30:00.000Z"
+ *               Total_Facturado: 862.50
  *               Tipo_documento: "Factura"
- *               idCliente: 1
+ *               idCliente: 2
  *               idFormaPago: 1
- *               idEmpleado: 1
- *               archivo_pdf: "factura12.pdf"
+ *               idEmpleado: 2
  *               estadoFactura: "activa"
  *             detalles:
- *               - idProducto: 2
+ *               - idProducto: 1
  *                 cantidad: 2
- *                 precioUnitario: 199.99
- *               - idProducto: 3
+ *               - idProducto: 2
  *                 cantidad: 1
- *                 precioUnitario: 150.00
- *               - idProducto: 5
- *                 cantidad: 1
- *                 precioUnitario: 300.00
  *             descuentos:
- *               - idDescuento: 1
- *                 monto: 0
  *               - idDescuento: 2
  *                 monto: 25
- *               - idDescuento: 4
- *                 monto: 50
  *     responses:
  *       201:
  *         description: Factura creada correctamente
