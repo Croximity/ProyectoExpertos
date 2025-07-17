@@ -14,7 +14,7 @@ const {verificarUsuario} = require('../../configuraciones/passport');
 
 /**
  * @swagger
- * /api/auth/registro:
+ * /auth/registro:
  *   post:
  *     summary: Registrar un nuevo usuario
  *     tags: [Autenticación]
@@ -73,7 +73,7 @@ const {verificarUsuario} = require('../../configuraciones/passport');
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     summary: Iniciar sesión de usuario
  *     tags: [Autenticación]

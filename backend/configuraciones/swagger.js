@@ -33,7 +33,13 @@ const options = {
         }
     ],
   },
-  apis: [`${path.join(__dirname, "../rutas/**/*.js")}`], // Ruta a los archivos donde están definidas las rutas
+  apis: [
+    './rutas/seguridad/*.js',
+    './rutas/gestion_cliente/*.js',
+    './rutas/productos/*.js',
+    './rutas/consulta_examenes/*.js',
+    './rutas/facturacion/*.js',
+  ], // Ruta a los archivos donde están definidas las rutas
 };
 
 const swaggerSpec = swaggerJsdoc(options);

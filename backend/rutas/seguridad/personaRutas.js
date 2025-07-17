@@ -10,7 +10,7 @@ const personaController = require('../../controladores/seguridad/personaControll
 
 /**
  * @swagger
- * /api/persona:
+ * /personas/persona:
  *   post:
  *     summary: Crear una nueva persona
  *     tags: [Persona]
@@ -43,7 +43,7 @@ const personaController = require('../../controladores/seguridad/personaControll
  *                 example: Calle principal, Tegucigalpa
  *               DNI:
  *                 type: string
- *                 example: 0801199912345
+ *                 example: 08011999123453
  *               correo:
  *                 type: string
  *                 example: juan.perez@email.com
@@ -66,7 +66,7 @@ const personaController = require('../../controladores/seguridad/personaControll
 
 /**
  * @swagger
- * /api/persona/{id}:
+ * /personas/persona/{id}:
  *   put:
  *     summary: Editar una persona por ID
  *     tags: [Persona]
@@ -94,7 +94,7 @@ const personaController = require('../../controladores/seguridad/personaControll
 
 /**
  * @swagger
- * /api/persona/{id}:
+ * /personas/persona/{id}:
  *   delete:
  *     summary: Eliminar una persona por ID
  *     tags: [Persona]
@@ -116,7 +116,7 @@ const personaController = require('../../controladores/seguridad/personaControll
 
 /**
  * @swagger
- * /api/personas:
+ * /personas/personas:
  *   post:
  *     summary: Crear múltiples personas
  *     tags: [Persona]
@@ -166,7 +166,7 @@ const personaController = require('../../controladores/seguridad/personaControll
  *           example: Barrio Centro, Comayagua
  *         DNI:
  *           type: string
- *           example: 0801199900001
+ *           example: 08011999000013
  *         correo:
  *           type: string
  *           example: ana.lopez@email.com
@@ -179,6 +179,7 @@ const personaController = require('../../controladores/seguridad/personaControll
  *           enum: [M, F]
  *           example: F
  */
+
 
 // Ruta: Crear una persona
 router.post('/persona', personaController.crearPersona);

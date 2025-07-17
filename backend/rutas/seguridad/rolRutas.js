@@ -10,7 +10,7 @@ const rolController = require('../../controladores/seguridad/rolController');
 
 /**
  * @swagger
- * /api/rol:
+ * /roles/rol:
  *   post:
  *     summary: Crear un nuevo rol
  *     tags: [Rol]
@@ -21,9 +21,9 @@ const rolController = require('../../controladores/seguridad/rolController');
  *           schema:
  *             type: object
  *             required:
- *               - nombreRol
+ *               - nombre
  *             properties:
- *               nombreRol:
+ *               nombre:
  *                 type: string
  *                 example: Administrador
  *     responses:
@@ -37,7 +37,7 @@ const rolController = require('../../controladores/seguridad/rolController');
 
 /**
  * @swagger
- * /api/roles:
+ * /roles/roles:
  *   get:
  *     summary: Obtener todos los roles
  *     tags: [Rol]
@@ -56,7 +56,7 @@ const rolController = require('../../controladores/seguridad/rolController');
 
 /**
  * @swagger
- * /api/rol/{id}:
+ * /roles/rol/{id}:
  *   put:
  *     summary: Editar un rol por ID
  *     tags: [Rol]
@@ -84,7 +84,7 @@ const rolController = require('../../controladores/seguridad/rolController');
 
 /**
  * @swagger
- * /api/rol/{id}:
+ * /roles/rol/{id}:
  *   delete:
  *     summary: Eliminar un rol por ID
  *     tags: [Rol]
@@ -111,12 +111,12 @@ const rolController = require('../../controladores/seguridad/rolController');
  *     Rol:
  *       type: object
  *       required:
- *         - nombreRol
+ *         - nombre
  *       properties:
  *         id:
  *           type: integer
  *           example: 1
- *         nombreRol:
+ *         nombre:
  *           type: string
  *           example: Supervisor
  */
