@@ -355,5 +355,76 @@ router.get('/factura/:id/pdf', async (req, res) => {
   }  
 });
 
+/**  
+ * @swagger  
+ * /factura/{id}/pdf/view:  
+ *   get:  
+ *     summary: Visualizar el PDF de una factura en el navegador  
+ *     description: Muestra el archivo PDF asociado a una factura directamente en el navegador sin forzar la descarga.  
+ *     tags: [Factura]  
+ *     parameters:  
+ *       - in: path  
+ *         name: id  
+ *         required: true  
+ *         description: ID de la factura  
+ *         schema:  
+ *           type: integer  
+ *           example: 12  
+ *     responses:  
+ *       200:  
+ *         description: PDF mostrado en navegador  
+ *         content:  
+ *           application/pdf:  
+ *             schema:  
+ *               type: string  
+ *               format: binary  
+ *       404:  
+ *         description: PDF no encontrado o factura inexistente  
+ *         content:  
+ *           application/json:  
+ *             schema:  
+ *               type: object  
+ *               properties:  
+ *                 error:  
+ *                   type: string  
+ *                   example: "PDF de factura no encontrado"  
+ *       500:  
+ *         description: Error interno del servidor  
+ *         content:  
+ *           application/json:  
+ *             schema:  
+ *               type: object  
+ *               properties:  
+ *                 error:  
+ *                   type: string  
+ *                   example: "Error al obtener PDF de factura"  
+ */
+router.get('/factura/:id/pdf/view', async (req, res) => {    
+  try {    
+    const factura = await Factura.findByPk(req.params.id);    
+    if (!factura || !factura.archivo_pdf) {    
+      return res.status(404).json({ error: 'PDF de factura no encontrado' });    
+    }    
+        
+    const filePath = path.resolve(__dirname, '../../uploads', factura.archivo_pdf);    
+    if (!fs.existsSync(filePath)) {    
+      return res.status(404).json({ error: 'Archivo PDF no encontrado' });    
+    }    
+        
+    // Headers correctos para mostrar PDF en navegador  
+    res.setHeader('Content-Type', 'application/pdf');  
+    res.setHeader('Content-Disposition', 'inline; filename="factura.pdf"');  
+    res.setHeader('Cache-Control', 'no-cache');  
+    res.sendFile(filePath);  
+  } catch (error) {    
+    console.error('Error al servir PDF:', error);  
+    res.status(500).json({ error: 'Error al obtener PDF de factura' });    
+  }    
+});
+
+
+
+
+
 module.exports = router;
 

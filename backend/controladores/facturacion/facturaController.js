@@ -145,6 +145,9 @@ exports.anularFactura = async (req, res) => {
 };
 
 
+
+
+// ------------------------------------------------------------------------------------------
 // Crear una factura completa (con detalles y descuentos)
 
 exports.crearFacturaCompleta = async (req, res) => {
