@@ -24,7 +24,7 @@ exports.registrar = async (req, res) => {
       Nombre_Usuario,
       Contraseña: hash, 
       idPersona,
-      idRol
+      idrol
     });
 
     res.status(201).json({ mensaje: 'Usuario registrado exitosamente', usuario: nuevoUsuario });
@@ -56,9 +56,13 @@ exports.iniciarSesion = async (req, res) => {
     if (!contraseñaValida) {
       return res.status(400).json({ mensaje: 'Contraseña incorrecta' });
     }
-
     const payload = { idUsuario: usuario.idUsuario, Nombre_Usuario: usuario.Nombre_Usuario };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const datos = {
+      token,
+      usuario: payload
+    };
+    console.log(datos);
+    res.status(200).json(datos);
 
     res.json({ mensaje: 'Inicio de sesión exitoso', token });
   } catch (error) {
