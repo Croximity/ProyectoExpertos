@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, query } = require('express-validator');
 const Examen_Vista = require('../../modelos/consulta_examenes/Examen_Vista');
 
 // === VALIDACIONES ===
@@ -34,8 +34,15 @@ const reglasEditar = [
 
 // === CONTROLADORES ===
 
+const validarFiltrosExamenVista = [
+  query('idConsulta').optional().isInt().withMessage('idConsulta debe ser un número entero'),
+  query('idReceta').optional().isInt().withMessage('idReceta debe ser un número entero'),
+  query('fechaInicio').optional().isISO8601().withMessage('fechaInicio debe tener formato YYYY-MM-DD'),
+  query('fechaFin').optional().isISO8601().withMessage('fechaFin debe tener formato YYYY-MM-DD'),
+];
+
 // Crear examen de vista
-const crearExamenVista = [
+const guardarExamenVista = [
   ...reglasCrear,
   async (req, res) => {
     const errores = validationResult(req);
@@ -51,15 +58,31 @@ const crearExamenVista = [
   }
 ];
 
-// Obtener todos los exámenes de vista
-const obtenerExamenesVista = async (req, res) => {
-  try {
-    const examenesVista = await Examen_Vista.findAll();
-    res.json(examenesVista);
-  } catch (error) {
-    res.status(500).json({ mensaje: 'Error al obtener exámenes de vista', error: error.message });
+// Obtener todos los exámenes de vista con filtros
+const listarExamenVista = [
+  ...validarFiltrosExamenVista,
+  async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+      return res.status(400).json({ errores: errores.array() });
+    }
+    const { idConsulta, idReceta, fechaInicio, fechaFin } = req.query;
+    const where = {};
+    if (idConsulta) where.idConsulta = idConsulta;
+    if (idReceta) where.idReceta = idReceta;
+    if (fechaInicio || fechaFin) {
+      where.Fecha_Examen = {};
+      if (fechaInicio) where.Fecha_Examen['$gte'] = fechaInicio;
+      if (fechaFin) where.Fecha_Examen['$lte'] = fechaFin;
+    }
+    try {
+      const examenesVista = await Examen_Vista.findAll({ where });
+      res.json(examenesVista);
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al obtener exámenes de vista', error: error.message });
+    }
   }
-};
+];
 
 // Obtener examen de vista por ID
 const obtenerExamenVistaPorId = async (req, res) => {
@@ -108,8 +131,8 @@ const eliminarExamenVista = async (req, res) => {
 
 // === EXPORTAR ===
 module.exports = {
-  crearExamenVista,
-  obtenerExamenesVista,
+  guardarExamenVista,
+  listarExamenVista,
   obtenerExamenVistaPorId,
   editarExamenVista,
   eliminarExamenVista

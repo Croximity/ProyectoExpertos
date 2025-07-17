@@ -2,9 +2,15 @@ const Factura = require('../../modelos/facturacion/Factura');
 const db = require('../../configuraciones/db');
 const FacturaDetalle = require('../../modelos/facturacion/FacturaDetalle');
 const DetalleDescuento = require('../../modelos/facturacion/DetalleDescuento');
+const Cliente = require('../../modelos/gestion_cliente/Cliente');  
+const Producto = require('../../modelos/productos/ProductoModel'); 
 const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
+
+const Empleado = require('../../modelos/gestion_cliente/Empleado');  
+const Persona = require('../../modelos/seguridad/Persona');  
+
 
 //validaciones
 const { body, validationResult } = require('express-validator');
@@ -149,66 +155,93 @@ exports.anularFactura = async (req, res) => {
 
 // ------------------------------------------------------------------------------------------
 // Crear una factura completa (con detalles y descuentos)
-
-exports.crearFacturaCompleta = async (req, res) => {
-  const t = await db.transaction();
-
-  try {
-    let { factura, detalles, descuentos } = req.body;
-
-    // Si no vienen descuentos, asignar uno por defecto para evitar error "no iterable"
-    descuentos = descuentos && descuentos.length > 0
-      ? descuentos
-      : [{ idDescuento: 0, monto: 0 }];
-
-    // 1. Crear factura
-    const nuevaFactura = await Factura.create(factura, { transaction: t });
-
-    // 2. Agregar ID de factura a cada detalle
-    for (let d of detalles) {
-      d.idFactura = nuevaFactura.idFactura;
-    }
-
-    // 3. Crear detalles
-    await FacturaDetalle.bulkCreate(detalles, { transaction: t });
-
-    // 4. Agregar ID de factura a cada descuento
-    for (let d of descuentos) {
-      d.idFactura = nuevaFactura.idFactura;
-    }
-
-    // 5. Crear descuentos
-    await DetalleDescuento.bulkCreate(descuentos, { transaction: t });
-
-    // --- Generar PDF de la factura ---
-    const nombreArchivo = `factura_${nuevaFactura.idFactura}.pdf`;
-    const rutaPDF = path.join(__dirname, '../../uploads', nombreArchivo);
-
-    // --- Generar PDF de la factura con formato SAR ---   
+exports.crearFacturaCompleta = async (req, res) => {  
+  const t = await db.transaction();  
   
-    // Crear el PDF con formato profesional  
-    const doc = new PDFDocument({ margin: 50 });  
-    doc.pipe(fs.createWriteStream(rutaPDF));  
+  try {  
+    let { factura, detalles, descuentos } = req.body;  
+  
+    // Si no vienen descuentos, asignar uno por defecto para evitar error "no iterable"  
+    descuentos = descuentos && descuentos.length > 0  
+      ? descuentos  
+      : [{ idDescuento: 0, monto: 0 }];  
+  
+    // 1. Crear factura  
+    const nuevaFactura = await Factura.create(factura, { transaction: t });  
+  
+    // 2. Agregar ID de factura a cada detalle  
+    for (let d of detalles) {  
+      d.idFactura = nuevaFactura.idFactura;  
+    }  
+  
+    // 3. Crear detalles  
+    await FacturaDetalle.bulkCreate(detalles, { transaction: t });  
+  
+    // 4. Agregar ID de factura a cada descuento  
+    for (let d of descuentos) {  
+      d.idFactura = nuevaFactura.idFactura;  
+    }  
+  
+    // 5. Crear descuentos  
+    await DetalleDescuento.bulkCreate(descuentos, { transaction: t });  
+  
+    // --- OBTENER DATOS COMPLETOS DE LA BASE DE DATOS ---  
       
-    // ENCABEZADO DE LA EMPRESA  
+    // Obtener cliente con sus datos de persona  
+    const cliente = await Cliente.findByPk(nuevaFactura.idCliente, {  
+      include: [{  
+        model: Persona,  
+        as: 'persona'  
+      }]  
+    });  
+  
+    // Obtener empleado con sus datos de persona  
+    const empleado = await Empleado.findByPk(nuevaFactura.idEmpleado, {  
+      include: [{  
+        model: Persona,  
+        foreignKey: 'idPersona'  
+      }]  
+    });  
+  
+    // Obtener productos para cada detalle  
+    const ProductoModel = require('../../modelos/productos/ProductoModel');  
+    const detallesConProductos = await Promise.all(  
+      detalles.map(async (detalle) => {  
+        const producto = await ProductoModel.findByPk(detalle.idProducto);  
+        return {  
+          ...detalle,  
+          producto: producto  
+        };  
+      })  
+    );  
+  
+    // --- Generar PDF de la factura ---  
+    const nombreArchivo = `factura_${nuevaFactura.idFactura}.pdf`;  
+    const rutaPDF = path.join(__dirname, '../../uploads', nombreArchivo);  
+  
+    const doc = new PDFDocument({ margin: 50 });    
+    doc.pipe(fs.createWriteStream(rutaPDF));    
+        
+    // ENCABEZADO DE LA EMPRESA    
     doc.fontSize(16).font('Helvetica-Bold')  
-      .text('ÓPTICA [NOMBRE DE TU EMPRESA]', { align: 'center' });  
+      .text('ÓPTICA Velazques', { align: 'center' });  
     doc.fontSize(10).font('Helvetica')  
-      .text('RTN: [TU-RTN-AQUÍ]', { align: 'center' })  
-      .text('CAI: [TU-CAI-AQUÍ]', { align: 'center' })  
-      .text('Dirección: [Tu dirección completa]', { align: 'center' })  
-      .text('Teléfono: [Tu teléfono] | Email: [Tu email]', { align: 'center' });  
+      .text('RTN: 0301201505686', { align: 'center' })  
+      .text('CAI: ACD2155QWJJ254254', { align: 'center' })  
+      .text('RANGO AUTORIZADO: Del 00000001 al 99999999', { align: 'center' })  
+      .text('Dirección: Barrio Abajo, Comayagua, Honduras', { align: 'center' })  
+      .text('Teléfono: 88277998 | Email: opticavelazques@gmail.com', { align: 'center' });  
       
-    // Línea separadora  
-    doc.moveTo(50, doc.y + 10).lineTo(550, doc.y + 10).stroke();  
-    doc.moveDown(2);  
-      
-    // TÍTULO FACTURA  
-    doc.fontSize(18).font('Helvetica-Bold')  
-      .text('FACTURA', { align: 'center' });  
-    doc.moveDown();  
-      
-    // INFORMACIÓN DE LA FACTURA (Lado izquierdo)  
+    // Línea separadora    
+    doc.moveTo(50, doc.y + 10).lineTo(550, doc.y + 10).stroke();    
+    doc.moveDown(2);    
+        
+    // TÍTULO FACTURA    
+    doc.fontSize(18).font('Helvetica-Bold')    
+      .text('FACTURA', { align: 'center' });    
+    doc.moveDown();    
+        
+  // INFORMACIÓN DE LA FACTURA (Lado izquierdo) - MEJORADA  
     const facturaY = doc.y;  
     doc.fontSize(10).font('Helvetica-Bold')  
       .text('FACTURA No:', 50, facturaY)  
@@ -216,7 +249,7 @@ exports.crearFacturaCompleta = async (req, res) => {
       .text(nuevaFactura.idFactura.toString().padStart(8, '0'), 130, facturaY);  
       
     doc.font('Helvetica-Bold')  
-      .text('FECHA:', 50, facturaY + 15)  
+      .text('FECHA EMISIÓN:', 50, facturaY + 15)  
       .font('Helvetica')  
       .text(new Date(nuevaFactura.Fecha).toLocaleDateString('es-HN'), 130, facturaY + 15);  
       
@@ -225,106 +258,172 @@ exports.crearFacturaCompleta = async (req, res) => {
       .font('Helvetica')  
       .text(nuevaFactura.Tipo_documento || 'FACTURA', 130, facturaY + 30);  
       
-    // DATOS DEL CLIENTE (Lado derecho)  
-    // Aquí necesitarías obtener los datos del cliente desde la base de datos  
+    // FECHA DE VENCIMIENTO DEL CAI  
+    doc.font('Helvetica-Bold')  
+      .text('VENCE CAI:', 50, facturaY + 45)  
+      .font('Helvetica')  
+      .text('31/12/2025', 130, facturaY + 45); // Ajusta según tu CAI real  
+      
+    // DATOS DEL EMPLEADO (Lado izquierdo, debajo de info factura)  
+    const empleadoPersona = empleado?.Persona;  
+    const nombreEmpleado = empleadoPersona ?   
+      `${empleadoPersona.Pnombre} ${empleadoPersona.Snombre || ''} ${empleadoPersona.Papellido} ${empleadoPersona.Sapellido || ''}`.trim() : 'N/A';  
+      
+    doc.font('Helvetica-Bold')  
+      .text('ATENDIDO POR:', 50, facturaY + 65)  
+      .font('Helvetica')  
+      .text(nombreEmpleado, 130, facturaY + 65);  
+      
+    // DATOS DEL CLIENTE (Lado derecho) - MEJORADOS  
+    const clientePersona = cliente?.persona;  
+    const nombreCliente = clientePersona ?   
+      `${clientePersona.Pnombre} ${clientePersona.Snombre || ''} ${clientePersona.Papellido} ${clientePersona.Sapellido || ''}`.trim() : 'N/A';  
+      
     doc.font('Helvetica-Bold')  
       .text('CLIENTE:', 300, facturaY)  
       .font('Helvetica')  
-      .text('[Nombre del Cliente]', 350, facturaY);  
+      .text(nombreCliente, 350, facturaY);  
+      
+    // RTN DEL CLIENTE (SI APLICA)  
+    const rtnCliente = clientePersona?.DNI;  
+    const tieneRTN = rtnCliente && rtnCliente.length >= 13; // RTN hondureño tiene formato específico  
       
     doc.font('Helvetica-Bold')  
-      .text('RTN/ID:', 300, facturaY + 15)  
+      .text(tieneRTN ? 'RTN:' : 'ID:', 300, facturaY + 15)  
       .font('Helvetica')  
-      .text('[RTN del Cliente]', 350, facturaY + 15);  
+      .text(rtnCliente || 'N/A', 350, facturaY + 15);  
       
     doc.font('Helvetica-Bold')  
       .text('DIRECCIÓN:', 300, facturaY + 30)  
       .font('Helvetica')  
-      .text('[Dirección del Cliente]', 350, facturaY + 30);  
+      .text(clientePersona ? (clientePersona.Direccion || 'N/A') : 'N/A', 350, facturaY + 30);  
       
-    doc.moveDown(4);  
+    doc.font('Helvetica-Bold')  
+      .text('EMAIL:', 300, facturaY + 45)  
+      .font('Helvetica')  
+      .text(clientePersona ? (clientePersona.correo || 'N/A') : 'N/A', 350, facturaY + 45);  
       
-    // TABLA DE PRODUCTOS/SERVICIOS  
-    const tableTop = doc.y;  
-    const itemCodeX = 50;  
-    const descriptionX = 100;  
-    const quantityX = 350;  
-    const priceX = 400;  
-    const totalX = 480;  
-      
-    // Encabezados de tabla  
-    doc.fontSize(9).font('Helvetica-Bold');  
-    doc.text('CÓDIGO', itemCodeX, tableTop);  
-    doc.text('DESCRIPCIÓN', descriptionX, tableTop);  
-    doc.text('CANT.', quantityX, tableTop);  
-    doc.text('PRECIO', priceX, tableTop);  
-    doc.text('TOTAL', totalX, tableTop);  
-      
-    // Línea bajo encabezados  
-    doc.moveTo(itemCodeX, tableTop + 15).lineTo(550, tableTop + 15).stroke();  
-      
-    // Aquí deberías iterar sobre los detalles de la factura  
-    let currentY = tableTop + 25;  
-    doc.fontSize(8).font('Helvetica');  
-      
-    // Ejemplo de línea de producto (deberías obtener esto de FacturaDetalle)  
-    doc.text('001', itemCodeX, currentY);  
-    doc.text('Examen de vista completo', descriptionX, currentY);  
-    doc.text('1', quantityX, currentY);  
-    doc.text('L. 500.00', priceX, currentY);  
-    doc.text('L. 500.00', totalX, currentY);  
-      
-    currentY += 20;  
-      
-    // TOTALES  
+    doc.moveDown(6);    
+        
+    // TABLA DE PRODUCTOS/SERVICIOS    
+    const tableTop = doc.y;    
+    const itemCodeX = 50;    
+    const descriptionX = 120;    
+    const quantityX = 320;    
+    const priceX = 380;    
+    const totalX = 480;    
+        
+    // Encabezados de tabla    
+    doc.fontSize(9).font('Helvetica-Bold');    
+    doc.text('CÓDIGO', itemCodeX, tableTop);    
+    doc.text('DESCRIPCIÓN', descriptionX, tableTop);    
+    doc.text('CANT.', quantityX, tableTop);    
+    doc.text('P. UNIT.', priceX, tableTop);    
+    doc.text('TOTAL', totalX, tableTop);    
+        
+    // Línea bajo encabezados    
+    doc.moveTo(itemCodeX, tableTop + 15).lineTo(550, tableTop + 15).stroke();    
+        
+    // ITERAR SOBRE LOS DETALLES REALES DE LA FACTURA  
+    let currentY = tableTop + 25;    
+    doc.fontSize(8).font('Helvetica');    
+        
+    for (let i = 0; i < detallesConProductos.length; i++) {  
+      const detalle = detallesConProductos[i];  
+      const producto = detalle.producto;  
+        
+      // Usar precioVenta del producto en lugar de precioUnitario del request  
+      const precioReal = producto ? producto.precioVenta : detalle.precioUnitario;  
+      const impuestoProducto = producto ? (producto.impuesto || 0) : 0;  
+        
+      doc.text(producto ? producto.idProducto.toString().padStart(3, '0') : detalle.idProducto.toString().padStart(3, '0'), itemCodeX, currentY);  
+      doc.text(producto ? producto.Nombre : 'Producto', descriptionX, currentY);  
+      doc.text(detalle.cantidad.toString(), quantityX, currentY);  
+      doc.text(`L. ${precioReal.toFixed(2)}`, priceX, currentY);  
+      doc.text(`L. ${(detalle.cantidad * precioReal).toFixed(2)}`, totalX, currentY);  
+        
+      currentY += 20;  
+    }  
+        
+    // TOTALES    
     const totalsY = currentY + 30;  
     doc.moveTo(350, totalsY - 10).lineTo(550, totalsY - 10).stroke();  
       
+    // Calcular subtotal usando precioVenta real de los productos  
+    const subtotal = detallesConProductos.reduce((sum, detalle) => {  
+      const producto = detalle.producto;  
+      const precioReal = producto ? producto.precioVenta : detalle.precioUnitario;  
+      return sum + (detalle.cantidad * precioReal);  
+    }, 0);  
+      
+    const totalDescuentos = descuentos.reduce((sum, desc) => sum + desc.monto, 0);  
+    const subtotalConDescuento = subtotal - totalDescuentos;  
+      
+    // Calcular ISV sobre el subtotal con descuentos (15% estándar en Honduras)  
+    const isv = subtotalConDescuento * 0.15;  
+    const totalFinal = subtotalConDescuento + isv;  
+      
     doc.fontSize(10).font('Helvetica-Bold');  
     doc.text('SUBTOTAL:', 400, totalsY);  
-    doc.text('L. 500.00', 480, totalsY);  
+    doc.text(`L. ${subtotal.toFixed(2)}`, 480, totalsY);  
       
-    doc.text('ISV (15%):', 400, totalsY + 15);  
-    doc.text('L. 75.00', 480, totalsY + 15);  
-      
-    doc.fontSize(12).font('Helvetica-Bold');  
-    doc.text('TOTAL:', 400, totalsY + 35);  
-    doc.text(`L. ${nuevaFactura.Total_Facturado}`, 480, totalsY + 35);  
-      
-    // INFORMACIÓN LEGAL  
+    if (totalDescuentos > 0) {  
+      doc.text('DESCUENTOS:', 400, totalsY + 15);  
+      doc.text(`L. ${totalDescuentos.toFixed(2)}`, 480, totalsY + 15);  
+        
+      doc.text('ISV (15%):', 400, totalsY + 30);  
+      doc.text(`L. ${isv.toFixed(2)}`, 480, totalsY + 30);  
+        
+      doc.fontSize(12).font('Helvetica-Bold');  
+      doc.text('TOTAL:', 400, totalsY + 50);  
+      doc.text(`L. ${totalFinal.toFixed(2)}`, 480, totalsY + 50);  
+    } else {  
+      doc.text('ISV (15%):', 400, totalsY + 15);  
+      doc.text(`L. ${isv.toFixed(2)}`, 480, totalsY + 15);  
+        
+      doc.fontSize(12).font('Helvetica-Bold');  
+      doc.text('TOTAL:', 400, totalsY + 35);  
+      doc.text(`L. ${totalFinal.toFixed(2)}`, 480, totalsY + 35);  
+    }
+    // INFORMACIÓN LEGAL COMPLETA - SAR  
+    const legalY = totalDescuentos > 0 ? totalsY + 80 : totalsY + 65;  
     doc.fontSize(8).font('Helvetica')  
-      .text('Esta factura es válida por 30 días', 50, totalsY + 80)  
-      .text('Resolución SAR No. [Tu resolución]', 50, totalsY + 95)  
-      .text('Del [fecha inicio] al [fecha fin]', 50, totalsY + 110)  
-      .text('Autorización [número autorización]', 50, totalsY + 125);  
+      .text('Esta factura es válida por 30 días', 50, legalY)  
+      .text('Resolución SAR No. 45145', 50, legalY + 15)  
+      .text('CAI: ACD2155QWJJ254254', 50, legalY + 30)  
+      .text('Rango Autorizado: Del 00000001 al 99999999', 50, legalY + 45)  
+      .text('Fecha límite de emisión: 31/12/2025', 50, legalY + 60)  
+      .text('Autorización 54120', 50, legalY + 75);     
+        
+    // LEYENDA TERRITORIAL OBLIGATORIA  
+    doc.fontSize(9).font('Helvetica-Bold')  
+      .text('Este documento es válido en todo el territorio nacional', 50, legalY + 95);  
       
-    // FIRMA  
-    doc.text('_________________________', 400, totalsY + 100);  
-    doc.text('Firma y Sello', 430, totalsY + 115);  
-      
-    doc.end();
-
-// --------------------------------------------------------------
-
-    // Guardar el nombre del archivo PDF en la factura
-    nuevaFactura.archivo_pdf = nombreArchivo;
-    await nuevaFactura.save({ transaction: t });
-
-    // 6. Confirmar transacción
-    await t.commit();
-
-    res.status(201).json({
-      mensaje: 'Factura completa registrada con éxito',
-      factura: nuevaFactura
-    });
-
-  } catch (error) {
-    await t.rollback();
-    console.error(error);
-    res.status(500).json({
-      mensaje: 'Error al crear factura completa',
-      error: error.message
-    });
-  }
+    // FIRMA Y EMPLEADO  
+    doc.text('_________________________', 400, legalY + 20);  
+    doc.text('Firma y Sello', 430, legalY + 35);  
+    doc.fontSize(7).text(`Atendido por: ${nombreEmpleado}`, 400, legalY + 50); 
+        
+    doc.end();  
+  
+    // Guardar el nombre del archivo PDF en la factura  
+    nuevaFactura.archivo_pdf = nombreArchivo;  
+    await nuevaFactura.save({ transaction: t });  
+  
+    // 6. Confirmar transacción  
+    await t.commit();  
+  
+    res.status(201).json({  
+      mensaje: 'Factura completa registrada con éxito',  
+      factura: nuevaFactura  
+    });  
+  
+  } catch (error) {  
+    await t.rollback();  
+    console.error(error);  
+    res.status(500).json({  
+      mensaje: 'Error al crear factura completa',  
+      error: error.message  
+    });  
+  }  
 };
-

@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, query } = require('express-validator');
 const TipoEnfermedad = require('../../modelos/consulta_examenes/TipoEnfermedad');
 
 // === VALIDACIONES ===
@@ -24,8 +24,12 @@ const reglasEditar = [
 
 // === CONTROLADORES ===
 
+const validarFiltrosTipoEnfermedad = [
+  query('nombre').optional().isString().withMessage('nombre debe ser texto'),
+];
+
 // Crear tipo de enfermedad
-const crearTipoEnfermedad = [
+const guardarTipoEnfermedad = [
   ...reglasCrear,
   async (req, res) => {
     const errores = validationResult(req);
@@ -41,15 +45,25 @@ const crearTipoEnfermedad = [
   }
 ];
 
-// Obtener todos los tipos de enfermedad
-const obtenerTiposEnfermedad = async (req, res) => {
-  try {
-    const tiposEnfermedad = await TipoEnfermedad.findAll();
-    res.json(tiposEnfermedad);
-  } catch (error) {
-    res.status(500).json({ mensaje: 'Error al obtener tipos de enfermedad', error: error.message });
+// Obtener todos los tipos de enfermedad con filtro
+const listarTipoEnfermedad = [
+  ...validarFiltrosTipoEnfermedad,
+  async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+      return res.status(400).json({ errores: errores.array() });
+    }
+    const { nombre } = req.query;
+    const where = {};
+    if (nombre) where.Nombre = { $like: `%${nombre}%` };
+    try {
+      const tiposEnfermedad = await TipoEnfermedad.findAll({ where });
+      res.json(tiposEnfermedad);
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al obtener tipos de enfermedad', error: error.message });
+    }
   }
-};
+];
 
 // Obtener tipo de enfermedad por ID
 const obtenerTipoEnfermedadPorId = async (req, res) => {
@@ -98,8 +112,8 @@ const eliminarTipoEnfermedad = async (req, res) => {
 
 // === EXPORTAR ===
 module.exports = {
-  crearTipoEnfermedad,
-  obtenerTiposEnfermedad,
+  guardarTipoEnfermedad,
+  listarTipoEnfermedad,
   obtenerTipoEnfermedadPorId,
   editarTipoEnfermedad,
   eliminarTipoEnfermedad

@@ -9,7 +9,7 @@ const options = {
       version: '1.0.0',
       description: 'API del sistemas expertos',
       contact: {
-        email: 'desofiwfacturacion@gmail.com'
+        email: 'ajgamez02@gmail.com'
       },
     },
     servers: [
