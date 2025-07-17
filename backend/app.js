@@ -32,6 +32,8 @@ const productoRutas = require('./rutas/productos/productoRutas');
 const categoriaProductoRutas = require('./rutas/productos/categoriaProductoRutas');
 const atributoRutas = require('./rutas/productos/atributoRutas');
 const productoAtributoRutas = require('./rutas/productos/productoAtributoRutas');
+const imagenProductoRutas = require('./rutas/productos/imagenProductoRutas');
+
 
 /* ========== RUTAS DE GESTIÓN CLIENTE ========== */
 const clienteRuta = require('./rutas/gestion_cliente/ClienteRuta');
@@ -93,6 +95,8 @@ app.use('/api/optica/productos', productoRutas);
 app.use('/api/optica/categorias', categoriaProductoRutas);
 app.use('/api/optica/atributos', atributoRutas);
 app.use('/api/optica/asignaciones', productoAtributoRutas);
+app.use('/api/optica/productos', imagenProductoRutas);
+
 
 /* ========== MODELOS A SINCRONIZAR (si querés controlar uno a uno) ========== */
 const Persona = require('./modelos/seguridad/Persona');

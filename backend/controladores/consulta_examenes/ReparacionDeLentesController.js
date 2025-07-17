@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, query } = require('express-validator');
 const ReparacionDeLentes = require('../../modelos/consulta_examenes/ReparacionDeLentes');
 
 // === VALIDACIONES ===
@@ -36,8 +36,15 @@ const reglasEditar = [
 
 // === CONTROLADORES ===
 
+const validarFiltrosReparacion = [
+  query('idConsulta').optional().isInt().withMessage('idConsulta debe ser un número entero'),
+  query('tipoReparacion').optional().isString().withMessage('tipoReparacion debe ser texto'),
+  query('costoMin').optional().isFloat().withMessage('costoMin debe ser un número decimal'),
+  query('costoMax').optional().isFloat().withMessage('costoMax debe ser un número decimal'),
+];
+
 // Crear reparación de lentes
-const crearReparacionDeLentes = [
+const guardarReparacionDeLentes = [
   ...reglasCrear,
   async (req, res) => {
     const errores = validationResult(req);
@@ -53,15 +60,31 @@ const crearReparacionDeLentes = [
   }
 ];
 
-// Obtener todas las reparaciones de lentes
-const obtenerReparacionesDeLentes = async (req, res) => {
-  try {
-    const reparacionesDeLentes = await ReparacionDeLentes.findAll();
-    res.json(reparacionesDeLentes);
-  } catch (error) {
-    res.status(500).json({ mensaje: 'Error al obtener reparaciones de lentes', error: error.message });
+// Obtener todas las reparaciones de lentes con filtros
+const listarReparacionDeLentes = [
+  ...validarFiltrosReparacion,
+  async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+      return res.status(400).json({ errores: errores.array() });
+    }
+    const { idConsulta, tipoReparacion, costoMin, costoMax } = req.query;
+    const where = {};
+    if (idConsulta) where.idConsulta = idConsulta;
+    if (tipoReparacion) where.Tipo_Reparacion = tipoReparacion;
+    if (costoMin || costoMax) {
+      where.Costo = {};
+      if (costoMin) where.Costo['$gte'] = costoMin;
+      if (costoMax) where.Costo['$lte'] = costoMax;
+    }
+    try {
+      const reparacionesDeLentes = await ReparacionDeLentes.findAll({ where });
+      res.json(reparacionesDeLentes);
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al obtener reparaciones de lentes', error: error.message });
+    }
   }
-};
+];
 
 // Obtener reparación de lentes por ID
 const obtenerReparacionDeLentesPorId = async (req, res) => {
@@ -110,8 +133,8 @@ const eliminarReparacionDeLentes = async (req, res) => {
 
 // === EXPORTAR ===
 module.exports = {
-  crearReparacionDeLentes,
-  obtenerReparacionesDeLentes,
+  guardarReparacionDeLentes,
+  listarReparacionDeLentes,
   obtenerReparacionDeLentesPorId,
   editarReparacionDeLentes,
   eliminarReparacionDeLentes
