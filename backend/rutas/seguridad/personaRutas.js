@@ -1,6 +1,184 @@
 const express = require('express');
 const router = express.Router();
 const personaController = require('../../controladores/seguridad/personaController');
+/**
+ * @swagger
+ * tags:
+ *   name: Persona
+ *   description: Rutas para gestión de personas
+ */
+
+/**
+ * @swagger
+ * /api/persona:
+ *   post:
+ *     summary: Crear una nueva persona
+ *     tags: [Persona]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - Pnombre
+ *               - Papellido
+ *               - DNI
+ *               - genero
+ *             properties:
+ *               Pnombre:
+ *                 type: string
+ *                 example: Juan
+ *               Snombre:
+ *                 type: string
+ *                 example: Carlos
+ *               Papellido:
+ *                 type: string
+ *                 example: Pérez
+ *               Sapellido:
+ *                 type: string
+ *                 example: Gómez
+ *               Direccion:
+ *                 type: string
+ *                 example: Calle principal, Tegucigalpa
+ *               DNI:
+ *                 type: string
+ *                 example: 0801199912345
+ *               correo:
+ *                 type: string
+ *                 example: juan.perez@email.com
+ *               fechaNacimiento:
+ *                 type: string
+ *                 format: date
+ *                 example: 1999-01-01
+ *               genero:
+ *                 type: string
+ *                 enum: [M, F]
+ *                 example: M
+ *     responses:
+ *       201:
+ *         description: Persona creada exitosamente
+ *       400:
+ *         description: Error en los datos enviados
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+/**
+ * @swagger
+ * /api/persona/{id}:
+ *   put:
+ *     summary: Editar una persona por ID
+ *     tags: [Persona]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la persona a editar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Persona'
+ *     responses:
+ *       200:
+ *         description: Persona actualizada exitosamente
+ *       404:
+ *         description: Persona no encontrada
+ *       500:
+ *         description: Error del servidor
+ */
+
+/**
+ * @swagger
+ * /api/persona/{id}:
+ *   delete:
+ *     summary: Eliminar una persona por ID
+ *     tags: [Persona]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la persona a eliminar
+ *     responses:
+ *       200:
+ *         description: Persona eliminada exitosamente
+ *       404:
+ *         description: Persona no encontrada
+ *       500:
+ *         description: Error del servidor
+ */
+
+/**
+ * @swagger
+ * /api/personas:
+ *   post:
+ *     summary: Crear múltiples personas
+ *     tags: [Persona]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Persona'
+ *     responses:
+ *       201:
+ *         description: Personas creadas exitosamente
+ *       400:
+ *         description: Datos inválidos
+ *       500:
+ *         description: Error del servidor
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Persona:
+ *       type: object
+ *       required:
+ *         - Pnombre
+ *         - Papellido
+ *         - DNI
+ *         - genero
+ *       properties:
+ *         Pnombre:
+ *           type: string
+ *           example: Ana
+ *         Snombre:
+ *           type: string
+ *           example: María
+ *         Papellido:
+ *           type: string
+ *           example: López
+ *         Sapellido:
+ *           type: string
+ *           example: Rodríguez
+ *         Direccion:
+ *           type: string
+ *           example: Barrio Centro, Comayagua
+ *         DNI:
+ *           type: string
+ *           example: 0801199900001
+ *         correo:
+ *           type: string
+ *           example: ana.lopez@email.com
+ *         fechaNacimiento:
+ *           type: string
+ *           format: date
+ *           example: 1998-05-10
+ *         genero:
+ *           type: string
+ *           enum: [M, F]
+ *           example: F
+ */
 
 // Ruta: Crear una persona
 router.post('/persona', personaController.crearPersona);
