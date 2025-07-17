@@ -2,7 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 const router = express.Router();
 const authController = require('../../controladores/seguridad/authController');
-const {verificarUsuario} = require('../../middlewares/passport');
+const {verificarUsuario} = require('../../configuraciones/passport');
 //prueba
 // Ruta: Registro de usuario
 router.post(
