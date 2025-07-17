@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const { uploadImagenProducto } = require('../../configuraciones/archivo');
+const { uploadImagenProducto } = require('../../configuraciones/archivos');
 const Producto = require('../../modelos/productos/ProductoModel');
 const fs = require('fs');
 const path = require('path');

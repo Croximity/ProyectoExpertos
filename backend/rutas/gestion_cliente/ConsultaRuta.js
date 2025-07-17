@@ -192,7 +192,7 @@ const { query } = require('express-validator');
  *               properties:
  *                 mensaje:
  *                   type: string
- *                   example: Debe enviar al menos un filtro: Motivo_consulta, desde, hasta, idCliente o Empleado_idEmpleado
+ *                   example: "Debe enviar al menos un filtro: Motivo_consulta, desde, hasta, idCliente o Empleado_idEmpleado"
  *                 errores:
  *                   type: array
  *                   items:

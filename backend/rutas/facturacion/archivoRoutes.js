@@ -15,7 +15,7 @@ const router = express.Router();
 const uploadDir = path.join(__dirname, '../../uploads');  
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });  
   
-// Configuración de almacenamiento  
+// Configuración de almacenamientos  
 const storage = multer.diskStorage({  
   destination: (req, file, cb) => cb(null, uploadDir),  
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)  
@@ -40,50 +40,7 @@ const upload = multer({
   }  
 });  
   
-/**  
- * @swagger  
- * /upload:  
- *   post:  
- *     summary: Subir un archivo  
- *     tags: [Archivos]  
- *     requestBody:  
- *       required: true  
- *       content:  
- *         multipart/form-data:  
- *           schema:  
- *             type: object  
- *             properties:  
- *               archivo:  
- *                 type: string  
- *                 format: binary  
- *                 description: Archivo a subir (PDF, JPEG, PNG)  
- *     responses:  
- *       200:  
- *         description: Archivo subido correctamente  
- *         content:  
- *           application/json:  
- *             schema:  
- *               type: object  
- *               properties:  
- *                 mensaje:  
- *                   type: string  
- *                   example: "Archivo subido correctamente"  
- *                 archivo:  
- *                   type: string  
- *                   example: "1640995200000-documento.pdf"  
- *       400:  
- *         description: Archivo no válido o tipo no permitido  
- *         content:  
- *           application/json:  
- *             schema:  
- *               type: object  
- *               properties:  
- *                 error:  
- *                   type: string  
- *                   example: "Archivo no válido"  
- *       413:  
- *         description: Archivo demasiado grande (máximo 5MB)  
- */  
+ 
 router.post('/upload', (req, res) => {  
   upload.single('archivo')(req, res, (err) => {  
     if (err) {  
@@ -105,40 +62,7 @@ router.post('/upload', (req, res) => {
     });  
   });  
 });  
-  
-/**  
- * @swagger  
- * /download/{filename}:  
- *   get:  
- *     summary: Descargar un archivo  
- *     tags: [Archivos]  
- *     parameters:  
- *       - in: path  
- *         name: filename  
- *         required: true  
- *         schema:  
- *           type: string  
- *         description: Nombre del archivo a descargar  
- *         example: "1640995200000-documento.pdf"  
- *     responses:  
- *       200:  
- *         description: Archivo descargado correctamente  
- *         content:  
- *           application/octet-stream:  
- *             schema:  
- *               type: string  
- *               format: binary  
- *       404:  
- *         description: Archivo no encontrado  
- *         content:  
- *           application/json:  
- *             schema:  
- *               type: object  
- *               properties:  
- *                 error:  
- *                   type: string  
- *                   example: "Archivo no encontrado"  
- */  
+ 
 router.get('/download/:filename', (req, res) => {  
   const filename = req.params.filename;  
     

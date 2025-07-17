@@ -170,7 +170,7 @@ const { query } = require('express-validator');
  *               properties:
  *                 mensaje:
  *                   type: string
- *                   example: Debe enviar al menos uno de los filtros: numero, tipo o idPersona
+ *                   example: "Debe enviar al menos uno de los filtros: numero, tipo o idPersona"
  *                 errores:
  *                   type: array
  *                   items:

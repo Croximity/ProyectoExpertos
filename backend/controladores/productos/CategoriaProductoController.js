@@ -1,4 +1,37 @@
 const CategoriaProducto = require('../../modelos/productos/CategoriaProducto');
+const { Op } = require('sequelize');
+
+exports.buscarCategorias = async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+        return res.status(400).json(errores.array());
+    }
+
+    const { nombre = '', marca = '', descripcion = '' } = req.query;
+    const condiciones = [];
+
+    if (nombre.length >= 3) {
+        condiciones.push({ Nombre: { [Op.like]: `%${nombre}%` } });
+    }
+    if (marca.length >= 3) {
+        condiciones.push({ marca: { [Op.like]: `%${marca}%` } });
+    }
+    if (descripcion.length >= 3) {
+        condiciones.push({ descripcion: { [Op.like]: `%${descripcion}%` } });
+    }
+
+    if (condiciones.length === 0) {
+        return res.status(400).json({
+            msj: 'Debe proveer al menos 3 caracteres en algún filtro: nombre, marca o descripción.'
+        });
+    }
+
+    const categorias = await CategoriaProducto.findAll({
+        where: { [Op.and]: condiciones }
+    });
+
+    res.json(categorias);
+};
 
 // Crear una nueva categoría
 exports.crearCategoria = async (req, res) => {
