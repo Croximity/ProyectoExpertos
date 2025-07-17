@@ -185,7 +185,7 @@ exports.crearFacturaCompleta = async (req, res) => {
     // 5. Crear descuentos  
     await DetalleDescuento.bulkCreate(descuentos, { transaction: t });  
   
-    // --- OBTENER DATOS COMPLETOS DE LA BASE DE DATOS ---  
+    // -- OBTENER DATOS COMPLETOS DE LA BASE DE DATOS ---  
       
     // Obtener cliente con sus datos de persona  
     const cliente = await Cliente.findByPk(nuevaFactura.idCliente, {  

@@ -56,3 +56,4 @@ exports.uploadImagenProducto = multer({
   },
   limits: { fileSize: 2000000 }
 }).single('imagen');
+

@@ -22,12 +22,12 @@ exports.registrar = async (req, res) => {
 
     const nuevoUsuario = await Usuario.create({
       Nombre_Usuario,
-      Contraseña: hash, 
+      contraseña: hash, 
       idPersona,
       idrol
     });
 
-    res.status(201).json({ mensaje: 'Usuario registrado exitosamente', usuario: nuevoUsuario });
+    res.status(201).json({ mensaje: 'Usuario registrado exitosamente', usuario: Nombre_Usuario});
   } catch (error) {
     console.error(' ERROR DETALLADO:', error);
     res.status(500).json({
@@ -52,17 +52,13 @@ exports.iniciarSesion = async (req, res) => {
       return res.status(400).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    const contraseñaValida = await bcrypt.compare(contraseña, usuario.Contraseña);
+    const contraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
     if (!contraseñaValida) {
       return res.status(400).json({ mensaje: 'Contraseña incorrecta' });
     }
+
     const payload = { idUsuario: usuario.idUsuario, Nombre_Usuario: usuario.Nombre_Usuario };
-    const datos = {
-      token,
-      usuario: payload
-    };
-    console.log(datos);
-    res.status(200).json(datos);
+    const token = jwt.sign(payload, 'Unah123.', { expiresIn: '1h' });
 
     res.json({ mensaje: 'Inicio de sesión exitoso', token });
   } catch (error) {
