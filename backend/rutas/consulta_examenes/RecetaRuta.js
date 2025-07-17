@@ -10,7 +10,7 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *     summary: Crear una nueva receta
  *     tags: [Recetas]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -142,7 +142,7 @@ router.post('/receta/guardar', verificarUsuario, recetaController.guardarReceta)
  *     summary: Obtener todas las recetas con filtros opcionales
  *     tags: [Recetas]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: idCliente
@@ -238,7 +238,7 @@ router.get('/receta/listar', verificarUsuario, recetaController.listarReceta);
  *     summary: Obtener una receta por ID
  *     tags: [Recetas]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -298,7 +298,7 @@ router.get('/receta/obtener/:id', verificarUsuario, recetaController.obtenerRece
  *     summary: Actualizar una receta existente
  *     tags: [Recetas]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -446,7 +446,7 @@ router.put('/receta/editar/:id', verificarUsuario, recetaController.editarReceta
  *     summary: Eliminar una receta
  *     tags: [Recetas]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -574,11 +574,6 @@ router.delete('/receta/eliminar/:id', verificarUsuario, recetaController.elimina
  *           format: date
  *           description: Fecha de la receta
  *           example: "2025-07-16"
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
  */
 
 module.exports = router;

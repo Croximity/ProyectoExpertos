@@ -27,11 +27,7 @@ const options = {
           }
       }
     },
-    security: [
-        {
-            BearerAuth: []
-        }
-    ],
+
   },
   apis: [
     './rutas/seguridad/*.js',

@@ -139,5 +139,6 @@ router.post(
   ],
   authController.iniciarSesion
 );
+router.get('/error', authController.error)
 
 module.exports = router;
