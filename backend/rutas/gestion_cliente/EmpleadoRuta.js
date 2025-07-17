@@ -11,12 +11,6 @@ const validarEmpleado = [
 
 router.post('/empleado',
   [
-    body('Pnombre').isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el primer nombre'),
-    body('Snombre').optional().isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el segundo nombre'),
-    body('Papellido').isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el primer apellido'),
-    body('Sapellido').optional().isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el segundo apellido'),
-    body('correo').isEmail().withMessage('El correo debe ser válido').isLength({ max: 100 }).withMessage('El correo no puede exceder 100 caracteres'),
-    body('DNI').isLength({ min: 13, max: 13 }).withMessage('El DNI debe tener exactamente 13 caracteres'),
     body('idPersona').isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo')
       .custom(async value => {
         const Persona = require('../../modelos/seguridad/Persona');
@@ -60,12 +54,6 @@ router.put('/empleado/:id',
         if (!existe) throw new Error('El empleado no existe');
         return true;
       }),
-    body('Pnombre').optional().isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el primer nombre'),
-    body('Snombre').optional().isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el segundo nombre'),
-    body('Papellido').optional().isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el primer apellido'),
-    body('Sapellido').optional().isLength({ min: 3, max: 50 }).withMessage('Debe escribir entre 3 - 50 caracteres para el segundo apellido'),
-    body('correo').optional().isEmail().withMessage('El correo debe ser válido').isLength({ max: 100 }).withMessage('El correo no puede exceder 100 caracteres'),
-    body('DNI').optional().isLength({ min: 13, max: 13 }).withMessage('El DNI debe tener exactamente 13 caracteres'),
     body('idPersona').optional().isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo')
       .custom(async value => {
         if (value) {
