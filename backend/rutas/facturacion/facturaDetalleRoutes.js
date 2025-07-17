@@ -15,6 +15,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  * /factura-detalle:
  *   post:
  *     summary: Crear un nuevo detalle de factura
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FacturaDetalle]
  *     requestBody:
  *       required: true
@@ -54,6 +56,8 @@ router.post('/factura-detalle', verificarUsuario, facturaDetalleController.valid
  * /factura-detalles:
  *   get:
  *     summary: Obtener todos los detalles de factura
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FacturaDetalle]
  *     responses:
  *       200:
@@ -66,6 +70,8 @@ router.get('/factura-detalles', verificarUsuario, facturaDetalleController.obten
  * /factura-detalle/{id}:
  *   get:
  *     summary: Obtener un detalle de factura por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FacturaDetalle]
  *     parameters:
  *       - in: path
@@ -87,6 +93,8 @@ router.get('/factura-detalle/:id', verificarUsuario, facturaDetalleController.ob
  * /factura-detalle/{id}:
  *   put:
  *     summary: Editar un detalle de factura
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FacturaDetalle]
  *     parameters:
  *       - in: path
@@ -121,6 +129,8 @@ router.put('/factura-detalle/:id', verificarUsuario, facturaDetalleController.va
  * /factura-detalle/{id}:
  *   delete:
  *     summary: Eliminar un detalle de factura
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FacturaDetalle]
  *     parameters:
  *       - in: path

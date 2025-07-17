@@ -3,7 +3,6 @@ const router = express.Router();
 const tipoEnfermedadController = require('../../controladores/consulta_examenes/TipoEnfermedadController');
 const { verificarUsuario } = require('../../configuraciones/passport');
 
-router.post('/tipo-enfermedad', verificarUsuario, tipoEnfermedadController.guardarTipoEnfermedad);
 /**
  * @swagger
  * /tipo-enfermedad/listar:
@@ -27,6 +26,13 @@ router.post('/tipo-enfermedad', verificarUsuario, tipoEnfermedadController.guard
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/TipoEnfermedad'
+ *             example:
+ *               - id: 1
+ *                 nombre: "Miopía"
+ *                 descripcion: "Dificultad para ver objetos lejanos"
+ *               - id: 2
+ *                 nombre: "Astigmatismo"
+ *                 descripcion: "Visión borrosa por curvatura irregular"
  *       401:
  *         description: No autorizado
  *       500:
@@ -43,11 +49,38 @@ router.post('/tipo-enfermedad', verificarUsuario, tipoEnfermedadController.guard
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/TipoEnfermedad'
+ *           example:
+ *             nombre: "Miopía"
+ *             descripcion: "Dificultad para ver objetos lejanos"
  *     responses:
  *       201:
  *         description: Tipo de enfermedad creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Tipo de enfermedad creado
+ *                 tipoEnfermedad:
+ *                   $ref: '#/components/schemas/TipoEnfermedad'
+ *             example:
+ *               mensaje: Tipo de enfermedad creado
+ *               tipoEnfermedad:
+ *                 id: 1
+ *                 nombre: "Miopía"
+ *                 descripcion: "Dificultad para ver objetos lejanos"
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Datos inválidos
  *       500:
  *         description: Error interno del servidor
  * /tipo-enfermedad/editar/{id}:
@@ -69,13 +102,48 @@ router.post('/tipo-enfermedad', verificarUsuario, tipoEnfermedadController.guard
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/TipoEnfermedad'
+ *           example:
+ *             nombre: "Astigmatismo"
+ *             descripcion: "Visión borrosa por curvatura irregular"
  *     responses:
  *       200:
  *         description: Tipo de enfermedad actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Tipo de enfermedad actualizado
+ *                 tipoEnfermedad:
+ *                   $ref: '#/components/schemas/TipoEnfermedad'
+ *             example:
+ *               mensaje: Tipo de enfermedad actualizado
+ *               tipoEnfermedad:
+ *                 id: 2
+ *                 nombre: "Astigmatismo"
+ *                 descripcion: "Visión borrosa por curvatura irregular"
  *       404:
  *         description: Tipo de enfermedad no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Tipo de enfermedad no encontrado
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Datos inválidos
  *       500:
  *         description: Error interno del servidor
  * /tipo-enfermedad/eliminar/{id}:
@@ -94,8 +162,26 @@ router.post('/tipo-enfermedad', verificarUsuario, tipoEnfermedadController.guard
  *     responses:
  *       200:
  *         description: Tipo de enfermedad eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Tipo de enfermedad eliminado
+ *             example:
+ *               mensaje: Tipo de enfermedad eliminado
  *       404:
  *         description: Tipo de enfermedad no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Tipo de enfermedad no encontrado
  *       401:
  *         description: No autorizado
  *       500:
@@ -120,13 +206,41 @@ router.post('/tipo-enfermedad', verificarUsuario, tipoEnfermedadController.guard
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/TipoEnfermedad'
+ *             example:
+ *               id: 1
+ *               nombre: "Miopía"
+ *               descripcion: "Dificultad para ver objetos lejanos"
  *       404:
  *         description: Tipo de enfermedad no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Tipo de enfermedad no encontrado
  *       401:
  *         description: No autorizado
  *       500:
  *         description: Error interno del servidor
+ *
+ * components:
+ *   schemas:
+ *     TipoEnfermedad:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         nombre:
+ *           type: string
+ *           example: Miopía
+ *         descripcion:
+ *           type: string
+ *           example: Dificultad para ver objetos lejanos
  */
+
 router.get('/tipo-enfermedad/listar', verificarUsuario, tipoEnfermedadController.listarTipoEnfermedad);
 router.post('/tipo-enfermedad/guardar', verificarUsuario, tipoEnfermedadController.guardarTipoEnfermedad);
 router.put('/tipo-enfermedad/editar/:id', verificarUsuario, tipoEnfermedadController.editarTipoEnfermedad);

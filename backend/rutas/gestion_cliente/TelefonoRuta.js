@@ -1,6 +1,7 @@
 const express = require('express');
-const { body, param, validationResult } = require('express-validator');
+const { body, param, validationResult, query } = require('express-validator');
 const telefonoController = require('../../controladores/gestion_cliente/TelefonoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 const router = express.Router();
 
 
@@ -10,6 +11,8 @@ const router = express.Router();
  *   post:
  *     summary: Crear un nuevo teléfono
  *     tags: [Telefonos]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -94,6 +97,7 @@ const validarTelefono = [
 ];
 
 router.post('/telefono',
+  verificarUsuario,
   [
     body('idPersona').isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo')
       .custom(async value => {
@@ -119,7 +123,6 @@ router.post('/telefono',
   ],
   telefonoController.crearTelefono
 );
-const { query } = require('express-validator');
 
 /**
  * @swagger
@@ -127,6 +130,8 @@ const { query } = require('express-validator');
  *   get:
  *     summary: Obtener todos los teléfonos con filtros opcionales
  *     tags: [Telefonos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: numero
@@ -194,8 +199,8 @@ const { query } = require('express-validator');
  *                   example: Mensaje de error
  */
 
-
 router.get('/telefono',
+  verificarUsuario,
   [
     query('numero').optional().isLength({ min: 7 }).withMessage('El número debe tener al menos 7 dígitos'),
     query('tipo').optional().isIn(['movil', 'fijo', 'fax']).withMessage('El tipo debe ser movil, fijo o fax'),
@@ -220,6 +225,8 @@ router.get('/telefono',
  *   get:
  *     summary: Obtener un teléfono por ID
  *     tags: [Telefonos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -262,6 +269,7 @@ router.get('/telefono',
  */
 
 router.get('/telefono/:id',
+  verificarUsuario,
   param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo'),
   telefonoController.obtenerTelefonoPorId
 );
@@ -272,6 +280,8 @@ router.get('/telefono/:id',
  *   put:
  *     summary: Actualizar un teléfono existente
  *     tags: [Telefonos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -356,7 +366,9 @@ router.get('/telefono/:id',
  *                   type: string
  *                   example: Mensaje de error
  */
+
 router.put('/telefono/:id',
+  verificarUsuario,
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
       .custom(async value => {
@@ -393,12 +405,15 @@ router.put('/telefono/:id',
   ],
   telefonoController.editarTelefono
 );
+
 /**
  * @swagger
  * /telefonos/telefono/{id}:
  *   delete:
  *     summary: Eliminar un teléfono
  *     tags: [Telefonos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -443,7 +458,9 @@ router.put('/telefono/:id',
  *                   type: string
  *                   example: Mensaje de error
  */
+
 router.delete('/telefono/:id',
+  verificarUsuario,
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
       .custom(async value => {

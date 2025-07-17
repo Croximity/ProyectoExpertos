@@ -18,6 +18,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  * /factura:
  *   post:
  *     summary: Crear una factura simple
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Factura]
  *     requestBody:
  *       required: true
@@ -87,6 +89,8 @@ router.post('/factura', verificarUsuario, facturaController.crearFactura);
  * /factura-completa:
  *   post:
  *     summary: Crear una factura completa (con detalle de productos y descuentos)
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Factura]
  *     requestBody:
  *       required: true
@@ -198,6 +202,8 @@ router.post('/factura-completa', verificarUsuario, facturaController.validarCrea
  * /facturas:
  *   get:
  *     summary: Obtener todas las facturas
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Factura]
  *     responses:
  *       200:

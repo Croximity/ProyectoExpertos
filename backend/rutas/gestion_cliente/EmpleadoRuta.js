@@ -1,6 +1,7 @@
 const express = require('express');
-const { body, param, validationResult } = require('express-validator');
+const { body, param, validationResult, query } = require('express-validator');
 const empleadoController = require('../../controladores/gestion_cliente/EmpleadoController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 const router = express.Router();
 
 /**
@@ -9,6 +10,8 @@ const router = express.Router();
  *   post:
  *     summary: Crear un nuevo empleado
  *     tags: [Empleados]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -81,6 +84,7 @@ const validarEmpleado = [
 ];
 
 router.post('/empleado',
+  verificarUsuario,
   [
     body('idPersona').isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo')
       .custom(async value => {
@@ -93,7 +97,6 @@ router.post('/empleado',
   ],
   empleadoController.crearEmpleado
 );
-const { query } = require('express-validator');
 
 /**
  * @swagger
@@ -101,6 +104,8 @@ const { query } = require('express-validator');
  *   get:
  *     summary: Obtener todos los empleados con filtros opcionales
  *     tags: [Empleados]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: Pnombre
@@ -160,8 +165,8 @@ const { query } = require('express-validator');
  *                   example: Mensaje de error
  */
 
-
 router.get('/empleado',
+  verificarUsuario,
   [
     query('Pnombre').optional().isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 letras'),
     query('Papellido').optional().isLength({ min: 3 }).withMessage('El apellido debe tener al menos 3 letras'),
@@ -185,6 +190,8 @@ router.get('/empleado',
  *   get:
  *     summary: Obtener un empleado por ID
  *     tags: [Empleados]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -226,8 +233,8 @@ router.get('/empleado',
  *                   example: Mensaje de error
  */
 
-
 router.get('/empleado/:id',
+  verificarUsuario,
   param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo'),
   empleadoController.obtenerEmpleadoPorId
 );
@@ -238,6 +245,8 @@ router.get('/empleado/:id',
  *   put:
  *     summary: Actualizar un empleado existente
  *     tags: [Empleados]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -320,6 +329,7 @@ router.get('/empleado/:id',
  */
 
 router.put('/empleado/:id',
+  verificarUsuario,
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
       .custom(async value => {
@@ -348,6 +358,8 @@ router.put('/empleado/:id',
  *   delete:
  *     summary: Eliminar un empleado
  *     tags: [Empleados]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -393,8 +405,8 @@ router.put('/empleado/:id',
  *                   example: Mensaje de error
  */
 
-
 router.delete('/empleado/:id',
+  verificarUsuario,
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
       .custom(async value => {

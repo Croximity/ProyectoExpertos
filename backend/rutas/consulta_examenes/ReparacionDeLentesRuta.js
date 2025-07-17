@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const reparacionDeLentesController = require('../../controladores/consulta_examenes/ReparacionDeLentesController');
 const { verificarUsuario } = require('../../configuraciones/passport');
-router.post('/reparacion-lentes', verificarUsuario, reparacionDeLentesController.guardarReparacionDeLentes);
+
 /**
  * @swagger
  * /reparacion-lentes/listar:
@@ -43,6 +43,17 @@ router.post('/reparacion-lentes', verificarUsuario, reparacionDeLentesController
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ReparacionDeLentes'
+ *             example:
+ *               - id: 1
+ *                 idConsulta: 10
+ *                 tipoReparacion: "Cambio de micas"
+ *                 costo: 150.00
+ *                 fecha: "2025-07-17"
+ *               - id: 2
+ *                 idConsulta: 11
+ *                 tipoReparacion: "Ajuste de montura"
+ *                 costo: 80.00
+ *                 fecha: "2025-07-18"
  *       401:
  *         description: No autorizado
  *       500:
@@ -59,11 +70,42 @@ router.post('/reparacion-lentes', verificarUsuario, reparacionDeLentesController
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/ReparacionDeLentes'
+ *           example:
+ *             idConsulta: 10
+ *             tipoReparacion: "Cambio de micas"
+ *             costo: 150.00
+ *             fecha: "2025-07-17"
  *     responses:
  *       201:
  *         description: Reparación de lentes creada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Reparación de lentes creada
+ *                 reparacionDeLentes:
+ *                   $ref: '#/components/schemas/ReparacionDeLentes'
+ *             example:
+ *               mensaje: Reparación de lentes creada
+ *               reparacionDeLentes:
+ *                 id: 1
+ *                 idConsulta: 10
+ *                 tipoReparacion: "Cambio de micas"
+ *                 costo: 150.00
+ *                 fecha: "2025-07-17"
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Datos inválidos
  *       500:
  *         description: Error interno del servidor
  * /reparacion-lentes/editar/{id}:
@@ -85,13 +127,52 @@ router.post('/reparacion-lentes', verificarUsuario, reparacionDeLentesController
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/ReparacionDeLentes'
+ *           example:
+ *             idConsulta: 10
+ *             tipoReparacion: "Ajuste de montura"
+ *             costo: 80.00
+ *             fecha: "2025-07-18"
  *     responses:
  *       200:
  *         description: Reparación de lentes actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Reparación de lentes actualizada
+ *                 reparacionDeLentes:
+ *                   $ref: '#/components/schemas/ReparacionDeLentes'
+ *             example:
+ *               mensaje: Reparación de lentes actualizada
+ *               reparacionDeLentes:
+ *                 id: 1
+ *                 idConsulta: 10
+ *                 tipoReparacion: "Ajuste de montura"
+ *                 costo: 80.00
+ *                 fecha: "2025-07-18"
  *       404:
  *         description: Reparación de lentes no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Reparación de lentes no encontrada
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Datos inválidos
  *       500:
  *         description: Error interno del servidor
  * /reparacion-lentes/eliminar/{id}:
@@ -110,8 +191,26 @@ router.post('/reparacion-lentes', verificarUsuario, reparacionDeLentesController
  *     responses:
  *       200:
  *         description: Reparación de lentes eliminada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Reparación de lentes eliminada
+ *             example:
+ *               mensaje: Reparación de lentes eliminada
  *       404:
  *         description: Reparación de lentes no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Reparación de lentes no encontrada
  *       401:
  *         description: No autorizado
  *       500:
@@ -136,13 +235,51 @@ router.post('/reparacion-lentes', verificarUsuario, reparacionDeLentesController
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ReparacionDeLentes'
+ *             example:
+ *               id: 1
+ *               idConsulta: 10
+ *               tipoReparacion: "Cambio de micas"
+ *               costo: 150.00
+ *               fecha: "2025-07-17"
  *       404:
  *         description: Reparación de lentes no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Reparación de lentes no encontrada
  *       401:
  *         description: No autorizado
  *       500:
  *         description: Error interno del servidor
+ *
+ * components:
+ *   schemas:
+ *     ReparacionDeLentes:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         idConsulta:
+ *           type: integer
+ *           example: 10
+ *         tipoReparacion:
+ *           type: string
+ *           example: Cambio de micas
+ *         costo:
+ *           type: number
+ *           format: float
+ *           example: 150.00
+ *         fecha:
+ *           type: string
+ *           format: date
+ *           example: "2025-07-17"
  */
+
 router.get('/reparacion-lentes/listar', verificarUsuario, reparacionDeLentesController.listarReparacionDeLentes);
 router.post('/reparacion-lentes/guardar', verificarUsuario, reparacionDeLentesController.guardarReparacionDeLentes);
 router.put('/reparacion-lentes/editar/:id', verificarUsuario, reparacionDeLentesController.editarReparacionDeLentes);

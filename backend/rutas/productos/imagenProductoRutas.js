@@ -9,6 +9,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  * /productos/imagen:
  *   put:
  *     summary: Actualizar imagen de producto
+ *     security:
+ *      - BearerAuth: []
  *     tags:
  *       - ImagenProducto
  *     parameters:

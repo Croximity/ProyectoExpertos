@@ -17,6 +17,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener todas las categorías
  *     tags: [Categorías]
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Lista completa de categorías
@@ -43,6 +45,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Buscar categorías por filtros (Nombre, marca, descripción)
  *     tags: [Categorías]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: Nombre
@@ -81,6 +85,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   post:
  *     summary: Crear una nueva categoría
  *     tags: [Categorías]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -108,6 +114,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener categoría por ID
  *     tags: [Categorías]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -133,6 +141,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   put:
  *     summary: Actualizar una categoría
  *     tags: [Categorías]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -170,6 +180,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   delete:
  *     summary: Eliminar una categoría
  *     tags: [Categorías]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -229,7 +241,7 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  */
 
 // Obtener todas las categorías (sin filtros)
-router.get('/categoria', categoriaController.obtenerCategorias);
+router.get('/categoria', verificarUsuario, categoriaController.obtenerCategorias);
 
 // Buscar categorías con filtros (nombre, marca, descripción)
 router.get(
@@ -238,7 +250,8 @@ router.get(
     query('nombre').optional().isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 caracteres'),
     query('marca').optional().isLength({ min: 3 }).withMessage('La marca debe tener al menos 3 caracteres'),
     query('descripcion').optional().isLength({ min: 3 }).withMessage('La descripción debe tener al menos 3 caracteres'),
-  ],verificarUsuario,
+  ],
+  verificarUsuario,
   categoriaController.buscarCategorias
 );
 
@@ -247,14 +260,16 @@ router.post(
   '/categoria',
   body('nombre')
     .isLength({ min: 3, max: 50 })
-    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),verificarUsuario,
+    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),
+  verificarUsuario,
   categoriaController.crearCategoria
 );
 
 // Obtener categoría por ID
 router.get(
   '/categoria/:id',
-  param('id').isInt().withMessage('El ID debe ser un número entero'),verificarUsuario,
+  param('id').isInt().withMessage('El ID debe ser un número entero'),
+  verificarUsuario,
   categoriaController.obtenerCategoriaPorId
 );
 
@@ -264,7 +279,8 @@ router.put(
   param('id').isInt().withMessage('El ID debe ser un número entero'),
   body('nombre')
     .isLength({ min: 3, max: 50 })
-    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),verificarUsuario,
+    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),
+  verificarUsuario,
   categoriaController.actualizarCategoria
 );
 

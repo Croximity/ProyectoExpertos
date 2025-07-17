@@ -16,6 +16,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  * /formas-pago:
  *   get:
  *     summary: Obtener todas las formas de pago
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FormaPago]
  *     responses:
  *       200:
@@ -28,6 +30,8 @@ router.get('/formas-pago', verificarUsuario, formaPagoController.obtenerFormasPa
  * /forma-pago/{id}:
  *   get:
  *     summary: Obtener una forma de pago por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FormaPago]
  *     parameters:
  *       - in: path
@@ -49,6 +53,8 @@ router.get('/forma-pago/:id', verificarUsuario, formaPagoController.obtenerForma
  * /forma-pago:
  *   post:
  *     summary: Crear una nueva forma de pago
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FormaPago]
  *     requestBody:
  *       required: true
@@ -81,6 +87,8 @@ router.post('/forma-pago', verificarUsuario, formaPagoController.validarCrear, f
  * /forma-pago/{id}:
  *   put:
  *     summary: Actualizar una forma de pago existente
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FormaPago]
  *     parameters:
  *       - in: path
@@ -114,6 +122,8 @@ router.put('/forma-pago/:id', verificarUsuario, formaPagoController.validarEdita
  * /forma-pago/{id}/inactivar:
  *   patch:
  *     summary: Inactivar una forma de pago (no se elimina físicamente)
+ *     security:
+ *       - BearerAuth: []
  *     tags: [FormaPago]
  *     parameters:
  *       - in: path

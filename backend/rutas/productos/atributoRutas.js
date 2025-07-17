@@ -17,6 +17,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Buscar atributos por filtro
  *     tags: [Atributos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: filtro
@@ -42,6 +44,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   post:
  *     summary: Crear un nuevo atributo
  *     tags: [Atributos]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -69,6 +73,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener todos los atributos
  *     tags: [Atributos]
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de atributos
@@ -86,6 +92,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener un atributo por ID
  *     tags: [Atributos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -111,6 +119,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   put:
  *     summary: Actualizar un atributo
  *     tags: [Atributos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -148,6 +158,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   delete:
  *     summary: Eliminar un atributo por ID
  *     tags: [Atributos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -201,12 +213,12 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *           example: texto
  */
 
-
-router.get('/atributos/buscar',verificarUsuario, atributoController.buscarAtributos);
+router.get('/atributos/buscar', verificarUsuario, atributoController.buscarAtributos);
 
 // CREAR atributo
 router.post(
   '/atributos',
+  verificarUsuario,
   body('nombre')
     .isLength({ min: 3, max: 50 })
     .withMessage('El nombre debe tener entre 3 y 50 caracteres'),
@@ -219,27 +231,30 @@ router.get('/atributos', verificarUsuario, atributoController.obtenerAtributos);
 // OBTENER por ID
 router.get(
   '/atributos/:id',
+  verificarUsuario,
   param('id')
-    .isInt().withMessage('El ID debe ser un número entero'),verificarUsuario,
+    .isInt().withMessage('El ID debe ser un número entero'),
   atributoController.obtenerAtributoPorId
 );
 
 // ACTUALIZAR
 router.put(
   '/atributos/:id',
+  verificarUsuario,
   param('id')
     .isInt().withMessage('El ID debe ser un número entero'),
   body('nombre')
     .isLength({ min: 3, max: 50 })
-    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),verificarUsuario,
+    .withMessage('El nombre debe tener entre 3 y 50 caracteres'),
   atributoController.actualizarAtributo
 );
 
 // ELIMINAR
 router.delete(
   '/atributos/:id',
+  verificarUsuario,
   param('id')
-    .isInt().withMessage('El ID debe ser un número entero'),verificarUsuario,
+    .isInt().withMessage('El ID debe ser un número entero'),
   atributoController.eliminarAtributo
 );
 

@@ -2,12 +2,14 @@ const express = require('express');
 const { body, param, validationResult } = require('express-validator');
 const clienteController = require('../../controladores/gestion_cliente/ClienteController');
 const router = express.Router();
-
+const { verificarUsuario } = require('../../configuraciones/passport');
 /**
  * @swagger
  * /clientes/cliente:
  *   post:
  *     summary: Crear un nuevo cliente
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Clientes]
  *     requestBody:
  *       required: true
@@ -86,7 +88,7 @@ router.post('/cliente',
         return true;
       }),
     body('fechaRegistro').optional().isISO8601().withMessage('La fecha debe tener un formato válido (YYYY-MM-DD)')
-  ],
+  ], verificarUsuario,
   clienteController.crearCliente
 );
 
@@ -95,6 +97,8 @@ router.post('/cliente',
  * /clientes/cliente:
  *   get:
  *     summary: Obtener todos los clientes con filtros opcionales
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Clientes]
  *     parameters:
  *       - in: query
@@ -173,7 +177,7 @@ router.get('/cliente',
       }
       next();
     }
-  ],
+  ], verificarUsuario,
   clienteController.obtenerClientes
 );
 
@@ -182,6 +186,8 @@ router.get('/cliente',
  * /clientes/cliente/{id}:
  *   get:
  *     summary: Obtener un cliente por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Clientes]
  *     parameters:
  *       - in: path
@@ -225,7 +231,7 @@ router.get('/cliente',
  */
 
 router.get('/cliente/:id',
-  param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo'),
+  param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo'), verificarUsuario,
   clienteController.obtenerClientePorId
 );
 /**
@@ -233,6 +239,8 @@ router.get('/cliente/:id',
  * /clientes/cliente/{id}:
  *   put:
  *     summary: Actualizar un cliente existente
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Clientes]
  *     parameters:
  *       - in: path
@@ -336,7 +344,7 @@ router.put('/cliente/:id',
         return true;
       }),
     body('fechaRegistro').optional().isISO8601().withMessage('La fecha debe tener un formato válido (YYYY-MM-DD)')
-  ],
+  ], verificarUsuario,
   clienteController.editarCliente
 );
 
@@ -345,6 +353,8 @@ router.put('/cliente/:id',
  * /clientes/cliente/{id}:
  *   delete:
  *     summary: Eliminar un cliente
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Clientes]
  *     parameters:
  *       - in: path
@@ -403,7 +413,7 @@ router.delete('/cliente/:id',
         if (!existe) throw new Error('El cliente no existe');
         return true;
       })
-  ],
+  ], verificarUsuario,
   clienteController.eliminarCliente
 );
 

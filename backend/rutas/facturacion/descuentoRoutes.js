@@ -27,6 +27,8 @@ router.get('/descuentos', verificarUsuario, descuentoController.obtenerDescuento
  * /descuento/{id}:
  *   get:
  *     summary: Obtener un descuento por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Descuento]
  *     parameters:
  *       - in: path
@@ -35,6 +37,7 @@ router.get('/descuentos', verificarUsuario, descuentoController.obtenerDescuento
  *         schema:
  *           type: integer
  *         description: ID del descuento
+ * 
  *     responses:
  *       200:
  *         description: Descuento encontrado
@@ -48,6 +51,8 @@ router.get('/descuento/:id', verificarUsuario, descuentoController.obtenerDescue
  * /descuento:
  *   post:
  *     summary: Crear un nuevo descuento
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Descuento]
  *     requestBody:
  *       required: true
@@ -88,6 +93,8 @@ router.post('/descuento', verificarUsuario, descuentoController.validarCrear, de
  * /descuento/{id}:
  *   put:
  *     summary: Actualizar un descuento existente
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Descuento]
  *     parameters:
  *       - in: path
@@ -135,6 +142,8 @@ router.put('/descuento/:id', verificarUsuario, descuentoController.validarEditar
  * /descuento/{id}:
  *   delete:
  *     summary: Eliminar un descuento por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Descuento]
  *     parameters:
  *       - in: path

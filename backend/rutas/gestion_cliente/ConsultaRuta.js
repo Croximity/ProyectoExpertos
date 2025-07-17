@@ -1,6 +1,7 @@
 const express = require('express');
-const { body, param, validationResult } = require('express-validator');
+const { body, param, validationResult, query } = require('express-validator');
 const consultaController = require('../../controladores/gestion_cliente/ConsultaController');
+const { verificarUsuario } = require('../../configuraciones/passport');
 const router = express.Router();
 
 
@@ -10,6 +11,8 @@ const router = express.Router();
  *   post:
  *     summary: Crear una nueva consulta
  *     tags: [Consultas]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -83,20 +86,8 @@ const router = express.Router();
  */
 
 
-// Validaciones para crear y editar consulta
-const validarConsulta = [
-  body('idCliente').isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo'),
-  body('Fecha_consulta').isISO8601().withMessage('La fecha debe tener un formato válido (YYYY-MM-DD)'),
-  body('Motivo_consulta').isString().withMessage('El motivo debe ser un texto').isLength({ min: 5, max: 255 }).withMessage('El motivo debe tener entre 5 y 255 caracteres'),
-  body('Motivo_consulta').custom(motivo => {
-    if (/^\d+$/.test(motivo)) {
-      throw new Error('El motivo no puede ser solo números');
-    }
-    return true;
-  })
-];
-
 router.post('/consulta',
+  verificarUsuario,
   [
     body('idCliente').isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo')
       .custom(async value => {
@@ -123,9 +114,6 @@ router.post('/consulta',
   ],
   consultaController.crearConsulta
 );
-const { query } = require('express-validator');
-
-
 
 /**
  * @swagger
@@ -133,6 +121,8 @@ const { query } = require('express-validator');
  *   get:
  *     summary: Obtener todas las consultas con filtros opcionales
  *     tags: [Consultas]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: Motivo_consulta
@@ -216,6 +206,7 @@ const { query } = require('express-validator');
  *                   example: Mensaje de error
  */
 router.get('/consulta',
+  verificarUsuario,
   [
     query('Motivo_consulta').optional().isLength({ min: 3 }).withMessage('El motivo debe tener al menos 3 letras'),
     query('desde').optional().isISO8601().withMessage('La fecha desde debe tener un formato válido (YYYY-MM-DD)'),
@@ -242,6 +233,8 @@ router.get('/consulta',
  *   get:
  *     summary: Obtener una consulta por ID
  *     tags: [Consultas]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -283,8 +276,8 @@ router.get('/consulta',
  *                   example: Mensaje de error
  */
 
-
 router.get('/consulta/:id',
+  verificarUsuario,
   param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo'),
   consultaController.obtenerConsultaPorId
 );
@@ -295,6 +288,8 @@ router.get('/consulta/:id',
  *   put:
  *     summary: Actualizar una consulta existente
  *     tags: [Consultas]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -381,8 +376,8 @@ router.get('/consulta/:id',
  *                   example: Mensaje de error
  */
 
-
 router.put('/consulta/:id',
+  verificarUsuario,
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
       .custom(async value => {
@@ -427,6 +422,8 @@ router.put('/consulta/:id',
  *   delete:
  *     summary: Eliminar una consulta
  *     tags: [Consultas]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -472,8 +469,8 @@ router.put('/consulta/:id',
  *                   example: Mensaje de error
  */
 
-
 router.delete('/consulta/:id',
+  verificarUsuario,
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
       .custom(async value => {
@@ -485,6 +482,7 @@ router.delete('/consulta/:id',
   ],
   consultaController.eliminarConsulta
 );
+
 /**
  * @swagger
  * components:

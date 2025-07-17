@@ -15,6 +15,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  * /detalle-descuento:
  *   post:
  *     summary: Asignar un descuento a una factura
+ *     security:
+ *       - BearerAuth: []
  *     tags: [DetalleDescuento]
  *     requestBody:
  *       required: true
@@ -54,6 +56,8 @@ router.post('/detalle-descuento', verificarUsuario,
  * /detalles-descuento:
  *   get:
  *     summary: Obtener todos los detalles de descuento aplicados a facturas
+ *     security:
+ *       - BearerAuth: []
  *     tags: [DetalleDescuento]
  *     responses:
  *       200:
@@ -66,6 +70,8 @@ router.get('/detalles-descuento', verificarUsuario, detalleDescuentoController.o
  * /detalle-descuento/{idFactura}/{idDescuento}:
  *   delete:
  *     summary: Eliminar un descuento aplicado a una factura
+ *     security:
+ *       - BearerAuth: []
  *     tags: [DetalleDescuento]
  *     parameters:
  *       - in: path

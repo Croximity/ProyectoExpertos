@@ -18,6 +18,8 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *   get:
  *     summary: Buscar productos por filtros
  *     tags: [Productos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: filtro
@@ -43,6 +45,8 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *   post:
  *     summary: Crear un producto
  *     tags: [Productos]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -70,6 +74,8 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener todos los productos
  *     tags: [Productos]
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de productos
@@ -87,6 +93,8 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener un producto por ID
  *     tags: [Productos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -112,6 +120,8 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *   put:
  *     summary: Editar un producto
  *     tags: [Productos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -149,6 +159,8 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *   delete:
  *     summary: Eliminar un producto por ID
  *     tags: [Productos]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -238,7 +250,8 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  */
 
 
-router.get('/producto/buscar',verificarUsuario, productoController.buscarProducto);
+// Buscar productos por filtro
+router.get('/producto/buscar', verificarUsuario, productoController.buscarProducto);
 
 // Crear un producto
 router.post('/producto',
@@ -270,12 +283,13 @@ router.post('/producto',
   body('stockInicial')
     .optional()
     .isInt({ min: 0 })
-    .withMessage('Stock inicial debe ser un número entero ≥ 0'),verificarUsuario,
+    .withMessage('Stock inicial debe ser un número entero ≥ 0'),
+  verificarUsuario,
   productoController.crearProducto
 );
 
 // Obtener todos los productos
-router.get('/producto',verificarUsuario, productoController.obtenerProductos);
+router.get('/producto', verificarUsuario, productoController.obtenerProductos);
 
 // Obtener un producto por ID
 router.get('/producto/:id',
@@ -284,7 +298,8 @@ router.get('/producto/:id',
     .custom(async (value) => {
       const producto = await Producto.findByPk(value);
       if (!producto) throw new Error('El producto no existe');
-    }),verificarUsuario,
+    }),
+  verificarUsuario,
   productoController.obtenerProductoPorId
 );
 
@@ -319,7 +334,8 @@ router.put('/producto/:id',
   body('stockInicial')
     .optional()
     .isInt({ min: 0 })
-    .withMessage('Stock inicial debe ser un número entero ≥ 0'),verificarUsuario,
+    .withMessage('Stock inicial debe ser un número entero ≥ 0'),
+  verificarUsuario,
   productoController.editarProducto
 );
 
@@ -330,7 +346,8 @@ router.delete('/producto/:id',
     .custom(async (value) => {
       const producto = await Producto.findByPk(value);
       if (!producto) throw new Error('El producto no existe');
-    }),verificarUsuario,
+    }),
+  verificarUsuario,
   productoController.eliminarProducto
 );
 

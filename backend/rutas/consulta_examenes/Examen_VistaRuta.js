@@ -43,6 +43,17 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Examen_Vista'
+ *             example:
+ *               - id: 1
+ *                 idConsulta: 10
+ *                 idReceta: 5
+ *                 resultado: "Visión 20/20"
+ *                 fecha: "2025-07-17"
+ *               - id: 2
+ *                 idConsulta: 11
+ *                 idReceta: 6
+ *                 resultado: "Astigmatismo detectado"
+ *                 fecha: "2025-07-18"
  *       401:
  *         description: No autorizado
  *       500:
@@ -59,11 +70,42 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Examen_Vista'
+ *           example:
+ *             idConsulta: 10
+ *             idReceta: 5
+ *             resultado: "Visión 20/20"
+ *             fecha: "2025-07-17"
  *     responses:
  *       201:
  *         description: Examen de vista creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Examen de vista creado
+ *                 examenVista:
+ *                   $ref: '#/components/schemas/Examen_Vista'
+ *             example:
+ *               mensaje: Examen de vista creado
+ *               examenVista:
+ *                 id: 1
+ *                 idConsulta: 10
+ *                 idReceta: 5
+ *                 resultado: "Visión 20/20"
+ *                 fecha: "2025-07-17"
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Datos inválidos
  *       500:
  *         description: Error interno del servidor
  * /examen-vista/editar/{id}:
@@ -85,13 +127,52 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Examen_Vista'
+ *           example:
+ *             idConsulta: 10
+ *             idReceta: 5
+ *             resultado: "Visión 20/25"
+ *             fecha: "2025-07-18"
  *     responses:
  *       200:
  *         description: Examen de vista actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Examen de vista actualizado
+ *                 examenVista:
+ *                   $ref: '#/components/schemas/Examen_Vista'
+ *             example:
+ *               mensaje: Examen de vista actualizado
+ *               examenVista:
+ *                 id: 1
+ *                 idConsulta: 10
+ *                 idReceta: 5
+ *                 resultado: "Visión 20/25"
+ *                 fecha: "2025-07-18"
  *       404:
  *         description: Examen de vista no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Examen de vista no encontrado
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Datos inválidos
  *       500:
  *         description: Error interno del servidor
  * /examen-vista/eliminar/{id}:
@@ -110,8 +191,26 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *     responses:
  *       200:
  *         description: Examen de vista eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Examen de vista eliminado
+ *             example:
+ *               mensaje: Examen de vista eliminado
  *       404:
  *         description: Examen de vista no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Examen de vista no encontrado
  *       401:
  *         description: No autorizado
  *       500:
@@ -136,13 +235,50 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Examen_Vista'
+ *             example:
+ *               id: 1
+ *               idConsulta: 10
+ *               idReceta: 5
+ *               resultado: "Visión 20/20"
+ *               fecha: "2025-07-17"
  *       404:
  *         description: Examen de vista no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: Examen de vista no encontrado
  *       401:
  *         description: No autorizado
  *       500:
  *         description: Error interno del servidor
+ *
+ * components:
+ *   schemas:
+ *     Examen_Vista:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         idConsulta:
+ *           type: integer
+ *           example: 10
+ *         idReceta:
+ *           type: integer
+ *           example: 5
+ *         resultado:
+ *           type: string
+ *           example: Visión 20/20
+ *         fecha:
+ *           type: string
+ *           format: date
+ *           example: "2025-07-17"
  */
+
 router.get('/examen-vista/listar', verificarUsuario, examenVistaController.listarExamenVista);
 router.post('/examen-vista/guardar', verificarUsuario, examenVistaController.guardarExamenVista);
 router.put('/examen-vista/editar/:id', verificarUsuario, examenVistaController.editarExamenVista);

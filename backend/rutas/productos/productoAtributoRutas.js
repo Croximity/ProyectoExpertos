@@ -17,6 +17,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Buscar asignaciones de producto-atributo con filtros opcionales
  *     tags: [ProductoAtributo]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: idProducto
@@ -49,6 +51,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   post:
  *     summary: Crear una nueva asignación producto-atributo
  *     tags: [ProductoAtributo]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -76,6 +80,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener todas las asignaciones producto-atributo
  *     tags: [ProductoAtributo]
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Lista completa de asignaciones
@@ -93,6 +99,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   get:
  *     summary: Obtener asignaciones por ID de producto
  *     tags: [ProductoAtributo]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: idProducto
@@ -120,6 +128,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   put:
  *     summary: Actualizar stock de una asignación producto-atributo
  *     tags: [ProductoAtributo]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -162,6 +172,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *   delete:
  *     summary: Eliminar una asignación producto-atributo por ID
  *     tags: [ProductoAtributo]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -222,10 +234,10 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *           example: 100
  */
 
+// Buscar asignaciones con filtros
+router.get('/producto-atributo/buscar', verificarUsuario, productoAtributoController.buscarAsignaciones);
 
-router.get('/producto-atributo/buscar',verificarUsuario, productoAtributoController.buscarAsignaciones);
-
-// Crear asignación - validamos que idProducto e idAtributo sean enteros, y stock un entero positivo
+// Crear asignación
 router.post(
   '/producto-atributo',
   body('idProducto')
@@ -236,23 +248,25 @@ router.post(
     .withMessage('idAtributo debe ser un número entero positivo'),
   body('stock')
     .isInt({ min: 0 })
-    .withMessage('stock debe ser un número entero igual o mayor a cero'),verificarUsuario,
+    .withMessage('stock debe ser un número entero igual o mayor a cero'),
+  verificarUsuario,
   productoAtributoController.crearAsignacion
 );
 
-// Obtener todas las asignaciones (sin validaciones)
-router.get('/producto-atributo',verificarUsuario, productoAtributoController.obtenerAsignaciones);
+// Obtener todas las asignaciones
+router.get('/producto-atributo', verificarUsuario, productoAtributoController.obtenerAsignaciones);
 
-// Obtener asignaciones por producto - validar idProducto como entero positivo
+// Obtener asignaciones por producto
 router.get(
   '/producto-atributo/producto/:idProducto',
   param('idProducto')
     .isInt({ gt: 0 })
-    .withMessage('idProducto debe ser un número entero positivo'),verificarUsuario,
+    .withMessage('idProducto debe ser un número entero positivo'),
+  verificarUsuario,
   productoAtributoController.obtenerAsignacionesPorProducto
 );
 
-// Actualizar stock - validar id como entero y stock en body
+// Actualizar stock
 router.put(
   '/producto-atributo/:id',
   param('id')
@@ -260,16 +274,18 @@ router.put(
     .withMessage('El id debe ser un número entero positivo'),
   body('stock')
     .isInt({ min: 0 })
-    .withMessage('stock debe ser un número entero igual o mayor a cero'),verificarUsuario,
+    .withMessage('stock debe ser un número entero igual o mayor a cero'),
+  verificarUsuario,
   productoAtributoController.actualizarStock
 );
 
-// Eliminar asignación - validar id como entero positivo
+// Eliminar asignación
 router.delete(
   '/producto-atributo/:id',
   param('id')
     .isInt({ gt: 0 })
-    .withMessage('El id debe ser un número entero positivo'),verificarUsuario,
+    .withMessage('El id debe ser un número entero positivo'),
+  verificarUsuario,
   productoAtributoController.eliminarAsignacion
 );
 
