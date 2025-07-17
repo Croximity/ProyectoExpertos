@@ -50,6 +50,7 @@ router.get('/cliente/:id',
   clienteController.obtenerClientePorId
 );
 // Validaciones PUT (editar)
+//hola
 router.put('/cliente/:id',
   [
     param('id').isInt({ min: 1 }).withMessage('El id debe ser un número entero positivo')
