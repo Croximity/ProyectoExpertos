@@ -66,11 +66,11 @@ app.use('/api/optica/telefonos', telefonoRuta);
 app.use('/api/optica/consultas', consultaRuta);
 
 // Usar rutas de consulta exámenes
-app.use('/api/optica/consulta-examenes', tipoEnfermedadRuta);
-app.use('/api/optica/consulta-examenes', recetaRuta);
-app.use('/api/optica/consulta-examenes', examenVistaRuta);
-app.use('/api/optica/consulta-examenes', diagnosticoRuta);
-app.use('/api/optica/consulta-examenes', reparacionDeLentesRuta);
+app.use('/api/optica', tipoEnfermedadRuta);
+app.use('/api/optica', recetaRuta);
+app.use('/api/optica', examenVistaRuta);
+app.use('/api/optica', diagnosticoRuta);
+app.use('/api/optica', reparacionDeLentesRuta);
 
 // Usar rutas de Facturacion
 app.use('/api/optica', facturaRutas);
