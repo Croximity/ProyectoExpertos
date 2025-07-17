@@ -39,7 +39,7 @@ Persona.hasOne(Usuario,{
   sourceKey: "idPersona"
 }
 )
-Usuario.belongsTo(Persona, {foreignKey:"idPersona"} )
+Usuario.belongsTo(Persona, {foreignKey:"idPersona", as: 'persona'} )
 Rol.hasMany(
   Usuario,{
     foreignKey: "idrol",

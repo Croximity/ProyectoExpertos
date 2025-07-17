@@ -119,7 +119,7 @@ const Telefono = require("./modelos/gestion_cliente/Telefono")
 const Consulta = require("./modelos/gestion_cliente/Consulta")
 
 // Modelos de Facturacion
-const Factura = require('./modelos/consulta_examenes/ReparacionDeLentes');
+const Factura = require('./modelos/facturacion/Factura'); // <-- CORREGIDO
 const FacturaDetalle = require('./modelos/facturacion/FacturaDetalle');
 const FormaPago = require('./modelos/facturacion/FormaPago');
 const Descuento = require('./modelos/facturacion/Descuento');
@@ -136,7 +136,7 @@ const startServer = async () => {
   try {
     await db.authenticate();
     console.log('✅ Conexión a la base de datos establecida correctamente.');
-
+    
     // Sincronizar modelos de seguridad
     await Persona.sync();
     await Rol.sync();
@@ -158,20 +158,20 @@ const startServer = async () => {
     console.log('✅ Modelos de consulta exámenes sincronizados.');
 
     // Sincronizar el resto (productos, etc.)
-    await Atributo.sync();
-    await Producto.sync();
     await CategoriaProducto.sync();
+    await Producto.sync();
+    await Atributo.sync();
     await ProductoAtributo.sync();
+    
     console.log('✅ Modelos de productos/inventario sincronizados.');
 
         // Sincronizar modelos de Fcaturacion
+    await Factura.sync();
     await Descuento.sync();
     await FormaPago.sync();
-    await Factura.sync();
     await DetalleDescuento.sync();
-    await Factura.sync();
     await FacturaDetalle.sync();
-    
+    await Factura.sync();
     console.log('✅ Modelos de  Facturacion sincronizados.');
 
     // Iniciar servidor
