@@ -25,7 +25,7 @@ router.post('/consulta',
         if (!existe) throw new Error('El cliente asociado no existe');
         return true;
       }),
-    body('Empleado_idEmpleado').isInt({ min: 1 }).withMessage('El Empleado_idEmpleado debe ser un número entero positivo')
+    body('idEmpleado').isInt({ min: 1 }).withMessage('El Empleado_idEmpleado debe ser un número entero positivo')
       .custom(async value => {
         const Empleado = require('../../modelos/gestion_cliente/Empleado');
         const existe = await Empleado.findByPk(value);
@@ -51,7 +51,7 @@ router.get('/consulta',
     query('desde').optional().isISO8601().withMessage('La fecha desde debe tener un formato válido (YYYY-MM-DD)'),
     query('hasta').optional().isISO8601().withMessage('La fecha hasta debe tener un formato válido (YYYY-MM-DD)'),
     query('idCliente').optional().isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo'),
-    query('Empleado_idEmpleado').optional().isInt({ min: 1 }).withMessage('El Empleado_idEmpleado debe ser un número entero positivo'),
+    query('idEmpleado').optional().isInt({ min: 1 }).withMessage('El Empleado_idEmpleado debe ser un número entero positivo'),
     (req, res, next) => {
       const errores = validationResult(req);
       if (!errores.isEmpty()) {
@@ -87,7 +87,7 @@ router.put('/consulta/:id',
         }
         return true;
       }),
-    body('Empleado_idEmpleado').optional().isInt({ min: 1 }).withMessage('El Empleado_idEmpleado debe ser un número entero positivo')
+    body('idEmpleado').optional().isInt({ min: 1 }).withMessage('El Empleado_idEmpleado debe ser un número entero positivo')
       .custom(async value => {
         if (value) {
           const Empleado = require('../../modelos/gestion_cliente/Empleado');

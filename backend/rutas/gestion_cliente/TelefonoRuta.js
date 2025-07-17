@@ -5,11 +5,11 @@ const router = express.Router();
 
 // Validaciones para crear y editar teléfono
 const validarTelefono = [
-  body('idCliente').isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo'),
-  body('numero').isString().withMessage('El número debe ser un texto').matches(/^\d{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos'),
-  body('tipo').isIn(['movil', 'fijo', 'fax']).withMessage('El tipo debe ser movil, fijo o fax'),
+  body('idPersona').isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo'),
+  body('Numero').isString().withMessage('El número debe ser un texto').matches(/^[\d]{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos'),
+  body('Estado').isIn(['movil', 'fijo', 'fax']).withMessage('El estado debe ser movil, fijo o fax'),
   body().custom(body => {
-    if (body.tipo === 'fax' && (!body.numero || !body.numero.startsWith('2'))) {
+    if (body.Estado === 'fax' && (!body.Numero || !body.Numero.startsWith('2'))) {
       throw new Error('El número de fax debe empezar por 2');
     }
     return true;
@@ -18,23 +18,23 @@ const validarTelefono = [
 
 router.post('/telefono',
   [
-    body('idCliente').isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo')
+    body('idPersona').isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo')
       .custom(async value => {
-        const Cliente = require('../../modelos/gestion_cliente/Cliente');
-        const existe = await Cliente.findByPk(value);
-        if (!existe) throw new Error('El cliente asociado no existe');
+        const Persona = require('../../modelos/seguridad/Persona');
+        const existe = await Persona.findByPk(value);
+        if (!existe) throw new Error('La persona asociada no existe');
         return true;
       }),
-    body('numero').isString().withMessage('El número debe ser un texto').matches(/^\d{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos')
+    body('Numero').isString().withMessage('El número debe ser un texto').matches(/^[\d]{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos')
       .custom(async value => {
         const Telefono = require('../../modelos/gestion_cliente/Telefono');
-        const existe = await Telefono.findOne({ where: { numero: value } });
+        const existe = await Telefono.findOne({ where: { Numero: value } });
         if (existe) throw new Error('El número de teléfono ya existe');
         return true;
       }),
-    body('tipo').isIn(['movil', 'fijo', 'fax']).withMessage('El tipo debe ser movil, fijo o fax'),
+    body('Estado').isIn(['movil', 'fijo', 'fax']).withMessage('El estado debe ser movil, fijo o fax'),
     body().custom(body => {
-      if (body.tipo === 'fax' && (!body.numero || !body.numero.startsWith('2'))) {
+      if (body.Estado === 'fax' && (!body.Numero || !body.Numero.startsWith('2'))) {
         throw new Error('El número de fax debe empezar por 2');
       }
       return true;
@@ -75,12 +75,12 @@ router.put('/telefono/:id',
         if (!existe) throw new Error('El teléfono no existe');
         return true;
       }),
-    body('idCliente').optional().isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo')
+    body('idPersona').optional().isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo')
       .custom(async value => {
         if (value) {
-          const Cliente = require('../../modelos/gestion_cliente/Cliente');
+          const Cliente = require('../../modelos/seguridad/Persona');
           const existe = await Cliente.findByPk(value);
-          if (!existe) throw new Error('El cliente asociado no existe');
+          if (!existe) throw new Error('La Persona asociada no existe');
         }
         return true;
       }),

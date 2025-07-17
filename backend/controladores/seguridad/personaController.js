@@ -158,10 +158,23 @@ const crearMultiplesPersonas = async (req, res) => {
   }
 };
 
+// Obtener una persona por ID
+const obtenerPersonaPorId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const persona = await Persona.findByPk(id);
+    if (!persona) return res.status(404).json({ mensaje: 'Persona no encontrada' });
+    res.json(persona);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al obtener persona', error: error.message });
+  }
+};
+
 // === EXPORTAR TODO JUNTO ===
 module.exports = {
   crearPersona,
   editarPersona,
   eliminarPersona,
-  crearMultiplesPersonas
+  crearMultiplesPersonas,
+  obtenerPersonaPorId
 };

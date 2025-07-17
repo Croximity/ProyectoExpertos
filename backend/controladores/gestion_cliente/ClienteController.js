@@ -1,5 +1,7 @@
 const { body, validationResult } = require('express-validator');
 const Cliente = require('../../modelos/gestion_cliente/Cliente');
+const Persona = require('../../modelos/seguridad/Persona');
+const { Op } = require('sequelize');
 
 // === VALIDACIONES ===
 const reglasCrear = [
@@ -39,21 +41,37 @@ const crearCliente = [
   }
 ];
 
-// Obtener todos los clientes
+// Obtener todos los clientes con búsqueda por nombre/apellido de Persona
 const obtenerClientes = async (req, res) => {
   try {
-    const clientes = await Cliente.findAll();
+    const { Pnombre, Papellido } = req.query;
+    const wherePersona = {};
+    if (Pnombre) wherePersona.Pnombre = { [Op.like]: `%${Pnombre}%` };
+    if (Papellido) wherePersona.Papellido = { [Op.like]: `%${Papellido}%` };
+
+    const clientes = await Cliente.findAll({
+      include: [{
+        model: Persona,
+        as: 'Persona',
+        where: Object.keys(wherePersona).length ? wherePersona : undefined
+      }]
+    });
     res.json(clientes);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener clientes', error: error.message });
   }
 };
 
-// Obtener cliente por ID
+// Obtener cliente por ID, incluyendo datos de Persona
 const obtenerClientePorId = async (req, res) => {
   const { id } = req.params;
   try {
-    const cliente = await Cliente.findByPk(id);
+    const cliente = await Cliente.findByPk(id, {
+      include: [{
+        model: Persona,
+        as: 'Persona'
+      }]
+    });
     if (!cliente) return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     res.json(cliente);
   } catch (error) {

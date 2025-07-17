@@ -4,19 +4,19 @@ const Telefono = require('../../modelos/gestion_cliente/Telefono');
 
 // === VALIDACIONES ===
 const reglasCrear = [
-  body('idCliente')
-    .notEmpty().withMessage('El idCliente es obligatorio')
-    .isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo'),
-  body('numero')
+  body('idPersona')
+    .notEmpty().withMessage('El idPersona es obligatorio')
+    .isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo'),
+  body('Numero')
     .notEmpty().withMessage('El número es obligatorio')
     .isString().withMessage('El número debe ser un texto')
-    .matches(/^\d{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos'),
-  body('tipo')
-    .notEmpty().withMessage('El tipo es obligatorio')
-    .isIn(['movil', 'fijo', 'fax']).withMessage('El tipo debe ser movil, fijo o fax'),
-  // Regla personalizada: si el tipo es "fax", el número debe empezar por 2
+    .matches(/^[\d]{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos'),
+  body('Estado')
+    .notEmpty().withMessage('El estado es obligatorio')
+    .isIn(['movil', 'fijo', 'fax']).withMessage('El estado debe ser movil, fijo o fax'),
+  // Regla personalizada: si el estado es "fax", el número debe empezar por 2
   body().custom(body => {
-    if (body.tipo === 'fax' && (!body.numero || !body.numero.startsWith('2'))) {
+    if (body.Estado === 'fax' && (!body.Numero || !body.Numero.startsWith('2'))) {
       throw new Error('El número de fax debe empezar por 2');
     }
     return true;
@@ -24,18 +24,18 @@ const reglasCrear = [
 ];
 
 const reglasEditar = [
-  body('idCliente')
+  body('idPersona')
     .optional()
-    .isInt({ min: 1 }).withMessage('El idCliente debe ser un número entero positivo'),
-  body('numero')
+    .isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo'),
+  body('Numero')
     .optional()
     .isString().withMessage('El número debe ser un texto')
-    .matches(/^\d{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos'),
-  body('tipo')
+    .matches(/^[\d]{7,15}$/).withMessage('El número debe tener entre 7 y 15 dígitos'),
+  body('Estado')
     .optional()
-    .isIn(['movil', 'fijo', 'fax']).withMessage('El tipo debe ser movil, fijo o fax'),
+    .isIn(['movil', 'fijo', 'fax']).withMessage('El estado debe ser movil, fijo o fax'),
   body().custom(body => {
-    if (body.tipo === 'fax' && body.numero && !body.numero.startsWith('2')) {
+    if (body.Estado === 'fax' && body.Numero && !body.Numero.startsWith('2')) {
       throw new Error('El número de fax debe empezar por 2');
     }
     return true;
