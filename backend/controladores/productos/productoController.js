@@ -1,5 +1,76 @@
 const Producto = require('../../modelos/productos/ProductoModel');
 const CategoriaProducto = require('../../modelos/productos/CategoriaProducto');
+const { Op } = require('sequelize');
+
+exports.buscarProducto = async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+        console.log(errores.array());
+        return res.status(400).json(errores.array());
+    }
+
+    const {
+        nombre = '',
+        marca = '',
+        categoria = '',
+        precioMin,
+        precioMax
+    } = req.query;
+
+    const condiciones = [];
+    const include = [];
+
+    if (nombre.length >= 3) {
+        condiciones.push({
+            Nombre: { [Op.like]: `%${nombre}%` }
+        });
+    }
+
+    if (marca.length >= 2) {
+        condiciones.push({
+            marca: { [Op.like]: `%${marca}%` }
+        });
+    }
+
+    if (precioMin && !isNaN(precioMin)) {
+        condiciones.push({
+            precioVenta: { [Op.gte]: parseFloat(precioMin) }
+        });
+    }
+
+    if (precioMax && !isNaN(precioMax)) {
+        condiciones.push({
+            precioVenta: { [Op.lte]: parseFloat(precioMax) }
+        });
+    }
+
+    if (categoria.length >= 3) {
+        include.push({
+            model: CategoriaProducto,
+            where: {
+                nombreCategoria: { [Op.like]: `%${categoria}%` }
+            }
+        });
+    } else {
+        // incluir la categoría aunque no se filtre por ella
+        include.push({
+            model: CategoriaProducto
+        });
+    }
+
+    if (condiciones.length === 0 && categoria.length < 3) {
+        return res.status(400).json({
+            msj: 'Debe proporcionar al menos un filtro válido: nombre (≥3), marca (≥2), precio o categoría (≥3).'
+        });
+    }
+
+    const productos = await ProductoModel.findAll({
+        where: condiciones.length > 0 ? { [Op.and]: condiciones } : undefined,
+        include
+    });
+
+    res.json(productos);
+};
 
 // Crear un producto
 exports.crearProducto = async (req, res) => {

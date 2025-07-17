@@ -1,7 +1,41 @@
+const { Op } = require('sequelize');
 const Atributo = require('../../modelos/productos/Atributo');
 
+// Buscar atributos con filtros opcionales
+exports.buscarAtributos = async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+        return res.status(400).json(errores.array());
+    }
 
-// Crear un atributo
+    const { nombre = '', tipo = '' } = req.query;
+    const condiciones = [];
+
+    if (nombre.length >= 3) {
+        condiciones.push({ nombre: { [Op.like]: `%${nombre}%` } });
+    }
+    if (tipo.length >= 3) {
+        condiciones.push({ tipo: { [Op.like]: `%${tipo}%` } });
+    }
+
+    if (condiciones.length === 0) {
+        return res.status(400).json({
+            msj: 'Debe proporcionar al menos 3 caracteres en el nombre o tipo para buscar.'
+        });
+    }
+
+    try {
+        const atributos = await Atributo.findAll({
+            where: { [Op.and]: condiciones }
+        });
+        res.json(atributos);
+    } catch (error) {
+        console.error('Error buscando atributos:', error);
+        res.status(500).json({ msj: 'Error interno del servidor' });
+    }
+};
+// (Resto de funciones que ya tienes sin cambios)
+
 exports.crearAtributo = async (req, res) => {
   try {
     const atributo = await Atributo.create(req.body);
@@ -12,7 +46,6 @@ exports.crearAtributo = async (req, res) => {
   }
 };
 
-// Obtener todos los atributos
 exports.obtenerAtributos = async (req, res) => {
   try {
     const atributos = await Atributo.findAll();
@@ -23,7 +56,6 @@ exports.obtenerAtributos = async (req, res) => {
   }
 };
 
-// Obtener atributo por ID
 exports.obtenerAtributoPorId = async (req, res) => {
   const { id } = req.params;
   try {
@@ -36,7 +68,6 @@ exports.obtenerAtributoPorId = async (req, res) => {
   }
 };
 
-// Actualizar atributo
 exports.actualizarAtributo = async (req, res) => {
   const { id } = req.params;
   try {
@@ -51,7 +82,6 @@ exports.actualizarAtributo = async (req, res) => {
   }
 };
 
-// Eliminar atributo
 exports.eliminarAtributo = async (req, res) => {
   const { id } = req.params;
   try {

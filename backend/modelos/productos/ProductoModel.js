@@ -37,6 +37,10 @@ const ProductoModel = db.define('Producto', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0
+  },
+  imagen: {
+    type: DataTypes.STRING(255),
+    allowNull: true
   }
 }, {
   tableName: 'producto',
@@ -54,3 +58,4 @@ ProductoModel.belongsTo(CategoriaProducto, {
 });
 
 module.exports = ProductoModel;
+
