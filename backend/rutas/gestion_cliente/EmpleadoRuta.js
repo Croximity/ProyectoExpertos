@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /empleado:
+ * /empleados/empleado:
  *   post:
  *     summary: Crear un nuevo empleado
  *     tags: [Empleados]
@@ -97,7 +97,7 @@ const { query } = require('express-validator');
 
 /**
  * @swagger
- * /empleado:
+ * /empleados/empleado:
  *   get:
  *     summary: Obtener todos los empleados con filtros opcionales
  *     tags: [Empleados]
@@ -181,7 +181,7 @@ router.get('/empleado',
 
 /**
  * @swagger
- * /empleado/{id}:
+ * /empleados/empleado/{id}:
  *   get:
  *     summary: Obtener un empleado por ID
  *     tags: [Empleados]
@@ -234,7 +234,7 @@ router.get('/empleado/:id',
 
 /**
  * @swagger
- * /empleado/{id}:
+ * /empleados/empleado/{id}:
  *   put:
  *     summary: Actualizar un empleado existente
  *     tags: [Empleados]
@@ -344,7 +344,7 @@ router.put('/empleado/:id',
 
 /**
  * @swagger
- * /empleado/{id}:
+ * /empleados/empleado/{id}:
  *   delete:
  *     summary: Eliminar un empleado
  *     tags: [Empleados]

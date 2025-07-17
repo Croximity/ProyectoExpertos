@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /cliente:
+ * /clientes/cliente:
  *   post:
  *     summary: Crear un nuevo cliente
  *     tags: [Clientes]
@@ -92,7 +92,7 @@ router.post('/cliente',
 
 /**
  * @swagger
- * /cliente:
+ * /clientes/cliente:
  *   get:
  *     summary: Obtener todos los clientes con filtros opcionales
  *     tags: [Clientes]
@@ -179,7 +179,7 @@ router.get('/cliente',
 
 /**
  * @swagger
- * /cliente/{id}:
+ * /clientes/cliente/{id}:
  *   get:
  *     summary: Obtener un cliente por ID
  *     tags: [Clientes]
@@ -230,7 +230,7 @@ router.get('/cliente/:id',
 );
 /**
  * @swagger
- * /cliente/{id}:
+ * /clientes/cliente/{id}:
  *   put:
  *     summary: Actualizar un cliente existente
  *     tags: [Clientes]
@@ -342,7 +342,7 @@ router.put('/cliente/:id',
 
 /**
  * @swagger
- * /cliente/{id}:
+ * /clientes/cliente/{id}:
  *   delete:
  *     summary: Eliminar un cliente
  *     tags: [Clientes]

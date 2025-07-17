@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /consulta:
+ * /consultas/consulta:
  *   post:
  *     summary: Crear una nueva consulta
  *     tags: [Consultas]
@@ -129,7 +129,7 @@ const { query } = require('express-validator');
 
 /**
  * @swagger
- * /consulta:
+ * /consultas/consulta:
  *   get:
  *     summary: Obtener todas las consultas con filtros opcionales
  *     tags: [Consultas]
@@ -238,7 +238,7 @@ router.get('/consulta',
 
 /**
  * @swagger
- * /consulta/{id}:
+ * /consultas/consulta/{id}:
  *   get:
  *     summary: Obtener una consulta por ID
  *     tags: [Consultas]
@@ -291,7 +291,7 @@ router.get('/consulta/:id',
 
 /**
  * @swagger
- * /consulta/{id}:
+ * /consultas/consulta/{id}:
  *   put:
  *     summary: Actualizar una consulta existente
  *     tags: [Consultas]
@@ -423,7 +423,7 @@ router.put('/consulta/:id',
 
 /**
  * @swagger
- * /consulta/{id}:
+ * /consultas/consulta/{id}:
  *   delete:
  *     summary: Eliminar una consulta
  *     tags: [Consultas]

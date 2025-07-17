@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /telefono:
+ * /telefonos/telefono:
  *   post:
  *     summary: Crear un nuevo teléfono
  *     tags: [Telefonos]
@@ -123,7 +123,7 @@ const { query } = require('express-validator');
 
 /**
  * @swagger
- * /telefono:
+ * /telefonos/telefono:
  *   get:
  *     summary: Obtener todos los teléfonos con filtros opcionales
  *     tags: [Telefonos]
@@ -216,7 +216,7 @@ router.get('/telefono',
 
 /**
  * @swagger
- * /telefono/{id}:
+ * /telefonos/telefono/{id}:
  *   get:
  *     summary: Obtener un teléfono por ID
  *     tags: [Telefonos]
@@ -268,7 +268,7 @@ router.get('/telefono/:id',
 
 /**
  * @swagger
- * /telefono/{id}:
+ * /telefonos/telefono/{id}:
  *   put:
  *     summary: Actualizar un teléfono existente
  *     tags: [Telefonos]
@@ -395,7 +395,7 @@ router.put('/telefono/:id',
 );
 /**
  * @swagger
- * /telefono/{id}:
+ * /telefonos/telefono/{id}:
  *   delete:
  *     summary: Eliminar un teléfono
  *     tags: [Telefonos]
