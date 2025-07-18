@@ -216,6 +216,8 @@ router.get('/facturas', verificarUsuario, facturaController.obtenerFacturas);
  * /factura/{id}:
  *   get:
  *     summary: Obtener una factura por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Factura]
  *     parameters:
  *       - in: path
@@ -237,6 +239,8 @@ router.get('/factura/:id', verificarUsuario, facturaController.obtenerFacturaPor
  * /facturas/{id}:
  *   put:
  *     summary: Las facturas no pueden ser editadas (Regulación SAR)
+ *     security:
+ *      - BearerAuth: []
  *     tags: [Factura]
  *     parameters:
  *       - in: path
@@ -264,6 +268,8 @@ router.put('/facturas/:id', verificarUsuario, facturaController.editarFactura);
  * /facturas/{id}/anular:
  *   patch:
  *     summary: Anular una factura (según normativa SAR, no se permite edición)
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Factura]
  *     parameters:
  *       - in: path
@@ -298,6 +304,8 @@ router.patch('/facturas/:id/anular', verificarUsuario, facturaController.anularF
  * /factura/{id}/pdf:
  *   get:
  *     summary: Descargar el PDF de una factura
+ *     security:
+ *       - BearerAuth: []
  *     description: Retorna el archivo PDF asociado a una factura si existe.
  *     tags: [Factura]
  *     parameters:
@@ -351,7 +359,9 @@ router.get('/factura/:id/pdf',  async (req, res) => {
  * @swagger  
  * /factura/{id}/pdf/view:  
  *   get:  
- *     summary: Visualizar el PDF de una factura en el navegador  
+ *     summary: Visualizar el PDF de una factura en el navegador
+ *     security:  
+ *      - BearerAuth: []
  *     description: Muestra el archivo PDF asociado a una factura directamente en el navegador sin forzar la descarga.  
  *     tags: [Factura]  
  *     parameters:  

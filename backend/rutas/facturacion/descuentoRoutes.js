@@ -15,6 +15,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  * /descuentos:
  *   get:
  *     summary: Obtener todos los descuentos
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Descuento]
  *     responses:
  *       200:
