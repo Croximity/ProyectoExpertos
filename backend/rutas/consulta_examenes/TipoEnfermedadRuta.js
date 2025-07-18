@@ -50,8 +50,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *           schema:
  *             $ref: '#/components/schemas/TipoEnfermedad'
  *           example:
- *             nombre: "Miopía"
- *             descripcion: "Dificultad para ver objetos lejanos"
+ *             Nombre: "Miopía"
+ *             Descripcion: "Dificultad para ver objetos lejanos"
  *     responses:
  *       201:
  *         description: Tipo de enfermedad creado exitosamente
