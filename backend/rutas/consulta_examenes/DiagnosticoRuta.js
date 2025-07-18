@@ -58,7 +58,7 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *             $ref: '#/components/schemas/DiagnosticoInput'
  *           example:
  *             idConsulta: 10
- *             idTipoEnfermedad:1
+ *             idTipoEnfermedad: 1
  *             idExamen: 1
  *             descripcion: "Miopía leve detectada"
  *             fecha: "2025-07-17"
