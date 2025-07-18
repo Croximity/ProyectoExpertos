@@ -72,8 +72,8 @@ const { verificarUsuario } = require('../../configuraciones/passport');
  *             $ref: '#/components/schemas/ReparacionDeLentes'
  *           example:
  *             idConsulta: 10
- *             tipoReparacion: "Cambio de micas"
- *             costo: 150.00
+ *             Tipo_Reparacion: "Cambio de micas"
+ *             Costo: 150.00
  *             fecha: "2025-07-17"
  *     responses:
  *       201:
