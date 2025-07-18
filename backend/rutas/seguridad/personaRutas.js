@@ -139,6 +139,44 @@ const personaController = require('../../controladores/seguridad/personaControll
 
 /**
  * @swagger
+ * /personas/persona:
+ *   get:
+ *     summary: Obtener todas las personas
+ *     tags: [Persona]
+ *     responses:
+ *       200:
+ *         description: Lista de personas obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Persona'
+ *             example:
+ *               - id: 1
+ *                 Pnombre: Juan
+ *                 Snombre: Carlos
+ *                 Papellido: Pérez
+ *                 Sapellido: Gómez
+ *                 Direccion: Calle principal, Tegucigalpa
+ *                 DNI: 08011999123453
+ *                 correo: juan.perez@email.com
+ *                 fechaNacimiento: 1999-01-01
+ *                 genero: M
+ *               - id: 2
+ *                 Pnombre: Ana
+ *                 Snombre: María
+ *                 Papellido: López
+ *                 Sapellido: Rodríguez
+ *                 Direccion: Barrio Centro, Comayagua
+ *                 DNI: 08011999000013
+ *                 correo: ana.lopez@email.com
+ *                 fechaNacimiento: 1998-05-10
+ *                 genero: F
+ */
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     Persona:
@@ -192,5 +230,8 @@ router.delete('/persona/:id', personaController.eliminarPersona);
 
 // Ruta: Crear varias personas
 router.post('/personas', personaController.crearMultiplesPersonas);
+
+// Ruta: Obtener todas las personas
+router.get('/persona', personaController.obtenerPersonas);
 
 module.exports = router;

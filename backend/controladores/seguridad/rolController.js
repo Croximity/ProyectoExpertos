@@ -99,6 +99,7 @@ const eliminarRol = async (req, res) => {
   }
 };
 
+
 // === EXPORTAR ===
 module.exports = {
   crearRol,

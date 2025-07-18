@@ -72,6 +72,18 @@ exports.iniciarSesion = async (req, res) => {
   }
 };
 
+// Obtener todos los usuarios
+exports.obtenerUsuarios = async (req, res) => {
+  try {
+    const usuarios = await Usuario.findAll({
+      attributes: { exclude: ['contraseña'] }
+    });
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al obtener usuarios', error: error.message });
+  }
+};
+
 exports.error = (req, res) => {
   res.status(401).json({ mensaje: 'Error en la autenticación' });
 };

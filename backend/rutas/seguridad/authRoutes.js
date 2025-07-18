@@ -112,6 +112,33 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *       500:
  *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /auth/listar:
+ *   get:
+ *     summary: Listar todos los usuarios
+ *     security:
+ *      - BearerAuth: []
+ *     tags: [Autenticación]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   idUsuario:
+ *                     type: integer
+ *                     example: 1
+ *                   Nombre_Usuario:
+ *                     type: string
+ *                     example: juan123
+ *       500:
+ *         description: Error del servidor
+ */
 
 router.post(
   '/registro',
@@ -139,6 +166,7 @@ router.post(
   ],
   authController.iniciarSesion
 );
+router.get('/listar', verificarUsuario, authController.obtenerUsuarios);
 router.get('/error', authController.error)
 
 module.exports = router;

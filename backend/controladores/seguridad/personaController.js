@@ -170,11 +170,22 @@ const obtenerPersonaPorId = async (req, res) => {
   }
 };
 
+// Obtener todas las personas
+const obtenerPersonas = async (req, res) => {
+  try {
+    const personas = await Persona.findAll();
+    res.json(personas);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al obtener personas', error: error.message });
+  }
+};
+
 // === EXPORTAR TODO JUNTO ===
 module.exports = {
   crearPersona,
   editarPersona,
   eliminarPersona,
   crearMultiplesPersonas,
-  obtenerPersonaPorId
+  obtenerPersonaPorId,
+  obtenerPersonas
 };
