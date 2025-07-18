@@ -119,9 +119,9 @@ const Telefono = require("./modelos/gestion_cliente/Telefono")
 const Consulta = require("./modelos/gestion_cliente/Consulta")
 
 // Modelos de Facturacion
+const FormaPago = require('./modelos/facturacion/FormaPago');
 const Factura = require('./modelos/facturacion/Factura'); // <-- CORREGIDO
 const FacturaDetalle = require('./modelos/facturacion/FacturaDetalle');
-const FormaPago = require('./modelos/facturacion/FormaPago');
 const Descuento = require('./modelos/facturacion/Descuento');
 const DetalleDescuento = require('./modelos/facturacion/DetalleDescuento');
 const Atributo = require('./modelos/productos/Atributo');
@@ -166,9 +166,9 @@ const startServer = async () => {
     console.log('✅ Modelos de productos/inventario sincronizados.');
 
         // Sincronizar modelos de Fcaturacion
+    await FormaPago.sync();
     await Factura.sync();
     await Descuento.sync();
-    await FormaPago.sync();
     await DetalleDescuento.sync();
     await FacturaDetalle.sync();
     await Factura.sync();
