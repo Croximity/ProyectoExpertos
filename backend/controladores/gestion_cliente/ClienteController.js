@@ -77,7 +77,7 @@ const obtenerClientes = async (req, res) => {
     const clientes = await Cliente.findAll({
       include: [{
         model: Persona,
-        as: 'Persona',
+        as: 'persona',
         where: Object.keys(wherePersona).length ? wherePersona : undefined
       }]
     });
@@ -94,7 +94,7 @@ const obtenerClientePorId = async (req, res) => {
     const cliente = await Cliente.findByPk(id, {
       include: [{
         model: Persona,
-        as: 'Persona'
+        as: 'persona'
       }]
     });
     if (!cliente) return res.status(404).json({ mensaje: 'Cliente no encontrado' });

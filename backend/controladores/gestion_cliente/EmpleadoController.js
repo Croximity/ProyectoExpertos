@@ -55,7 +55,7 @@ exports.obtenerEmpleados = async (req, res) => {
     const empleados = await Empleado.findAll({
       include: [{
         model: Persona,
-        as: 'Persona',
+        as: 'persona',
         where: Object.keys(wherePersona).length ? wherePersona : undefined
       }]
     });
@@ -72,7 +72,7 @@ exports.obtenerEmpleadoPorId = async (req, res) => {
     const empleado = await Empleado.findByPk(id, {
       include: [{
         model: Persona,
-        as: 'Persona'
+        as: 'persona'
       }]
     });
     if (!empleado) return res.status(404).json({ mensaje: 'Empleado no encontrado' });

@@ -37,7 +37,8 @@ const ProductoAtributo = db.define('ProductoAtributo', {
 
 // Relaciones (opcional para que Sequelize entienda)
 ProductoModel.hasMany(ProductoAtributo, { foreignKey: 'idProducto' });
-ProductoAtributo.belongsTo(ProductoModel, { foreignKey: 'idProducto' });
+ProductoAtributo.belongsTo(ProductoModel, { foreignKey: 'idProducto',
+  as: 'producto' });
 
 Atributo.hasMany(ProductoAtributo, { foreignKey: 'idAtributo' });
 ProductoAtributo.belongsTo(Atributo, { foreignKey: 'idAtributo' });

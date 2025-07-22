@@ -11,6 +11,10 @@ const Empleado = db.define('Empleado', {
   idPersona: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'persona',
+      key: 'idPersona'
+    }
 
   },
   Fecha_Registro: {
@@ -24,6 +28,6 @@ const Empleado = db.define('Empleado', {
 });
 
 // Relaciones
-Empleado.belongsTo(Persona, { foreignKey: 'idPersona', as: 'Persona' });
+Empleado.belongsTo(Persona, { foreignKey: 'idPersona', as: 'persona' });
 Persona.hasOne(Empleado,{foreignKey: "idPersona", sourceKey:"idPersona"})
 module.exports = Empleado;

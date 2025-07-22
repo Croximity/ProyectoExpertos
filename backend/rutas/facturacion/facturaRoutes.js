@@ -6,6 +6,9 @@ const path = require('path');
 const Factura = require('../../modelos/facturacion/Factura');
 const { verificarUsuario } = require('../../configuraciones/passport');
 
+const { body, param, validationResult, query } = require('express-validator');
+
+
 /**
  * @swagger
  * tags:
@@ -337,7 +340,7 @@ router.patch('/facturas/:id/anular', verificarUsuario, facturaController.anularF
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/factura/:id/pdf',  async (req, res) => {  
+router.get('/factura/:id/pdf', verificarUsuario, async (req, res) => {  
   try {  
     const factura = await Factura.findByPk(req.params.id);  
     if (!factura || !factura.archivo_pdf) {  
@@ -401,7 +404,7 @@ router.get('/factura/:id/pdf',  async (req, res) => {
  *                   type: string  
  *                   example: "Error al obtener PDF de factura"  
  */
-router.get('/factura/:id/pdf/view', async (req, res) => {    
+router.get('/factura/:id/pdf/view', verificarUsuario, async (req, res) => {    
   try {    
     const factura = await Factura.findByPk(req.params.id);    
     if (!factura || !factura.archivo_pdf) {    

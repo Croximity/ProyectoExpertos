@@ -27,8 +27,8 @@ const Cliente = db.define('Cliente', {
 });
 
 // Relaciones
-Cliente.belongsTo(Persona, { foreignKey: 'idPersona', as: 'Persona' });
+Cliente.belongsTo(Persona, { foreignKey: 'idPersona', as: 'persona' });
 Persona.hasOne(Cliente, { foreignKey: 'idPersona'});
 module.exports = Cliente;
 // Exporta el modelo Cliente para su uso en otras partes de la aplicación
-// Puedes usar este modelo para realizar operaciones CRUD en la tabla cliente           
+// Puedes usar este modelo para realizar op eraciones CRUD en la tabla cliente           
