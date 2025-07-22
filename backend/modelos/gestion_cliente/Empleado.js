@@ -15,7 +15,6 @@ const Empleado = db.define('Empleado', {
       model: 'persona',
       key: 'idPersona'
     }
-
   },
   Fecha_Registro: {
     type: DataTypes.DATE,
