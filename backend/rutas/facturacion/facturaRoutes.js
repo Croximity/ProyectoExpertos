@@ -142,7 +142,7 @@ router.post('/factura', verificarUsuario, facturaController.crearFactura);
  *                   idEmpleado:  
  *                     type: integer  
  *                     minimum: 1  
- *                     example: 2  
+ *                     example: 1  
  *                   estadoFactura:  
  *                     type: string  
  *                     enum: ['activa', 'anulada']  
@@ -193,7 +193,7 @@ router.post('/factura', verificarUsuario, facturaController.crearFactura);
  *               Tipo_documento: "Factura"  
  *               idCliente: 2  
  *               idFormaPago: 1  
- *               idEmpleado: 2  
+ *               idEmpleado: 1  
  *               estadoFactura: "activa"  
  *             detalles:  
  *               - idProducto: 8  
