@@ -170,7 +170,7 @@ const Sidebar = (props) => {
           {/* Navigation */}
           <Nav className="mb-md-3">
             <NavItem> 
-              <NavLink to="http://localhost:3000/admin/user-profile" tag={NavLinkRRD}>
+              <NavLink to="http://localhost:3002/admin/user-profile" tag={NavLinkRRD}>
                 <i className="ni ni-single-02" />
                 Perfil de Usuario
               </NavLink>

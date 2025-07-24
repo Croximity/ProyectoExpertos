@@ -106,7 +106,7 @@ API-Optica es una API REST completa diseñada para gestionar las operaciones de 
 
 Accede a la documentación en Swagger UI:
 
-   http://localhost:3000/api-docs
+   http://localhost:4051/api-docs
 
 ## 🔐 Autenticación
 

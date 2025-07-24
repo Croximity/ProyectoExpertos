@@ -16,7 +16,7 @@ import {
   InputGroupText  
 } from 'reactstrap';  
 import Header from 'components/Headers/Header.js';  
-import { facturaService } from 'services/facturaService.js';  
+import { facturaService } from 'services/facturacion/facturaService.js';  
   
 const ListaFacturas = () => {  
   const [facturas, setFacturas] = useState([]);  

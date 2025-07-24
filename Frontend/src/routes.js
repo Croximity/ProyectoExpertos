@@ -1,13 +1,18 @@
 
-// Clientes
-import Clientes from "views/gestion_cliente/Clientes.js";
 
+// Dashboard
 import Index from "views/Index.js";
-import Profile from "views/gestion_cliente/Profile.js";
-import Maps from "views/gestion_cliente/Maps.js";
-import Register from "views/gestion_cliente/Register.js";
-import Login from "views/gestion_cliente/Login.js";
 
+// Mapa
+import Maps from "views/Maps.js";
+
+// seguridad
+import Profile from "views/seguridad/Profile.js";
+import Register from "views/seguridad/Register.js";
+import Login from "views/seguridad/Login.js";
+
+// Gestion Clientes
+import Clientes from "views/gestion_cliente/Clientes.js";
 
 
 // Facturación
@@ -34,10 +39,10 @@ const routes = [
     name: "Panel de Control",
     icon: "ni ni-tv-2 text-primary",
     component: Index,
-    layout: "/admin",
+    layout: "/admin", 
   },
 
-// Clientes
+// Gestion Clientes
   {
   path: "/clientes",
   name: "Clientes",
@@ -125,6 +130,9 @@ const routes = [
     layout: "/admin",
     hidden: true,
   },
+
+
+  // ------------------- Parte----------------------------
   // Perfil de Usuario
     {
     path: "/user-profile",
@@ -134,14 +142,7 @@ const routes = [
     layout: "/admin",
     hidden: true,
   },
-// Mapa
-    {
-    path: "/mapas",
-    name: "Mapa",
-    icon: "ni ni-pin-3 text-orange",
-    component: Maps,
-    layout: "/admin",
-  },
+
 
   // Authentication Login/Register
   {
@@ -158,6 +159,15 @@ const routes = [
     component: Register,
     layout: "/auth",
   },
+  // Mapa
+    {
+    path: "/mapas",
+    name: "Mapa",
+    icon: "ni ni-pin-3 text-orange",
+    component: Maps,
+    layout: "/admin",
+  },
+
 ];
 
 export default routes;

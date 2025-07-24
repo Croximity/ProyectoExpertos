@@ -1,4 +1,3 @@
-// views/examples/Register.js  
 import React, { useState } from 'react';  
 import { useNavigate } from 'react-router-dom';  
 import {  
@@ -16,19 +15,15 @@ import {
   Col,  
   Alert  
 } from "reactstrap";  
-import { authService } from '../../services/authService';  
+import { authService } from '../../services/seguridad/authService';  
   
-const Register = () => {  
+const Login = () => {  
   const [formData, setFormData] = useState({  
     Nombre_Usuario: '',  
-    contraseña: '',  
-    idPersona: 1, // Valor por defecto según tu modelo  
-    idrol: 1 // Valor por defecto según tu modelo  
+    contraseña: ''  
   });  
   const [loading, setLoading] = useState(false);  
   const [error, setError] = useState('');  
-  const [success, setSuccess] = useState('');  
-  const [acceptedTerms, setAcceptedTerms] = useState(false);  
   const navigate = useNavigate();  
   
   const handleChange = (e) => {  
@@ -42,22 +37,13 @@ const Register = () => {
     e.preventDefault();  
     setLoading(true);  
     setError('');  
-    setSuccess('');  
-  
-    if (!acceptedTerms) {  
-      setError('Debes aceptar la Política de Privacidad');  
-      setLoading(false);  
-      return;  
-    }  
   
     try {  
-      const response = await authService.register(formData);  
-      setSuccess('Usuario registrado exitosamente. Puedes iniciar sesión ahora.');  
+      const response = await authService.login(formData);  
+      console.log('Login exitoso:', response.mensaje);  
         
-      // Redirigir al login después de 2 segundos  
-      setTimeout(() => {  
-        navigate('/auth/login');  
-      }, 2000);  
+      // Redirigir al dashboard  
+      navigate('/admin/index');  
     } catch (error) {  
       setError(error.message);  
     } finally {  
@@ -67,15 +53,15 @@ const Register = () => {
   
   return (  
     <>  
-      <Col lg="6" md="8">  
+      <Col lg="5" md="7">  
         <Card className="bg-secondary shadow border-0">  
           <CardHeader className="bg-transparent pb-5">  
-            <div className="text-muted text-center mt-2 mb-4">  
-              <small>Registrarse con</small>  
+            <div className="text-muted text-center mt-2 mb-3">  
+              <small>Inicia sesión con</small>  
             </div>  
-            <div className="text-center">  
+            <div className="btn-wrapper text-center">  
               <Button  
-                className="btn-neutral btn-icon mr-4"  
+                className="btn-neutral btn-icon"  
                 color="default"  
                 href="#pablo"  
                 onClick={(e) => e.preventDefault()}  
@@ -106,35 +92,30 @@ const Register = () => {
           </CardHeader>  
           <CardBody className="px-lg-5 py-lg-5">  
             <div className="text-center text-muted mb-4">  
-              <small>O crea una cuenta con tus datos</small>  
+              <small>O inicia sesión con tus credenciales</small>  
             </div>  
-  
+              
             {error && (  
               <Alert color="danger">  
                 {error}  
               </Alert>  
             )}  
   
-            {success && (  
-              <Alert color="success">  
-                {success}  
-              </Alert>  
-            )}  
-  
             <Form role="form" onSubmit={handleSubmit}>  
-              <FormGroup>  
-                <InputGroup className="input-group-alternative mb-3">  
+              <FormGroup className="mb-3">  
+                <InputGroup className="input-group-alternative">  
                   <InputGroupAddon addonType="prepend">  
                     <InputGroupText>  
                       <i className="ni ni-single-02" />  
                     </InputGroupText>  
                   </InputGroupAddon>  
-                  <Input   
-                    placeholder="Nombre de usuario"   
+                  <Input  
+                    placeholder="Nombre de usuario"  
                     type="text"  
                     name="Nombre_Usuario"  
                     value={formData.Nombre_Usuario}  
                     onChange={handleChange}  
+                    autoComplete="username"  
                     required  
                   />  
                 </InputGroup>  
@@ -147,71 +128,59 @@ const Register = () => {
                     </InputGroupText>  
                   </InputGroupAddon>  
                   <Input  
-                    placeholder="Contraseña (mínimo 6 caracteres)"  
+                    placeholder="Contraseña"  
                     type="password"  
                     name="contraseña"  
                     value={formData.contraseña}  
                     onChange={handleChange}  
-                    minLength="6"  
-                    autoComplete="new-password"  
+                    autoComplete="current-password"  
                     required  
                   />  
                 </InputGroup>  
               </FormGroup>  
-              <div className="text-muted font-italic">  
-                <small>  
-                  Seguridad de la contraseña:{" "}  
-                  <span className="text-success font-weight-700">  
-                    {formData.contraseña.length >= 6 ? 'fuerte' : 'débil'}  
-                  </span>  
-                </small>  
+              <div className="custom-control custom-control-alternative custom-checkbox">  
+                <input  
+                  className="custom-control-input"  
+                  id="customCheckLogin"  
+                  type="checkbox"  
+                />  
+                <label  
+                  className="custom-control-label"  
+                  htmlFor="customCheckLogin"  
+                >  
+                  <span className="text-muted">Recordarme</span>  
+                </label>  
               </div>  
-              <Row className="my-4">  
-                <Col xs="12">  
-                  <div className="custom-control custom-control-alternative custom-checkbox">  
-                    <input  
-                      className="custom-control-input"  
-                      id="customCheckRegister"  
-                      type="checkbox"  
-                      checked={acceptedTerms}  
-                      onChange={(e) => setAcceptedTerms(e.target.checked)}  
-                      required  
-                    />  
-                    <label  
-                      className="custom-control-label"  
-                      htmlFor="customCheckRegister"  
-                    >  
-                      <span className="text-muted">  
-                        Acepto la{" "}  
-                        <a href="#pablo" onClick={(e) => e.preventDefault()}>  
-                          Política de Privacidad  
-                        </a>  
-                      </span>  
-                    </label>  
-                  </div>  
-                </Col>  
-              </Row>  
               <div className="text-center">  
                 <Button   
-                  className="mt-4"   
+                  className="my-4"   
                   color="primary"   
                   type="submit"  
                   disabled={loading}  
                 >  
-                  {loading ? 'Creando cuenta...' : 'Crear cuenta'}  
+                  {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}  
                 </Button>  
               </div>  
             </Form>  
           </CardBody>  
         </Card>  
         <Row className="mt-3">  
-          <Col className="text-center">  
+          <Col xs="6">  
             <a  
               className="text-light"  
               href="#pablo"  
-              onClick={(e) => navigate('/auth/login')}  
+              onClick={(e) => e.preventDefault()}  
             >  
-              <small>¿Ya tienes cuenta? Inicia sesión</small>  
+              <small>¿Olvidaste tu contraseña?</small>  
+            </a>  
+          </Col>  
+          <Col className="text-right" xs="6">  
+            <a  
+              className="text-light"  
+              href="#pablo"  
+              onClick={(e) => navigate('/auth/register')}  
+            >  
+              <small>Crear una cuenta</small>  
             </a>  
           </Col>  
         </Row>  
@@ -220,4 +189,4 @@ const Register = () => {
   );  
 };  
   
-export default Register;
+export default Login;

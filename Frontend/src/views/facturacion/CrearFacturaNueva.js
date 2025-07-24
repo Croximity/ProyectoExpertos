@@ -16,7 +16,7 @@ import {
   Container  
 } from 'reactstrap';  
 import Header from 'components/Headers/Header.js';  
-import { facturaService } from '../../services/facturaService';  
+import { facturaService } from '../../services/facturacion/facturaService.js';  
   
 const CrearFacturaNueva = () => {  
   const [factura, setFactura] = useState({  
