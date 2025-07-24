@@ -16,7 +16,7 @@ const app = express();
 
 // Configuración básica de CORS
 app.use(cors({
-  origin: 'http://localhost:3000', // frontend (React)
+  origin: 'http://localhost:3002', // frontend (React)
   credentials: true,               // para enviar cookies o encabezados de autorización
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -35,6 +35,10 @@ app.use(express.json());
 // Middleware para validar factura
 
 app.use(passport.initialize());
+
+// rutas de documentación Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 /* ========== RUTAS DE SEGURIDAD ========== */
 const authRoutes = require('./rutas/seguridad/authRoutes');
@@ -70,10 +74,6 @@ const archivoRoutes = require('./rutas/facturacion/archivoRoutes');
 const descuentoRoutes = require('./rutas/facturacion/descuentoRoutes');
 const formaPagoRoutes = require('./rutas/facturacion/formaPagoRoutes');
 
-const facturaRoutes = require('./rutas/facturacion/facturaRoutes');
-
-// rutas de documentación Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Usar rutas de gestión cliente
 app.use('/api/optica/clientes', clienteRuta);
