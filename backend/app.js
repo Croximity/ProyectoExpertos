@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const db = require('./configuraciones/db');
@@ -12,6 +13,19 @@ dotenv.config();
 
 // Inicializar la app
 const app = express();
+
+// Configuración básica de CORS
+app.use(cors({
+  origin: 'http://localhost:3000', // frontend (React)
+  credentials: true,               // para enviar cookies o encabezados de autorización
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+
+
+app.options('*', cors()); // permite todas las solicitudes OPTIONS
+
 
 // Middlewares
 app.use(morgan('dev'));
