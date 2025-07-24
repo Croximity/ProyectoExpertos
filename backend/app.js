@@ -6,7 +6,7 @@ const passport = require('passport');
 const db = require('./configuraciones/db');
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./configuraciones/swagger'); // ajusta según tu ruta
+const swaggerSpec = require('./configuraciones/swagger.js'); // ajusta según tu ruta
 
 // Cargar variables de entorno
 dotenv.config();
@@ -24,7 +24,6 @@ app.use(cors({
 
 
 
-app.options('*', cors()); // permite todas las solicitudes OPTIONS
 
 
 // Middlewares

@@ -126,52 +126,7 @@ const Admin = () => {
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
-          if (prop.path === "/inventario") {
-          return (
-            <Route
-              path={prop.path}
-              element={<prop.component addActivo={addActivo} />}
-              key={key}
-            />
-          );
-        }
-        if (prop.path === "/gestionar-stock") {
-            return (
-                <Route
-                    path={prop.path}
-                    element={<prop.component inventoryData={inventoryData} updateStock={updateStock} />}
-                    key={key}
-                />
-            );
-        }
-        if (prop.path === "/lista-activos") {
-          return (
-            <Route
-              path={prop.path}
-              element={<prop.component inventoryData={inventoryData} />}
-              key={key}
-            />
-          );
-        }
-        // NUEVA RUTA: Pasar inventoryData y la función addMantenimientoRecord a GestionarMantenimiento
-        if (prop.path === "/gestionar-mantenimiento") {
-            return (
-                <Route
-                    path={prop.path}
-                    element={<prop.component inventoryData={inventoryData} addMantenimientoRecord={addMantenimientoRecord} />}
-                    key={key}
-                />
-            );
-        }
-        if (prop.path === "/generar-reportes") {
-          return (
-            <Route
-                path={prop.path}
-                element={<prop.component inventoryData={inventoryData}/>}
-                key={key}
-                />
-          );
-        }
+          
         return (
           <Route path={prop.path} element={<prop.component />} key={key} />
         );
@@ -200,7 +155,7 @@ const Admin = () => {
         routes={routes}
         logo={{
           innerLink: "/admin/index",
-          imgSrc: require("../assets/img/brand/logoCanal.png"),
+          imgSrc: require("../assets/img/brand/logoOptica.png"),
           imgAlt: "...",
         }}
       />
