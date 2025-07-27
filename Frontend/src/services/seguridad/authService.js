@@ -13,7 +13,7 @@ export const authService = {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          Nombre_Usuario: credentials.nombre_usuario, // Debe coincidir con el backend
+          Nombre_Usuario: credentials.Nombre_Usuario, // Debe coincidir con el backend
           contraseña: credentials.contraseña
         })
       });
@@ -29,7 +29,7 @@ export const authService = {
         localStorage.setItem('token', data.token);
         localStorage.setItem('usuario', JSON.stringify({
           idUsuario: data.idUsuario ?? null,
-          nombre_usuario: credentials.nombre_usuario,
+          Nombre_Usuario: credentials.Nombre_Usuario,
           rol: data.rol ?? null // Solo si el backend te envía este campo
         }));
       }
