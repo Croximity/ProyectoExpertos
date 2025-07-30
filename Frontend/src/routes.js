@@ -10,9 +10,14 @@ import Maps from "views/Maps.js";
 import Profile from "views/seguridad/Profile.js";
 import Register from "views/seguridad/Register.js";
 import Login from "views/seguridad/Login.js";
+import Personas from "views/seguridad/Personas.js";
+import PersonaForm from "views/seguridad/PersonaForm.js";
 
 // Gestion Clientes
 import Clientes from "views/gestion_cliente/Clientes.js";
+import ClienteForm from "views/gestion_cliente/ClienteForm.js";
+import Empleados from "views/gestion_cliente/Empleados.js";
+import EmpleadoForm from "views/gestion_cliente/EmpleadoForm.js";
 
 
 // Facturación
@@ -27,6 +32,12 @@ import Canjes from "views/facturacion/Canjes";
 // Facturación - Crear Factura
 import CrearFacturaNueva from "views/facturacion/CrearFacturaNueva";
 import ListaFacturas from "views/facturacion/ListasFacturas.js";
+
+// Productos
+import Productos from "views/productos/Productos.js";
+import ProductoForm from "views/productos/ProductoForm.js";
+import Categorias from "views/productos/Categorias.js";
+import CategoriaForm from "views/productos/CategoriaForm.js";
 
 
 
@@ -50,8 +61,86 @@ const routes = [
   component: Clientes,
   layout: "/admin"
   },
+  {
+    path: "/clientes/nuevo",
+    name: "Nuevo Cliente",
+    component: ClienteForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/clientes/editar/:id",
+    name: "Editar Cliente",
+    component: ClienteForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/empleados",
+    name: "Empleados",
+    icon: "ni ni-badge text-success",
+    component: Empleados,
+    layout: "/admin",
+  },
+  {
+    path: "/empleados/nuevo",
+    name: "Nuevo Empleado",
+    component: EmpleadoForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/empleados/editar/:id",
+    name: "Editar Empleado",
+    component: EmpleadoForm,
+    layout: "/admin",
+    hidden: true,
+  },
 
-  
+  // Productos
+  {
+    path: "/productos",
+    name: "Productos",
+    icon: "ni ni-shop text-info",
+    component: Productos,
+    layout: "/admin",
+  },
+  {
+    path: "/productos/nuevo",
+    name: "Nuevo Producto",
+    component: ProductoForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/productos/editar/:id",
+    name: "Editar Producto",
+    component: ProductoForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/categorias",
+    name: "Categorías",
+    icon: "ni ni-tag text-warning",
+    component: Categorias,
+    layout: "/admin",
+  },
+  {
+    path: "/categorias/nueva",
+    name: "Nueva Categoría",
+    component: CategoriaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/categorias/editar/:id",
+    name: "Editar Categoría",
+    component: CategoriaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+
   // Facturación
   {
     path: "/facturacion/panel",
@@ -131,6 +220,28 @@ const routes = [
     hidden: true,
   },
 
+  // Seguridad - Gestión de Personas
+  {
+    path: "/personas",
+    name: "Personas",
+    icon: "ni ni-circle-08 text-info",
+    component: Personas,
+    layout: "/admin",
+  },
+  {
+    path: "/personas/nueva",
+    name: "Nueva Persona",
+    component: PersonaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/personas/editar/:id",
+    name: "Editar Persona",
+    component: PersonaForm,
+    layout: "/admin",
+    hidden: true,
+  },
 
   // ------------------- Parte----------------------------
   // Perfil de Usuario

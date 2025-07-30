@@ -6,6 +6,7 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
+import ProtectedRoute from "components/ProtectedRoute.js";
 
 import routes from "routes.js";
 
@@ -19,7 +20,9 @@ const Admin = () => {
   useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
-    mainContentRef.current.scrollTop = 0;
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0;
+    }
   }, [location]);
 
   
@@ -50,7 +53,7 @@ const Admin = () => {
   };
 
   return (
-    <>
+    <ProtectedRoute>
       <Sidebar
         location={location}
         routes={routes}
@@ -70,7 +73,7 @@ const Admin = () => {
           <AdminFooter />
         
       </div>
-    </>
+    </ProtectedRoute>
   );
 };
 
