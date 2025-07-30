@@ -2,6 +2,41 @@ import axiosInstance from '../../utils/axiosConfig';
 
 export const authService = {
   login: async (credentials) => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          Nombre_Usuario: credentials.Nombre_Usuario, // Debe coincidir con el backend
+          contraseña: credentials.contraseña
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.mensaje || 'Error en el login');
+      }
+
+      const data = await response.json();
+
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('usuario', JSON.stringify({
+          idUsuario: data.idUsuario ?? null,
+          Nombre_Usuario: credentials.Nombre_Usuario,
+          rol: data.rol ?? null // Solo si el backend te envía este campo
+        }));
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error en authService.login:', error);
+      throw error;
+    }
     const response = await axiosInstance.post('/auth/login', credentials);
     
     if (response.data.token) {
