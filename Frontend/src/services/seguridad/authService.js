@@ -83,6 +83,21 @@ export const authService = {
     return usuario ? JSON.parse(usuario) : null;
   },
 
+  obtenerUsuarioActual: async () => {
+    const response = await axiosInstance.get('/auth/usuario-actual');
+    return response.data;
+  },
+
+  obtenerUsuarios: async () => {
+    const response = await axiosInstance.get('/auth/listar');
+    return response.data;
+  },
+
+  asociarPersonaAUsuario: async (data) => {
+    const response = await axiosInstance.post('/auth/asociar-persona', data);
+    return response.data;
+  },
+
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
   }

@@ -168,15 +168,12 @@ router.post('/empleado',
 router.get('/empleado',
   verificarUsuario,
   [
-    query('Pnombre').optional().isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 letras'),
-    query('Papellido').optional().isLength({ min: 3 }).withMessage('El apellido debe tener al menos 3 letras'),
+    query('Pnombre').optional().isLength({ min: 1 }).withMessage('El nombre debe tener al menos 1 letra'),
+    query('Papellido').optional().isLength({ min: 1 }).withMessage('El apellido debe tener al menos 1 letra'),
     (req, res, next) => {
       const errores = validationResult(req);
       if (!errores.isEmpty()) {
         return res.status(400).json({ errores: errores.array() });
-      }
-      if (!req.query.Pnombre && !req.query.Papellido) {
-        return res.status(400).json({ mensaje: 'Debe enviar al menos Pnombre o Papellido con mínimo 3 letras.' });
       }
       next();
     }

@@ -75,10 +75,10 @@ const formaPagoRoutes = require('./rutas/facturacion/formaPagoRoutes');
 
 
 // Usar rutas de gestión cliente
-app.use('/api/optica/clientes', clienteRuta);
-app.use('/api/optica/empleados', empleadoRuta);
-app.use('/api/optica/telefonos', telefonoRuta);
-app.use('/api/optica/consultas', consultaRuta);
+app.use('/api/optica/gestion_cliente/clientes', clienteRuta);
+app.use('/api/optica/gestion_cliente/empleados', empleadoRuta);
+app.use('/api/optica/gestion_cliente/telefonos', telefonoRuta);
+app.use('/api/optica/gestion_cliente/consultas', consultaRuta);
 
 // Usar rutas de consulta exámenes
 app.use('/api/optica', tipoEnfermedadRuta);

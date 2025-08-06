@@ -77,7 +77,16 @@ exports.iniciarSesion = async (req, res) => {
 
     const token = getToken(payload);
 
-    res.json({ mensaje: 'Inicio de sesión exitoso', token, user: { idUsuario: usuario.idUsuario, Nombre_Usuario: usuario.Nombre_Usuario } });
+    res.json({ 
+      mensaje: 'Inicio de sesión exitoso', 
+      token, 
+      user: { 
+        idUsuario: usuario.idUsuario, 
+        Nombre_Usuario: usuario.Nombre_Usuario,
+        idPersona: usuario.idPersona,
+        estado: usuario.estado
+      } 
+    });
 
   } catch (error) {
     res.status(500).json({ mensaje: 'Error en el servidor', error: error.message });
@@ -99,6 +108,64 @@ exports.obtenerUsuarios = async (req, res) => {
 // VERIFICAR PIN 2FA - Temporalmente deshabilitado
 exports.verificarPin = async (req, res) => {
   res.status(400).json({ mensaje: 'Funcionalidad de PIN 2FA temporalmente deshabilitada' });
+};
+
+// OBTENER USUARIO ACTUAL
+exports.obtenerUsuarioActual = async (req, res) => {
+  try {
+    const usuario = await Usuario.findOne({ 
+      where: { idUsuario: req.user.idUsuario },
+      include: [{ model: Persona, as: 'persona' }],
+      attributes: { exclude: ['contraseña'] }
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    res.json({
+      idUsuario: usuario.idUsuario,
+      Nombre_Usuario: usuario.Nombre_Usuario,
+      idPersona: usuario.idPersona,
+      estado: usuario.estado,
+      persona: usuario.persona
+    });
+
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error en el servidor', error: error.message });
+  }
+};
+
+// ENDPOINT TEMPORAL: ASOCIAR PERSONA A USUARIO
+exports.asociarPersonaAUsuario = async (req, res) => {
+  try {
+    const { idUsuario, idPersona } = req.body;
+
+    const usuario = await Usuario.findByPk(idUsuario);
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    const persona = await Persona.findByPk(idPersona);
+    if (!persona) {
+      return res.status(404).json({ mensaje: 'Persona no encontrada' });
+    }
+
+    usuario.idPersona = idPersona;
+    await usuario.save();
+
+    res.json({ 
+      mensaje: 'Persona asociada exitosamente al usuario',
+      usuario: {
+        idUsuario: usuario.idUsuario,
+        Nombre_Usuario: usuario.Nombre_Usuario,
+        idPersona: usuario.idPersona
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error en el servidor', error: error.message });
+  }
 };
 
 // REGISTRAR PERSONA

@@ -12,12 +12,14 @@ import Register from "views/seguridad/Register.js";
 import Login from "views/seguridad/Login.js";
 import Personas from "views/seguridad/Personas.js";
 import PersonaForm from "views/seguridad/PersonaForm.js";
+import AsociarPersona from "views/seguridad/AsociarPersona.js";
 
 // Gestion Clientes
 import Clientes from "views/gestion_cliente/Clientes.js";
 import ClienteForm from "views/gestion_cliente/ClienteForm.js";
 import Empleados from "views/gestion_cliente/Empleados.js";
 import EmpleadoForm from "views/gestion_cliente/EmpleadoForm.js";
+import PanelGestionCliente from "views/gestion_cliente/PanelGestionCliente.js";
 
 
 // Facturación
@@ -55,8 +57,15 @@ const routes = [
 
 // Gestion Clientes
   {
+    path: "/gestion-cliente",
+    name: "Panel de Gestión",
+    icon: "ni ni-single-02 text-primary",
+    component: PanelGestionCliente,
+    layout: "/admin"
+  },
+  {
   path: "/clientes",
-  name: "Clientes",
+  name: "Lista de Clientes",
   icon: "ni ni-single-02 text-primary",
   component: Clientes,
   layout: "/admin"
@@ -77,7 +86,7 @@ const routes = [
   },
   {
     path: "/empleados",
-    name: "Empleados",
+    name: "Lista de Empleados",
     icon: "ni ni-badge text-success",
     component: Empleados,
     layout: "/admin",
@@ -241,6 +250,13 @@ const routes = [
     component: PersonaForm,
     layout: "/admin",
     hidden: true,
+  },
+  {
+    path: "/asociar-persona",
+    name: "Asociar Personas",
+    icon: "ni ni-link text-warning",
+    component: AsociarPersona,
+    layout: "/admin",
   },
 
   // ------------------- Parte----------------------------

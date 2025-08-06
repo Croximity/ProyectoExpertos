@@ -202,6 +202,8 @@ router.post(
 );
 
 router.get('/listar', verificarUsuario, authController.obtenerUsuarios);
+router.get('/usuario-actual', verificarUsuario, authController.obtenerUsuarioActual);
+router.post('/asociar-persona', verificarUsuario, authController.asociarPersonaAUsuario);
 router.get('/error', authController.error)
 
 module.exports = router;
