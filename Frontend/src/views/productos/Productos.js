@@ -5,11 +5,13 @@ import { productoService } from '../../services/productos/productoService';
 import { useToast } from '../../hooks/useToast';
 import Header from 'components/Headers/Header.js';
 import Toast from 'components/Toast/Toast';
+import axiosInstance from '../../utils/axiosConfig';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState({});
+  const [imageError, setImageError] = useState({});
   const navigate = useNavigate();
   const { toast, showSuccess, showError, hideToast } = useToast();
 
@@ -47,6 +49,13 @@ const Productos = () => {
     }
   };
 
+  const apiOrigin = new URL(axiosInstance.defaults.baseURL).origin;
+  const basePublic = `${apiOrigin}/public/img/productos`;
+
+  const handleImgError = (id) => {
+    setImageError(prev => ({ ...prev, [id]: true }));
+  };
+
   return (
     <>
       <Header />
@@ -72,7 +81,7 @@ const Productos = () => {
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">ID</th>
-                      <th scope="col">Nombre</th>
+                      <th scope="col">Producto</th>
                       <th scope="col">Categoría</th>
                       <th scope="col">Marca</th>
                       <th scope="col">Precio Venta</th>
@@ -81,27 +90,52 @@ const Productos = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {productos.map(producto => (
-                      <tr key={producto.idProducto}>
-                        <td>{producto.idProducto}</td>
-                        <td>{producto.Nombre}</td>
-                        <td>{producto.CategoriaProducto?.Nombre || 'N/A'}</td>
-                        <td>{producto.marca}</td>
-                        <td>{producto.precioVenta}</td>
-                        <td>{producto.stockInicial}</td>
-                        <td>
-                          <Dropdown isOpen={dropdownOpen[producto.idProducto]} toggle={() => toggleDropdown(producto.idProducto)}>
-                            <DropdownToggle>
-                              <i className="fas fa-ellipsis-v" />
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              <DropdownItem onClick={() => handleEdit(producto.idProducto)}>Editar</DropdownItem>
-                              <DropdownItem onClick={() => handleDelete(producto.idProducto)}>Eliminar</DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </td>
-                      </tr>
-                    ))}
+                    {productos.map(producto => {
+                      const hasUrl = !!producto.imagenUrl;
+                      const fallbackUrl = producto.imagen ? `${basePublic}/${producto.imagen}` : null;
+                      const imgSrc = hasUrl ? producto.imagenUrl : fallbackUrl;
+                      const showFallback = !imgSrc || imageError[producto.idProducto];
+                      return (
+                        <tr key={producto.idProducto}>
+                          <td>{producto.idProducto}</td>
+                          <td>
+                            {!showFallback ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <img
+                                  src={imgSrc}
+                                  alt={producto.Nombre}
+                                  style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #e9ecef' }}
+                                  onError={() => handleImgError(producto.idProducto)}
+                                />
+                                <span>{producto.Nombre}</span>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 60, height: 60, borderRadius: 6, border: '1px dashed #adb5bd', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6c757d', fontSize: 12 }}>
+                                  No hay imagen subida
+                                </div>
+                                <span>{producto.Nombre}</span>
+                              </div>
+                            )}
+                          </td>
+                          <td>{producto.CategoriaProducto?.Nombre || 'N/A'}</td>
+                          <td>{producto.marca}</td>
+                          <td>{producto.precioVenta}</td>
+                          <td>{producto.stockInicial}</td>
+                          <td>
+                            <Dropdown isOpen={dropdownOpen[producto.idProducto]} toggle={() => toggleDropdown(producto.idProducto)}>
+                              <DropdownToggle>
+                                <i className="fas fa-ellipsis-v" />
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                <DropdownItem onClick={() => handleEdit(producto.idProducto)}>Editar</DropdownItem>
+                                <DropdownItem onClick={() => handleDelete(producto.idProducto)}>Eliminar</DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </Table>
               </CardBody>

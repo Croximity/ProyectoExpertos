@@ -29,7 +29,7 @@ const formasPago = [
   "Otro",
 ];
 
-const RegistroPago = () => {
+const RegistrarPago = () => {
   const [facturaSeleccionada, setFacturaSeleccionada] = useState(null);
   const [montoPago, setMontoPago] = useState("");
   const [formaPago, setFormaPago] = useState("");
@@ -98,12 +98,12 @@ const RegistroPago = () => {
 
     doc.setFontSize(12);
     doc.text(`Factura: ${pago.factura}`, 14, 30);
-    doc.text(`Cliente: ${pago.cliente}`, 14, 36);
-    doc.text(`Monto: L ${pago.monto.toFixed(2)}`, 14, 42);
-    doc.text(`Forma de pago: ${pago.formaPago}`, 14, 48);
-    doc.text(`Fecha de pago: ${pago.fechaPago}`, 14, 54);
+    doc.text(`Cliente: ${pago.cliente}`, 14, 40);
+    doc.text(`Monto: L ${pago.monto.toFixed(2)}`, 14, 50);
+    doc.text(`Forma de Pago: ${pago.formaPago}`, 14, 60);
+    doc.text(`Fecha: ${pago.fechaPago}`, 14, 70);
 
-    doc.save(`recibo_pago_${pago.id}.pdf`);
+    doc.save(`recibo-${pago.factura}-${pago.id}.pdf`);
   };
 
   return (
@@ -112,40 +112,56 @@ const RegistroPago = () => {
       <Container className="mt-4">
         <Card>
           <CardBody>
-            <h3 className="mb-4">Registro de Pago</h3>
+            <h4>Registrar Pago</h4>
+
             <Row form>
-              <Col md={6}>
+              <Col md={12}>
                 <FormGroup>
-                  <Label>Factura</Label>
+                  <Label>Seleccionar Factura</Label>
                   <Input
                     type="select"
                     value={facturaSeleccionada ? facturaSeleccionada.id : ""}
                     onChange={(e) => {
-                      const fact = facturasSimuladas.find(
+                      const factura = facturasSimuladas.find(
                         (f) => f.id === parseInt(e.target.value)
                       );
-                      setFacturaSeleccionada(fact || null);
+                      setFacturaSeleccionada(factura || null);
                     }}
                   >
                     <option value="">Seleccione una factura</option>
                     {facturasSimuladas
-                      .filter((f) => f.saldo > 0) // solo pendientes
-                      .map((fact) => (
-                        <option key={fact.id} value={fact.id}>
-                          {fact.numero} - {fact.cliente} - Saldo: L {fact.saldo.toFixed(2)}
+                      .filter((f) => f.saldo > 0) // Solo facturas con saldo pendiente
+                      .map((factura) => (
+                        <option key={factura.id} value={factura.id}>
+                          {factura.numero} - {factura.cliente} (Saldo: L{" "}
+                          {factura.saldo.toFixed(2)})
                         </option>
                       ))}
                   </Input>
                 </FormGroup>
               </Col>
+            </Row>
 
+            {facturaSeleccionada && (
+              <div className="alert alert-info">
+                <strong>Factura seleccionada:</strong> {facturaSeleccionada.numero} -{" "}
+                {facturaSeleccionada.cliente}
+                <br />
+                <strong>Total:</strong> L {facturaSeleccionada.total.toFixed(2)} |{" "}
+                <strong>Saldo pendiente:</strong> L{" "}
+                {facturaSeleccionada.saldo.toFixed(2)}
+              </div>
+            )}
+
+            <Row form>
               <Col md={6}>
                 <FormGroup>
-                  <Label>Monto a pagar</Label>
+                  <Label>Monto a pagar (L)</Label>
                   <Input
                     type="number"
-                    min="0"
                     step="0.01"
+                    min="0"
+                    max={facturaSeleccionada ? facturaSeleccionada.saldo : 0}
                     placeholder="Ingrese monto"
                     value={montoPago}
                     onChange={(e) => setMontoPago(e.target.value)}
@@ -244,4 +260,4 @@ const RegistroPago = () => {
   );
 };
 
-export default RegistroPago;
+export default RegistrarPago;

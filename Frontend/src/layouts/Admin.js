@@ -10,12 +10,9 @@ import ProtectedRoute from "components/ProtectedRoute.js";
 
 import routes from "routes.js";
 
-
-
 const Admin = () => {
   const location = useLocation();
   const mainContentRef = React.useRef(null);
-  
 
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -25,15 +22,19 @@ const Admin = () => {
     }
   }, [location]);
 
-  
-
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
-          
-        return (
-          <Route path={prop.path} element={<prop.component />} key={key} />
-        );
+        const Component = prop.component;
+        // Check if component is properly imported
+        if (Component && typeof Component === 'function') {
+          return (
+            <Route path={prop.path} element={<Component />} key={key} />
+          );
+        } else {
+          console.error(`Component for route ${prop.path} is not properly imported`);
+          return null;
+        }
       } else {
         return null;
       }
@@ -43,8 +44,7 @@ const Admin = () => {
   const getBrandText = (path) => {
     for (let i = 0; i < routes.length; i++) {
       if (
-        path.indexOf(routes[i].layout + routes[i].path) !==
-        -1
+        path.indexOf(routes[i].layout + routes[i].path) !== -1
       ) {
         return routes[i].name;
       }
@@ -69,9 +69,7 @@ const Admin = () => {
           brandText={getBrandText(location.pathname)}
         />
         <Routes>{getRoutes(routes)}</Routes>
-        
-          <AdminFooter />
-        
+        <AdminFooter />
       </div>
     </ProtectedRoute>
   );

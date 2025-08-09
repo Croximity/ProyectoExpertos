@@ -6,6 +6,7 @@ import { categoriaProductoService } from '../../services/productos/categoriaProd
 import { useToast } from '../../hooks/useToast';
 import Header from 'components/Headers/Header.js';
 import Toast from 'components/Toast/Toast';
+import axiosInstance from '../../utils/axiosConfig';
 
 const ProductoForm = () => {
   const { id } = useParams();
@@ -15,6 +16,9 @@ const ProductoForm = () => {
   const [categorias, setCategorias] = useState([]);
   const [imagen, setImagen] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [imgError, setImgError] = useState(false);
+  const [cacheBust, setCacheBust] = useState(0);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -33,6 +37,8 @@ const ProductoForm = () => {
         try {
           const data = await productoService.obtenerProductoPorId(id);
           setProducto(data);
+          setImgError(false);
+          setCacheBust(Date.now());
         } catch (error) {
           showError('Error al cargar el producto');
         }
@@ -47,7 +53,15 @@ const ProductoForm = () => {
   };
 
   const handleImageChange = (e) => {
-    setImagen(e.target.files[0]);
+    const file = e.target.files[0];
+    setImagen(file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      setImgError(false);
+    } else {
+      setPreviewUrl(null);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -57,11 +71,19 @@ const ProductoForm = () => {
       if (id) {
         await productoService.actualizarProducto(id, producto);
         if (imagen) {
-          await productoService.actualizarImagenProducto(id, imagen);
+          const resp = await productoService.actualizarImagenProducto(id, imagen);
+          if (resp?.producto) {
+            // Reconsultar para asegurar consistencia y bustear cache
+            const actualizado = await productoService.obtenerProductoPorId(id);
+            setProducto(actualizado);
+            setPreviewUrl(null);
+            setImgError(false);
+            setCacheBust(Date.now());
+          }
         }
         showSuccess('Producto actualizado exitosamente');
       } else {
-        await productoService.crearProducto(producto, imagen);
+        const creado = await productoService.crearProducto(producto, imagen);
         showSuccess('Producto creado exitosamente');
       }
       setTimeout(() => navigate('/admin/productos'), 1000);
@@ -71,6 +93,16 @@ const ProductoForm = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  const apiOrigin = new URL(axiosInstance.defaults.baseURL).origin;
+  const baseImagen = producto?.imagenUrl || (producto?.imagen ? `${apiOrigin}/public/img/productos/${producto.imagen}` : null);
+  const imagenExistente = baseImagen ? `${baseImagen}${baseImagen.includes('?') ? '&' : '?'}t=${cacheBust}` : null;
 
   return (
     <>
@@ -142,7 +174,24 @@ const ProductoForm = () => {
                     <Col md="6">
                       <FormGroup>
                         <Label for="imagen">Imagen (Opcional)</Label>
-                        <Input type="file" name="imagen" id="imagen" onChange={handleImageChange} />
+                        <Input type="file" name="imagen" id="imagen" onChange={handleImageChange} accept="image/png, image/jpeg, image/jpg" />
+                        <div style={{ marginTop: 10 }}>
+                          {previewUrl ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              <img src={previewUrl} alt="Previsualización" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6, border: '1px solid #e9ecef' }} />
+                              <span>Previsualización</span>
+                            </div>
+                          ) : imagenExistente && !imgError ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              <img key={imagenExistente} src={imagenExistente} alt={producto.Nombre} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6, border: '1px solid #e9ecef' }} onError={() => setImgError(true)} />
+                              <span>Imagen actual</span>
+                            </div>
+                          ) : (
+                            <div style={{ width: 80, height: 80, borderRadius: 6, border: '1px dashed #adb5bd', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6c757d', fontSize: 12 }}>
+                              No hay imagen subida
+                            </div>
+                          )}
+                        </div>
                       </FormGroup>
                     </Col>
                   </Row>

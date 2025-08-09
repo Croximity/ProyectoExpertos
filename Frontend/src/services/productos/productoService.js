@@ -26,14 +26,18 @@ export const productoService = {
         const formData = new FormData();
         formData.append('imagen', imagen);
         
-        await axiosInstance.post(`/productos/imagen?id=${response.data.producto.idProducto}`, formData, {
+        // Agregar headers específicos para FormData
+        const config = {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        });
+        };
+        
+        await axiosInstance.put(`/productos/imagen?id=${response.data.producto.idProducto}`, formData, config);
       } catch (imageError) {
         console.warn('Producto creado pero error al subir imagen:', imageError);
         // No fallar completamente si solo falla la imagen
+        throw new Error(`Producto creado exitosamente pero error al subir imagen: ${imageError.message}`);
       }
     }
     
@@ -51,11 +55,14 @@ export const productoService = {
     const formData = new FormData();
     formData.append('imagen', imagen);
     
-    const response = await axiosInstance.post(`/productos/imagen?id=${id}`, formData, {
+    // Agregar headers específicos para FormData
+    const config = {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    });
+    };
+    
+    const response = await axiosInstance.put(`/productos/imagen?id=${id}`, formData, config);
     return response.data;
   },
 

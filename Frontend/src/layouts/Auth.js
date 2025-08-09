@@ -32,10 +32,11 @@ const Auth = (props) => {
   const getRoutes = (routes) => {
   return routes.map((prop, key) => {
     if (prop.layout === "/auth") {
+      const Component = prop.component;
       return (
         <Route
           path={prop.path}
-          element={<prop.component />}
+          element={<Component />}
           key={key}
         />
       );

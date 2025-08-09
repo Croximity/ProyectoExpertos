@@ -2,7 +2,7 @@
 // reactstrap components
 import { Row, Col, Nav, NavItem, NavLink } from "reactstrap";
 
-const Footer = () => {
+const AdminFooter = () => {
   return (
     <footer className="footer bg-light p-5 mt-5">
       <Row className="align-items-center justify-content-xl-between">
@@ -84,4 +84,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default AdminFooter;

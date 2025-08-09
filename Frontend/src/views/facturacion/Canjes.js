@@ -6,7 +6,7 @@ import {
 } from "reactstrap";
 import HeaderResponsive from "components/Headers/HeaderResponsive";
 
-const GestionCanjes = () => {
+const Canjes = () => {
   const [canjes, setCanjes] = useState([]);
   const [nuevoCanje, setNuevoCanje] = useState({
     empresa: "",
@@ -159,4 +159,4 @@ const GestionCanjes = () => {
   );
 };
 
-export default GestionCanjes;
+export default Canjes;

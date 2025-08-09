@@ -7,6 +7,7 @@ const db = require('./configuraciones/db');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./configuraciones/swagger.js'); // ajusta según tu ruta
+const path = require('path');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -29,6 +30,8 @@ app.use(cors({
 // Middlewares
 app.use(morgan('dev'));
 app.use(express.json());
+// Servir archivos estáticos desde /public
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 
 // Middleware para validar factura
@@ -172,7 +175,7 @@ const startServer = async () => {
 
     // Sincronizar el resto (productos, etc.)
     await CategoriaProducto.sync();
-    await Producto.sync();
+    await Producto.sync({ alter: true });
     await Atributo.sync();
     await ProductoAtributo.sync();
     
@@ -188,7 +191,7 @@ const startServer = async () => {
     console.log('✅ Modelos de  Facturacion sincronizados.');
 
     // Iniciar servidor
-    const PORT = process.env.puerto || 3000;
+    const PORT = process.env.puerto || 4051;
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     });

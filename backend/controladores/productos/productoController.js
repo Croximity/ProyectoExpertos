@@ -76,7 +76,10 @@ exports.buscarProducto = async (req, res) => {
 exports.crearProducto = async (req, res) => {
   try {
     const nuevo = await Producto.create(req.body);
-    res.status(201).json({ mensaje: 'Producto creado', producto: nuevo });
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const json = nuevo.toJSON();
+    json.imagenUrl = json.imagen ? `${baseUrl}/public/img/productos/${json.imagen}` : null;
+    res.status(201).json({ mensaje: 'Producto creado', producto: json });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear producto', error: error.message });
@@ -89,7 +92,13 @@ exports.obtenerProductos = async (req, res) => {
     const productos = await Producto.findAll({
       include: [{ model: CategoriaProducto }]
     });
-    res.json(productos);
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const withUrls = productos.map(p => {
+      const j = p.toJSON();
+      j.imagenUrl = j.imagen ? `${baseUrl}/public/img/productos/${j.imagen}` : null;
+      return j;
+    });
+    res.json(withUrls);
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener productos', error: error.message });
@@ -104,7 +113,10 @@ exports.obtenerProductoPorId = async (req, res) => {
       include: [{ model: CategoriaProducto }]
     });
     if (!producto) return res.status(404).json({ mensaje: 'Producto no encontrado' });
-    res.json(producto);
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const json = producto.toJSON();
+    json.imagenUrl = json.imagen ? `${baseUrl}/public/img/productos/${json.imagen}` : null;
+    res.json(json);
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener producto', error: error.message });
@@ -119,7 +131,10 @@ exports.editarProducto = async (req, res) => {
     if (!producto) return res.status(404).json({ mensaje: 'Producto no encontrado' });
 
     await producto.update(req.body);
-    res.json({ mensaje: 'Producto actualizado', producto });
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const json = producto.toJSON();
+    json.imagenUrl = json.imagen ? `${baseUrl}/public/img/productos/${json.imagen}` : null;
+    res.json({ mensaje: 'Producto actualizado', producto: json });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar producto', error: error.message });
