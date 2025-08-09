@@ -45,9 +45,11 @@ import { empleadoService } from '../../services/gestion_cliente/empleadoService'
 import { personaService } from '../../services/seguridad/personaService';
 import { useToast } from '../../hooks/useToast';
 import Header from 'components/Headers/Header.js';
+import { useNavigate } from 'react-router-dom';
 import Toast from 'components/Toast/Toast';
 
 const Empleados = () => {
+  const navigate = useNavigate();
   const [empleados, setEmpleados] = useState([]);
   const [personas, setPersonas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -358,6 +360,7 @@ const Empleados = () => {
                                 <i className="fas fa-ellipsis-v" />
                               </DropdownToggle>
                               <DropdownMenu>
+                                <DropdownItem onClick={() => navigate(`/admin/empleados/editar/${empleado.idEmpleado}`)}>Editar</DropdownItem>
                                 <DropdownItem onClick={() => openViewModal(empleado)}>Ver Detalles</DropdownItem>
                                 <DropdownItem onClick={() => openDeleteModal(empleado)}>Eliminar</DropdownItem>
                               </DropdownMenu>

@@ -39,7 +39,7 @@ exports.actualizarImagenProducto = async (req, res) => {
 
     // Eliminar imagen anterior si existe
     if (producto.imagen) {
-      const rutaImagenAnterior = path.join(__dirname, '../../../public/img/productos/', producto.imagen);
+      const rutaImagenAnterior = path.join(__dirname, '../../public/img/productos/', producto.imagen);
       if (fs.existsSync(rutaImagenAnterior)) {
         try { fs.unlinkSync(rutaImagenAnterior); } catch (_) {}
       }

@@ -23,7 +23,7 @@ const Maps = () => {
         <Row>
           <div className="col">
             <Card className="shadow border-0 p-3">
-              <h3 className="mb-4">Ubicación de Canal 40</h3>
+              <h3 className="mb-4">Ubicación de Optica</h3>
               {mapError ? (
                 <Alert color="warning">
                   <h4 className="alert-heading">Mapa no disponible</h4>

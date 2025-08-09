@@ -5,7 +5,6 @@ export const clienteService = {
     const params = new URLSearchParams();
     if (filtros.Pnombre) params.append('Pnombre', filtros.Pnombre);
     if (filtros.Papellido) params.append('Papellido', filtros.Papellido);
-
     const response = await axiosInstance.get(`/gestion_cliente/clientes/cliente?${params.toString()}`);
     return response.data;
   },

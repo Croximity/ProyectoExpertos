@@ -22,7 +22,7 @@ function buildFilename(prefix, id, originalname) {
 
 const almacenarUsuarios = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dest = path.join(__dirname, '../../public/img/usuarios');
+    const dest = path.join(__dirname, '../public/img/usuarios');
     ensureDirSync(dest);
     cb(null, dest);
   },
@@ -37,7 +37,7 @@ const almacenarUsuarios = multer.diskStorage({
 
 const almacenarProductos = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dest = path.join(__dirname, '../../public/img/productos');
+    const dest = path.join(__dirname, '../public/img/productos');
     ensureDirSync(dest);
     cb(null, dest);
   },
