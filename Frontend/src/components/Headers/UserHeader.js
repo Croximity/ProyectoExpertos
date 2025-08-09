@@ -1,5 +1,5 @@
 // reactstrap components
-import { Button, Container, Row, Col } from "reactstrap";
+import { Container } from "reactstrap";
 
 const UserHeader = () => {
   return (
@@ -16,26 +16,8 @@ const UserHeader = () => {
         <span className="mask bg-gradient-default opacity-8" />
         {/* Header container */}
         <Container className="d-flex align-items-center" fluid>
-              <Row>
-                <Col md="12" className="d-flex gap-2">
-                  <Button color="success" onClick={() => console.log("Crear")}>
-                    Crear
-                  </Button>
-
-                  <Button color="primary" onClick={() => console.log("Leer")}>
-                    Mostrar
-                  </Button>
-
-                  <Button color="info" onClick={() => console.log("Editar")}>
-                    Editar
-                  </Button>
-
-                  <Button color="danger" onClick={() => console.log("Eliminar")}>
-                    Eliminar
-                  </Button>
-                </Col>
-              </Row>
-            </Container>
+          {/* Header content can be added here if needed */}
+        </Container>
       </div>
     </>
   );

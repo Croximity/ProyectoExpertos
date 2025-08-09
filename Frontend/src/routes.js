@@ -35,6 +35,24 @@ import Canjes from "views/facturacion/Canjes";
 import CrearFacturaNueva from "views/facturacion/CrearFacturaNueva";
 import ListaFacturas from "views/facturacion/ListasFacturas.js";
 
+// Consulta Exámenes
+import PanelConsultaExamenes from "views/consulta_examenes/PanelConsultaExamenes";
+import Recetas from "views/consulta_examenes/Recetas";
+import RecetaForm from "views/consulta_examenes/RecetaForm";
+import RecetaVer from "views/consulta_examenes/RecetaVer";
+import ExamenesVista from "views/consulta_examenes/ExamenesVista";
+import ExamenVistaForm from "views/consulta_examenes/ExamenVistaForm";
+import ExamenVistaVer from "views/consulta_examenes/ExamenVistaVer";
+import Diagnosticos from "views/consulta_examenes/Diagnosticos";
+import DiagnosticoForm from "views/consulta_examenes/DiagnosticoForm";
+import DiagnosticoVer from "views/consulta_examenes/DiagnosticoVer";
+import TiposEnfermedad from "views/consulta_examenes/TiposEnfermedad";
+import TipoEnfermedadForm from "views/consulta_examenes/TipoEnfermedadForm";
+import TipoEnfermedadVer from "views/consulta_examenes/TipoEnfermedadVer";
+import ReparacionLentes from "views/consulta_examenes/ReparacionLentes";
+import ReparacionLentesForm from "views/consulta_examenes/ReparacionLentesForm";
+import ReparacionLentesVer from "views/consulta_examenes/ReparacionLentesVer";
+
 // Productos
 import Productos from "views/productos/Productos.js";
 import ProductoForm from "views/productos/ProductoForm.js";
@@ -225,6 +243,155 @@ const routes = [
     name: "Canjes",
     icon: "ni ni-basket text-danger",
     component: Canjes,
+    layout: "/admin",
+    hidden: true,
+  },
+
+  // Consulta Exámenes
+  {
+    path: "/consulta-examenes",
+    name: "Consulta Exámenes",
+    icon: "ni ni-glasses text-success",
+    component: PanelConsultaExamenes,
+    layout: "/admin",
+  },
+  {
+    path: "/consulta-examenes/recetas",
+    name: "Recetas",
+    icon: "ni ni-paper text-primary",
+    component: Recetas,
+    layout: "/admin",
+  },
+  {
+    path: "/consulta-examenes/recetas/nuevo",
+    name: "Nueva Receta",
+    component: RecetaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/recetas/editar/:id",
+    name: "Editar Receta",
+    component: RecetaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/recetas/ver/:id",
+    name: "Ver Receta",
+    component: RecetaVer,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/examenes-vista",
+    name: "Exámenes de Vista",
+    icon: "ni ni-check-bold text-info",
+    component: ExamenesVista,
+    layout: "/admin",
+  },
+  {
+    path: "/consulta-examenes/examenes-vista/nuevo",
+    name: "Nuevo Examen",
+    component: ExamenVistaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/examenes-vista/editar/:id",
+    name: "Editar Examen",
+    component: ExamenVistaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/examenes-vista/ver/:id",
+    name: "Ver Examen",
+    component: ExamenVistaVer,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/diagnosticos",
+    name: "Diagnósticos",
+    icon: "ni ni-stethoscope text-warning",
+    component: Diagnosticos,
+    layout: "/admin",
+  },
+  {
+    path: "/consulta-examenes/diagnosticos/nuevo",
+    name: "Nuevo Diagnóstico",
+    component: DiagnosticoForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/diagnosticos/editar/:id",
+    name: "Editar Diagnóstico",
+    component: DiagnosticoForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/diagnosticos/ver/:id",
+    name: "Ver Diagnóstico",
+    component: DiagnosticoVer,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/tipos-enfermedad",
+    name: "Tipos de Enfermedad",
+    icon: "ni ni-favourite-28 text-danger",
+    component: TiposEnfermedad,
+    layout: "/admin",
+  },
+  {
+    path: "/consulta-examenes/tipos-enfermedad/nuevo",
+    name: "Nuevo Tipo Enfermedad",
+    component: TipoEnfermedadForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/tipos-enfermedad/editar/:id",
+    name: "Editar Tipo Enfermedad",
+    component: TipoEnfermedadForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/tipos-enfermedad/ver/:id",
+    name: "Ver Tipo Enfermedad",
+    component: TipoEnfermedadVer,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/reparacion-lentes",
+    name: "Reparación Lentes",
+    icon: "ni ni-settings text-secondary",
+    component: ReparacionLentes,
+    layout: "/admin",
+  },
+  {
+    path: "/consulta-examenes/reparacion-lentes/nuevo",
+    name: "Nueva Reparación",
+    component: ReparacionLentesForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/reparacion-lentes/editar/:id",
+    name: "Editar Reparación",
+    component: ReparacionLentesForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/reparacion-lentes/ver/:id",
+    name: "Ver Reparación",
+    component: ReparacionLentesVer,
     layout: "/admin",
     hidden: true,
   },
