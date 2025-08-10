@@ -251,14 +251,14 @@ const routes = [
   {
     path: "/consulta-examenes",
     name: "Consulta Exámenes",
-    icon: "ni ni-glasses text-success",
+    icon: "ni ni-collection text-info",
     component: PanelConsultaExamenes,
     layout: "/admin",
   },
   {
     path: "/consulta-examenes/recetas",
     name: "Recetas",
-    icon: "ni ni-paper text-primary",
+    icon: "ni ni-single-copy-04 text-primary",
     component: Recetas,
     layout: "/admin",
   },
@@ -314,7 +314,7 @@ const routes = [
   {
     path: "/consulta-examenes/diagnosticos",
     name: "Diagnósticos",
-    icon: "ni ni-stethoscope text-warning",
+    icon: "ni ni-badge text-warning",
     component: Diagnosticos,
     layout: "/admin",
   },
@@ -370,7 +370,7 @@ const routes = [
   {
     path: "/consulta-examenes/reparacion-lentes",
     name: "Reparación Lentes",
-    icon: "ni ni-settings text-secondary",
+    icon: "ni ni-settings text-info",
     component: ReparacionLentes,
     layout: "/admin",
   },
