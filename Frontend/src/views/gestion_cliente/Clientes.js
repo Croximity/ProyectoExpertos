@@ -41,19 +41,46 @@ const Clientes = () => {
     navigate(`/admin/clientes/editar/${id}`);
   };
 
+  const cargar = async () => {
+    try {
+      setLoading(true);
+      const data = await clienteService.obtenerClientes();
+      setClientes(data);
+    } catch (_) {
+      showError('Error al cargar clientes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBuscar = async () => {
     try {
       setLoading(true);
       const filtros = {};
-      if (searchTerm) {
-        const parts = searchTerm.trim().split(' ');
-        if (parts.length >= 2) {
-          filtros.Pnombre = parts[0];
-          filtros.Papellido = parts.slice(1).join(' ');
+      if (searchTerm.trim()) {
+        // Búsqueda flexible: buscar en cualquier parte del nombre o apellido
+        const searchValue = searchTerm.trim();
+        
+        // Si hay espacios, buscar por nombre y apellido por separado
+        if (searchValue.includes(' ')) {
+          const parts = searchValue.split(' ').filter(part => part.length > 0);
+          if (parts.length >= 2) {
+            // Buscar por primer nombre y primer apellido
+            filtros.Pnombre = parts[0];
+            filtros.Papellido = parts[1];
+          } else {
+            // Solo un término, buscar en ambos campos
+            filtros.Pnombre = searchValue;
+            filtros.Papellido = searchValue;
+          }
         } else {
-          filtros.Pnombre = searchTerm.trim();
+          // Un solo término, buscar en ambos campos
+          filtros.Pnombre = searchValue;
+          filtros.Papellido = searchValue;
         }
       }
+      
+      console.log('Filtros de búsqueda:', filtros);
       const data = await clienteService.obtenerClientes(filtros);
       setClientes(data);
     } catch (_) {
@@ -92,13 +119,17 @@ const Clientes = () => {
                 <div className="d-flex gap-2 mb-3" style={{ gap: 8 }}>
                   <input
                     className="form-control"
-                    placeholder="Buscar por nombre y/o apellido"
+                    placeholder="Buscar por nombre, apellido o ambos (ej: 'Juan Pérez' o 'Juan' o 'Pérez')"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleBuscar()}
-                    style={{ maxWidth: 360 }}
+                    style={{ maxWidth: 400 }}
                   />
                   <Button color="primary" onClick={handleBuscar}>Buscar</Button>
+                  <Button color="secondary" onClick={() => {
+                    setSearchTerm('');
+                    cargar();
+                  }}>Limpiar</Button>
                 </div>
                 {loading ? (
                   <div>Cargando...</div>

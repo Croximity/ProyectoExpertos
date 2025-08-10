@@ -49,8 +49,21 @@ exports.obtenerEmpleados = async (req, res) => {
   try {
     const { Pnombre, Papellido } = req.query;
     const wherePersona = {};
-    if (Pnombre) wherePersona.Pnombre = { [Op.like]: `%${Pnombre}%` };
-    if (Papellido) wherePersona.Papellido = { [Op.like]: `%${Papellido}%` };
+    
+    if (Pnombre) {
+      wherePersona[Op.or] = [
+        { Pnombre: { [Op.like]: `%${Pnombre}%` } },
+        { Snombre: { [Op.like]: `%${Pnombre}%` } }
+      ];
+    }
+    
+    if (Papellido) {
+      wherePersona[Op.or] = [
+        ...(wherePersona[Op.or] || []),
+        { Papellido: { [Op.like]: `%${Papellido}%` } },
+        { Sapellido: { [Op.like]: `%${Papellido}%` } }
+      ];
+    }
 
     const empleados = await Empleado.findAll({
       include: [{

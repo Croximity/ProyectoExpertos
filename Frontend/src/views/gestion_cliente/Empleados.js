@@ -102,15 +102,30 @@ const Empleados = () => {
     try {
       setLoading(true);
       const filtros = {};
-      if (searchTerm) {
-        const terms = searchTerm.split(' ');
-        if (terms.length >= 2) {
-          filtros.Pnombre = terms[0];
-          filtros.Papellido = terms[1];
+      if (searchTerm.trim()) {
+        // Búsqueda flexible: buscar en cualquier parte del nombre o apellido
+        const searchValue = searchTerm.trim();
+        
+        // Si hay espacios, buscar por nombre y apellido por separado
+        if (searchValue.includes(' ')) {
+          const parts = searchValue.split(' ').filter(part => part.length > 0);
+          if (parts.length >= 2) {
+            // Buscar por primer nombre y primer apellido
+            filtros.Pnombre = parts[0];
+            filtros.Papellido = parts[1];
+          } else {
+            // Solo un término, buscar en ambos campos
+            filtros.Pnombre = searchValue;
+            filtros.Papellido = searchValue;
+          }
         } else {
-          filtros.Pnombre = searchTerm;
+          // Un solo término, buscar en ambos campos
+          filtros.Pnombre = searchValue;
+          filtros.Papellido = searchValue;
         }
       }
+      
+      console.log('Filtros de búsqueda empleados:', filtros);
       const empleadosData = await empleadoService.obtenerEmpleados(filtros);
       setEmpleados(empleadosData);
     } catch (error) {
@@ -288,7 +303,7 @@ const Empleados = () => {
                         </InputGroupText>
                       </InputGroupAddon>
                       <Input
-                        placeholder="Buscar por nombre o apellido..."
+                        placeholder="Buscar por nombre, apellido o ambos (ej: 'Juan Pérez' o 'Juan' o 'Pérez')"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -297,6 +312,12 @@ const Empleados = () => {
                       <InputGroupAddon addonType="append">
                         <Button color="success" onClick={handleSearch}>
                           Buscar
+                        </Button>
+                        <Button color="secondary" onClick={() => {
+                          setSearchTerm('');
+                          cargarDatos();
+                        }}>
+                          Limpiar
                         </Button>
                       </InputGroupAddon>
                     </InputGroup>

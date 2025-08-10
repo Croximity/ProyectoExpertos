@@ -60,21 +60,42 @@ const Profile = () => {
       setLoading(true);
       const usuarioCompleto = await authService.obtenerUsuarioActual();
       
-      if (usuarioCompleto.idPersona) {
+      console.log('Usuario completo recibido:', usuarioCompleto);
+      
+      if (usuarioCompleto && usuarioCompleto.persona) {
         // Si tiene persona asociada, cargar los datos de la persona
-        const response = await personaService.obtenerPersonaPorId(usuarioCompleto.idPersona);
-        setPersona(response);
+        setPersona(usuarioCompleto.persona);
         setFormData({
-          Pnombre: response.Pnombre || '',
-          Snombre: response.Snombre || '',
-          Papellido: response.Papellido || '',
-          Sapellido: response.Sapellido || '',
-          Direccion: response.Direccion || '',
-          DNI: response.DNI || '',
-          correo: response.correo || '',
-          fechaNacimiento: response.fechaNacimiento ? response.fechaNacimiento.split('T')[0] : '',
-          genero: response.genero || 'M'
+          Pnombre: usuarioCompleto.persona.Pnombre || '',
+          Snombre: usuarioCompleto.persona.Snombre || '',
+          Papellido: usuarioCompleto.persona.Papellido || '',
+          Sapellido: usuarioCompleto.persona.Sapellido || '',
+          Direccion: usuarioCompleto.persona.Direccion || '',
+          DNI: usuarioCompleto.persona.DNI || '',
+          correo: usuarioCompleto.persona.correo || '',
+          fechaNacimiento: usuarioCompleto.persona.fechaNacimiento ? usuarioCompleto.persona.fechaNacimiento.split('T')[0] : '',
+          genero: usuarioCompleto.persona.genero || 'M'
         });
+      } else if (usuarioCompleto && usuarioCompleto.idPersona) {
+        // Si tiene idPersona pero no los datos completos, intentar obtener la persona
+        try {
+          const response = await personaService.obtenerPersonaPorId(usuarioCompleto.idPersona);
+          setPersona(response);
+          setFormData({
+            Pnombre: response.Pnombre || '',
+            Snombre: response.Snombre || '',
+            Papellido: response.Papellido || '',
+            Sapellido: response.Sapellido || '',
+            Direccion: response.Direccion || '',
+            DNI: response.DNI || '',
+            correo: response.correo || '',
+            fechaNacimiento: response.fechaNacimiento ? response.fechaNacimiento.split('T')[0] : '',
+            genero: response.genero || 'M'
+          });
+        } catch (personaError) {
+          console.error('Error al obtener persona por ID:', personaError);
+          setPersona(null);
+        }
       } else {
         // Si no tiene persona asociada, mostrar mensaje
         setPersona(null);
@@ -82,6 +103,7 @@ const Profile = () => {
     } catch (error) {
       console.error('Error al cargar datos del usuario:', error);
       showError('Error al cargar los datos del usuario');
+      setPersona(null);
     } finally {
       setLoading(false);
     }
@@ -235,12 +257,24 @@ const Profile = () => {
             <p className="mb-0">
               <strong>Información del usuario:</strong><br />
               Nombre de usuario: {user?.Nombre_Usuario}<br />
-              ID de usuario: {user?.idUsuario}
+              ID de usuario: {user?.idUsuario}<br />
+              ID de persona: {user?.idPersona || 'No asociado'}
             </p>
             <hr />
             <p className="mb-0">
-              <strong>Solución:</strong> Contacta al administrador para asociar una persona a tu cuenta de usuario.
+              <strong>Posibles soluciones:</strong><br />
+              1. Contacta al administrador para asociar una persona a tu cuenta de usuario.<br />
+              2. Verifica que tu sesión esté activa y válida.<br />
+              3. Intenta cerrar sesión y volver a iniciar.
             </p>
+            <hr />
+            <Button 
+              color="primary" 
+              onClick={() => window.location.reload()}
+              className="mt-2"
+            >
+              Recargar página
+            </Button>
           </Alert>
         </Container>
       </>
