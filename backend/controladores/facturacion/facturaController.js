@@ -99,7 +99,31 @@ exports.crearFactura = async (req, res) => {
 // Obtener todas las facturas
 exports.obtenerFacturas = async (req, res) => {
   try {
-    const facturas = await Factura.findAll();
+    const facturas = await Factura.findAll({
+      include: [
+        {
+          model: Cliente,
+          as: 'cliente',
+          include: [
+            {
+              model: Persona,
+              as: 'persona'
+            }
+          ]
+        },
+        {
+          model: Empleado,
+          as: 'empleado',
+          include: [
+            {
+              model: Persona,
+              as: 'persona'
+            }
+          ]
+        }
+      ],
+      order: [['Fecha', 'DESC']]
+    });
     res.json({ facturas });
   } catch (error) {
     console.error(error);
