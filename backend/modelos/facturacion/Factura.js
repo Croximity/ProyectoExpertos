@@ -8,7 +8,8 @@ const Factura = db.define('Factura', {
   idFactura: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    allowNull: true
+    autoIncrement: true,
+    allowNull: false
   },
   Fecha: {
     type: DataTypes.DATE,
@@ -22,11 +23,11 @@ const Factura = db.define('Factura', {
     type: DataTypes.STRING(45),
     allowNull: true
   },
-  tipoFacturacion: {
-    type: DataTypes.ENUM('consulta', 'producto', 'servicio', 'mixto'),
-    allowNull: true,
-    defaultValue: 'mixto'
-  },
+  // tipoFacturacion: {
+  //   type: DataTypes.ENUM('consulta', 'producto', 'servicio', 'mixto'),
+  //   allowNull: true,
+  //   defaultValue: 'mixto'
+  // },
   idCliente: {
     type: DataTypes.INTEGER,
     allowNull: false

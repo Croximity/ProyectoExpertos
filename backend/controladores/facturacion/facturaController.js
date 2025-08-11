@@ -175,13 +175,31 @@ exports.crearFacturaCompleta = async (req, res) => {
     // Si no vienen descuentos, asignar uno por defecto para evitar error "no iterable"      
     descuentos = descuentos && descuentos.length > 0      
       ? descuentos      
-      : [{ idDescuento: 0, monto: 0 }];      
+      : [{ idDescuento: 0, Monto: 0 }];      
     
-    // 1. Crear factura con fecha automática  
+    // 1. Crear factura con fecha automática y sin ID (se genera automáticamente)
     if (!factura.Fecha) {  
       factura.Fecha = new Date();  
-    }  
-    const nuevaFactura = await Factura.create(factura, { transaction: t });
+    }
+    
+    // Determinar tipo de facturación basado en los detalles (comentado temporalmente)
+    // const tieneProductos = detalles.some(d => d.idProducto);
+    // const tieneEntradaManual = detalles.some(d => !d.idProducto && d.nombreProducto);
+    
+    // if (tieneProductos && tieneEntradaManual) {
+    //   factura.tipoFacturacion = 'mixto';
+    // } else if (tieneProductos) {
+    //   factura.tipoFacturacion = 'producto';
+    // } else if (tieneEntradaManual) {
+    //   factura.tipoFacturacion = 'servicio';
+    // } else {
+    //   factura.tipoFacturacion = 'mixto'; // Por defecto
+    // }
+    
+    // Remover idFactura si viene del frontend para que se genere automáticamente
+    const { idFactura, ...facturaSinId } = factura;
+    
+    const nuevaFactura = await Factura.create(facturaSinId, { transaction: t });
       
     // 2. Agregar ID de factura a cada detalle y mapear idProducto a idProductoAtributo
     const ProductoAtributo = require('../../modelos/productos/ProductoAtributo');
@@ -384,7 +402,7 @@ exports.crearFacturaCompleta = async (req, res) => {
     
     const clientePersona = cliente?.persona;      
     const nombreCliente = clientePersona ?       
-      `${empleadoPersona.Pnombre} ${empleadoPersona.Snombre || ''} ${empleadoPersona.Papellido} ${empleadoPersona.Sapellido || ''}`.trim() : 'N/A';
+      `${clientePersona.Pnombre} ${clientePersona.Snombre || ''} ${clientePersona.Papellido} ${clientePersona.Sapellido || ''}`.trim() : 'N/A';
     
     doc.fontSize(9).font('Helvetica-Bold')
       .text('Cliente:', 320, infoY + 20)
@@ -447,7 +465,7 @@ exports.crearFacturaCompleta = async (req, res) => {
             
       // Validación defensiva para precios
       const precioReal = Number(producto?.precioVenta || detalle.precioUnitario || 0);    
-      const cantidad = Number(detalle.cantidad || 0);    
+      const cantidad = Number(detalle.Cantidad || 0);    
       const totalLinea = cantidad * precioReal;
             
       // Para entrada manual, usar información del detalle; para productos, usar información del producto
@@ -484,11 +502,11 @@ exports.crearFacturaCompleta = async (req, res) => {
     const subtotal = detallesConProductos.reduce((sum, detalle) => {        
       const producto = detalle.producto;        
       const precioReal = Number(producto?.precioVenta || detalle.precioUnitario || 0);      
-      const cantidad = Number(detalle.cantidad || 0);      
+      const cantidad = Number(detalle.Cantidad || 0);      
       return sum + (cantidad * precioReal);        
     }, 0);   
             
-    const totalDescuentos = descuentos.reduce((sum, desc) => sum + Number(desc.monto || 0), 0);        
+    const totalDescuentos = descuentos.reduce((sum, desc) => sum + Number(desc.Monto || 0), 0);        
     const subtotalConDescuento = subtotal - totalDescuentos;        
     const isv = subtotalConDescuento * 0.15;        
     const totalFinal = subtotalConDescuento + isv;
@@ -639,15 +657,18 @@ exports.crearFacturaPorConsulta = async (req, res) => {
     // Si no vienen descuentos, asignar uno por defecto
     descuentos = descuentos && descuentos.length > 0
       ? descuentos
-      : [{ idDescuento: 0, monto: 0 }];
+      : [{ idDescuento: 0, Monto: 0 }];
     
     // 1. Crear factura con fecha automática y tipo consulta
     if (!factura.Fecha) {
       factura.Fecha = new Date();
     }
-    factura.tipoFacturacion = 'consulta';
+    // factura.tipoFacturacion = 'consulta';
     
-    const nuevaFactura = await Factura.create(factura, { transaction: t });
+    // Remover idFactura si viene del frontend para que se genere automáticamente
+    const { idFactura, ...facturaSinId } = factura;
+    
+    const nuevaFactura = await Factura.create(facturaSinId, { transaction: t });
     
     // 2. Crear detalles de consultas
     const detallesConsultas = consultas.map(consulta => ({
@@ -821,7 +842,7 @@ exports.crearFacturaPorConsulta = async (req, res) => {
       return sum + (detalle.totalLinea || 0);
     }, 0);   
             
-    const totalDescuentos = descuentos.reduce((sum, desc) => sum + Number(desc.monto || 0), 0);        
+    const totalDescuentos = descuentos.reduce((sum, desc) => sum + Number(desc.Monto || 0), 0);        
     const subtotalConDescuento = subtotal - totalDescuentos;        
     const isv = subtotalConDescuento * 0.15;        
     const totalFinal = subtotalConDescuento + isv;        
@@ -950,12 +971,12 @@ exports.obtenerEstadisticasFacturacion = async (req, res) => {
     const pagadas = facturasMes.filter(f => f.estadoFactura === 'cobrada').length;
     const anuladas = facturasMes.filter(f => f.estadoFactura === 'anulada').length;
 
-    // Calcular estadísticas por tipo de facturación
+    // Calcular estadísticas por tipo de facturación (comentado temporalmente)
     const porTipo = {
-      consulta: facturasMes.filter(f => f.tipoFacturacion === 'consulta').length,
-      producto: facturasMes.filter(f => f.tipoFacturacion === 'producto').length,
-      servicio: facturasMes.filter(f => f.tipoFacturacion === 'servicio').length,
-      mixto: facturasMes.filter(f => f.tipoFacturacion === 'mixto').length
+      consulta: 0, // facturasMes.filter(f => f.tipoFacturacion === 'consulta').length,
+      producto: 0, // facturasMes.filter(f => f.tipoFacturacion === 'producto').length,
+      servicio: 0, // facturasMes.filter(f => f.tipoFacturacion === 'servicio').length,
+      mixto: 0 // facturasMes.filter(f => f.tipoFacturacion === 'mixto').length
     };
 
     // Obtener las últimas 10 facturas para la tabla
@@ -965,7 +986,7 @@ exports.obtenerEstadisticasFacturacion = async (req, res) => {
       fecha: factura.Fecha,
       estado: factura.estadoFactura,
       total: factura.Total_Facturado || 0,
-      tipo: factura.tipoFacturacion
+      tipo: 'N/A' // factura.tipoFacturacion
     }));
 
     res.json({

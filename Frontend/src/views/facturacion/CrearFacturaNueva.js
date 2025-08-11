@@ -46,7 +46,6 @@ const descuentoService = {
   
 const CrearFacturaNueva = () => {  
   const [factura, setFactura] = useState({  
-    idFactura: '', // Valor por defecto como fallback
     idCliente: '',  
     idFormaPago: '1',
     idEmpleado: '',  
@@ -105,13 +104,12 @@ const CrearFacturaNueva = () => {
   };
 
   
+  // Función para mostrar el siguiente número de factura (solo informativo)
   const cargarSiguienteNumeroFactura = async () => {  
     try {  
       const data = await facturaService.obtenerSiguienteNumeroFactura();  
-      setFactura(prev => ({   
-        ...prev,   
-        idFactura: data.siguienteNumero.toString().padStart(5, '0')   
-      }));  
+      // Solo para mostrar información al usuario, no se usa para crear la factura
+      console.log('Siguiente número de factura disponible:', data.siguienteNumero);
     } catch (error) {  
       console.error('Error al cargar siguiente número de factura:', error);  
     }  
@@ -427,13 +425,13 @@ const CrearFacturaNueva = () => {
     cargarTodosLosDatos();
   }, []);
 
-  // Efecto para cargar siguiente número de factura cuando se cargue el CAI
+  // Efecto para cargar siguiente número de factura cuando se cargue el CAI (solo informativo)
   useEffect(() => {
-    if (caiActivo && !factura.idFactura) {
+    if (caiActivo) {
       console.log('CAI activo cargado, obteniendo siguiente número de factura...');
       cargarSiguienteNumeroFactura();
     }
-  }, [caiActivo, factura.idFactura]);
+  }, [caiActivo]);
 
   // Calcular total automáticamente
   useEffect(() => {
@@ -470,7 +468,7 @@ const CrearFacturaNueva = () => {
         throw new Error('Todos los campos obligatorios deben ser completados');  
       }  
   
-            // Validar que todos los detalles tengan la información necesaria
+      // Validar que todos los detalles tengan la información necesaria
       if (detalles.some(d => {
         // Para entrada manual, solo necesitamos nombre, cantidad y precio (descripción es opcional)
         if (d.isManualEntry) {
@@ -485,9 +483,6 @@ const CrearFacturaNueva = () => {
       // Validar que el total sea mayor a 0
       if (calculoAutomatico.total <= 0) {
         throw new Error('El total de la factura debe ser mayor a 0');
-      }  
-      if (!factura.idFactura || !factura.idCliente || !factura.idFormaPago || !factura.idEmpleado) {
-        throw new Error('Todos los campos obligatorios deben ser completados');
       }
       // Debug: verificar los valores antes de enviar
       console.log('Detalles antes de mapear:', detalles);
@@ -495,7 +490,7 @@ const CrearFacturaNueva = () => {
       const data = {   
         factura: {  
           ...factura,  
-          idFactura: parseInt(factura.idFactura),
+          // No enviar idFactura, se generará automáticamente en el backend
           idCliente: parseInt(factura.idCliente),  
           idFormaPago: parseInt(factura.idFormaPago),  
           idEmpleado: parseInt(factura.idEmpleado),
@@ -503,7 +498,7 @@ const CrearFacturaNueva = () => {
         detalles: detalles.map(d => {
           const detalle = {
           ...d,  
-            cantidad: parseInt(d.cantidad) || 1,
+            Cantidad: parseInt(d.cantidad) || 1,
             precioUnitario: parseFloat(d.precioUnitario) || 0,
             total: parseFloat(d.total) || 0,
             nombreProducto: d.nombreProducto || '',
@@ -523,7 +518,7 @@ const CrearFacturaNueva = () => {
         descuentos: descuentos.map(d => ({  
           ...d,  
           idDescuento: parseInt(d.idDescuento),  
-          monto: parseFloat(d.monto)  
+          Monto: parseFloat(d.monto)  
         }))  
       };  
       
@@ -539,7 +534,6 @@ const CrearFacturaNueva = () => {
   
       // Limpiar formulario  
       setFactura({  
-        idFactura: '',
         idCliente: '',  
         DNI: '',
         idFormaPago: '1',
@@ -645,19 +639,18 @@ const CrearFacturaNueva = () => {
                       <Col lg="4">  
                       <FormGroup>      
   <Label className="form-control-label" htmlFor="idFactura">      
-    No. Factura *  
+    No. Factura  
   </Label>      
   <Input      
     className="form-control-alternative"      
     id="idFactura"      
     name="idFactura"      
     type="text"      
-    value={factura.idFactura || 'Generando...'}      
+    value="Se generará automáticamente"      
     disabled      
-    required      
   />      
   <small className="text-muted">      
-    Número generado automáticamente      
+    Número generado automáticamente al crear la factura      
   </small>      
 </FormGroup>
                       </Col>
