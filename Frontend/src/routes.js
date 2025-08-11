@@ -1,5 +1,3 @@
-
-
 // Dashboard
 import Index from "views/Index.js";
 
@@ -21,7 +19,6 @@ import Empleados from "views/gestion_cliente/Empleados.js";
 import EmpleadoForm from "views/gestion_cliente/EmpleadoForm.js";
 import PanelGestionCliente from "views/gestion_cliente/PanelGestionCliente.js";
 
-
 // Facturación
 import PanelFacturacion from "views/facturacion/PanelFacturacion";
 import CrearFactura from "views/facturacion/CrearFactura";
@@ -34,6 +31,9 @@ import Canjes from "views/facturacion/Canjes";
 // Facturación - Crear Factura
 import CrearFacturaNueva from "views/facturacion/CrearFacturaNueva";
 import ListaFacturas from "views/facturacion/ListasFacturas.js";
+// Facturación - Gestión
+import FormasPago from "views/facturacion/FormasPago";
+import Descuentos from "views/facturacion/Descuentos";
 
 // Consulta Exámenes
 import PanelConsultaExamenes from "views/consulta_examenes/PanelConsultaExamenes";
@@ -59,11 +59,7 @@ import ProductoForm from "views/productos/ProductoForm.js";
 import Categorias from "views/productos/Categorias.js";
 import CategoriaForm from "views/productos/CategoriaForm.js";
 
-
-
 const routes = [
-
- 
   // Dashboard
   {
     path: "/index",
@@ -73,7 +69,7 @@ const routes = [
     layout: "/admin", 
   },
 
-// Gestion Clientes
+  // Gestion Clientes
   {
     path: "/gestion-cliente",
     name: "Panel de Gestión",
@@ -82,11 +78,11 @@ const routes = [
     layout: "/admin"
   },
   {
-  path: "/clientes",
-  name: "Lista de Clientes",
-  icon: "ni ni-single-02 text-primary",
-  component: Clientes,
-  layout: "/admin"
+    path: "/clientes",
+    name: "Lista de Clientes",
+    icon: "ni ni-single-02 text-primary",
+    component: Clientes,
+    layout: "/admin"
   },
   {
     path: "/clientes/nuevo",
@@ -214,7 +210,7 @@ const routes = [
     layout: "/admin",
     hidden: true,
   },  
-    {
+  {
     path: "/facturacion/pagos",
     name: "Registrar Pago",
     icon: "ni ni-money-coins text-success",
@@ -245,6 +241,20 @@ const routes = [
     component: Canjes,
     layout: "/admin",
     hidden: true,
+  },
+  {
+    path: "/facturacion/formas-pago",
+    name: "Formas de Pago",
+    icon: "ni ni-credit-card text-success",
+    component: FormasPago,
+    layout: "/admin",
+  },
+  {
+    path: "/facturacion/descuentos",
+    name: "Descuentos",
+    icon: "ni ni-tag text-warning",
+    component: Descuentos,
+    layout: "/admin",
   },
 
   // Consulta Exámenes
@@ -314,7 +324,7 @@ const routes = [
   {
     path: "/consulta-examenes/diagnosticos",
     name: "Diagnósticos",
-    icon: "ni ni-badge text-warning",
+    icon: "ni ni-chart-bar-32 text-warning",
     component: Diagnosticos,
     layout: "/admin",
   },
@@ -342,35 +352,35 @@ const routes = [
   {
     path: "/consulta-examenes/tipos-enfermedad",
     name: "Tipos de Enfermedad",
-    icon: "ni ni-favourite-28 text-danger",
+    icon: "ni ni-badge text-danger",
     component: TiposEnfermedad,
     layout: "/admin",
   },
   {
     path: "/consulta-examenes/tipos-enfermedad/nuevo",
-    name: "Nuevo Tipo Enfermedad",
+    name: "Nuevo Tipo de Enfermedad",
     component: TipoEnfermedadForm,
     layout: "/admin",
     hidden: true,
   },
   {
     path: "/consulta-examenes/tipos-enfermedad/editar/:id",
-    name: "Editar Tipo Enfermedad",
+    name: "Editar Tipo de Enfermedad",
     component: TipoEnfermedadForm,
     layout: "/admin",
     hidden: true,
   },
   {
     path: "/consulta-examenes/tipos-enfermedad/ver/:id",
-    name: "Ver Tipo Enfermedad",
+    name: "Ver Tipo de Enfermedad",
     component: TipoEnfermedadVer,
     layout: "/admin",
     hidden: true,
   },
   {
     path: "/consulta-examenes/reparacion-lentes",
-    name: "Reparación Lentes",
-    icon: "ni ni-settings text-info",
+    name: "Reparación de Lentes",
+    icon: "ni ni-glasses-2 text-info",
     component: ReparacionLentes,
     layout: "/admin",
   },
@@ -396,16 +406,41 @@ const routes = [
     hidden: true,
   },
 
-  // Seguridad - Gestión de Personas
+  // Seguridad
+  {
+    path: "/profile",
+    name: "Perfil",
+    icon: "ni ni-single-02 text-yellow",
+    component: Profile,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/register",
+    name: "Registro",
+    icon: "ni ni-circle-08 text-pink",
+    component: Register,
+    layout: "/auth",
+    hidden: true,
+  },
+  {
+    path: "/login",
+    name: "Login",
+    icon: "ni ni-key-25 text-info",
+    component: Login,
+    layout: "/auth",
+    hidden: true,
+  },
   {
     path: "/personas",
     name: "Personas",
-    icon: "ni ni-circle-08 text-info",
+    icon: "ni ni-single-02 text-yellow",
     component: Personas,
     layout: "/admin",
+    hidden: true,
   },
   {
-    path: "/personas/nueva",
+    path: "/personas/nuevo",
     name: "Nueva Persona",
     component: PersonaForm,
     layout: "/admin",
@@ -420,50 +455,21 @@ const routes = [
   },
   {
     path: "/asociar-persona",
-    name: "Asociar Personas",
-    icon: "ni ni-link text-warning",
-    component: AsociarPersona,
-    layout: "/admin",
-  },
-
-  // ------------------- Parte----------------------------
-  // Perfil de Usuario
-    {
-    path: "/user-profile",
-    name: "Perfil de Usuario",
+    name: "Asociar Persona",
     icon: "ni ni-single-02 text-yellow",
-    component: Profile,
+    component: AsociarPersona,
     layout: "/admin",
     hidden: true,
   },
 
-
-  // Authentication Login/Register
-  {
-    path: "/login",
-    name: "Login",
-    icon: "ni ni-key-25 text-info",
-    component: Login,
-    layout: "/auth",
-  },
-  {
-    path: "/register",
-    name: "Register",
-    icon: "ni ni-circle-08 text-pink",
-    component: Register,
-    layout: "/auth",
-  },
   // Mapa
-    {
-    path: "/mapas",
+  {
+    path: "/maps",
     name: "Mapa",
     icon: "ni ni-pin-3 text-orange",
     component: Maps,
     layout: "/admin",
   },
-
 ];
 
 export default routes;
-
-

@@ -71,7 +71,7 @@ const ListaFacturas = () => {
   
   const facturasFiltradas = facturas.filter(factura =>  
     factura.idFactura.toString().includes(filtro) ||  
-    (factura.Cliente?.nombre || '').toLowerCase().includes(filtro.toLowerCase()) ||  
+    (factura.cliente?.persona?.nombre || '').toLowerCase().includes(filtro.toLowerCase()) ||  
     factura.estadoFactura.toLowerCase().includes(filtro.toLowerCase())  
   );  
   
@@ -184,7 +184,7 @@ const ListaFacturas = () => {
                           </td>  
                           <td>  
                             <span className="mb-0 text-sm">  
-                              {factura.Cliente?.nombre || 'Cliente no disponible'}  
+                              {factura.cliente?.persona?.nombre || 'Cliente no disponible'}  
                             </span>  
                           </td>  
                           <td>  
