@@ -362,6 +362,142 @@ router.put('/facturas/:id', verificarUsuario, facturaController.editarFactura);
  */
 router.patch('/facturas/:id/anular', verificarUsuario, facturaController.anularFactura);
 
+/**
+ * @swagger
+ * /factura-consulta:
+ *   post:
+ *     summary: Crear una factura por consulta médica
+ *     security:
+ *       - BearerAuth: []
+ *     tags: [Factura]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - factura
+ *               - consultas
+ *             properties:
+ *               factura:
+ *                 type: object
+ *                 required:
+ *                   - idCliente
+ *                   - idFormaPago
+ *                   - idEmpleado
+ *                 properties:
+ *                   idCliente:
+ *                     type: integer
+ *                     minimum: 1
+ *                     description: ID del cliente
+ *                     example: 2
+ *                   idFormaPago:
+ *                     type: integer
+ *                     minimum: 1
+ *                     description: ID de la forma de pago
+ *                     example: 1
+ *                   idEmpleado:
+ *                     type: integer
+ *                     minimum: 1
+ *                     description: ID del empleado
+ *                     example: 1
+ *                   Fecha:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Fecha de emisión (opcional)
+ *                     example: "2025-07-22T15:30:00.000Z"
+ *                   Tipo_documento:
+ *                     type: string
+ *                     description: Tipo de documento
+ *                     example: "Factura Consulta"
+ *               consultas:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - idConsulta
+ *                     - precio
+ *                   properties:
+ *                     idConsulta:
+ *                       type: integer
+ *                       minimum: 1
+ *                       description: ID de la consulta médica
+ *                       example: 15
+ *                     precio:
+ *                       type: number
+ *                       minimum: 0
+ *                       description: Precio del servicio médico
+ *                       example: 150.00
+ *                     descripcion:
+ *                       type: string
+ *                       description: Descripción del servicio
+ *                       example: "Examen de la vista completo"
+ *                     tipo:
+ *                       type: string
+ *                       description: Tipo de consulta
+ *                       example: "Examen de la vista"
+ *               descuentos:
+ *                 type: array
+ *                 description: Array de descuentos (opcional)
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     idDescuento:
+ *                       type: integer
+ *                       minimum: 1
+ *                       description: ID del descuento
+ *                       example: 2
+ *                     monto:
+ *                       type: number
+ *                       minimum: 0
+ *                       description: Monto del descuento
+ *                       example: 25.00
+ *           example:
+ *             factura:
+ *               idCliente: 2
+ *               idFormaPago: 1
+ *               idEmpleado: 1
+ *               Tipo_documento: "Factura Consulta"
+ *             consultas:
+ *               - idConsulta: 15
+ *                 precio: 150.00
+ *                 descripcion: "Examen de la vista completo"
+ *                 tipo: "Examen de la vista"
+ *               - idConsulta: 16
+ *                 precio: 75.00
+ *                 descripcion: "Diagnóstico oftalmológico"
+ *                 tipo: "Diagnóstico"
+ *             descuentos:
+ *               - idDescuento: 2
+ *                 monto: 25.00
+ *     responses:
+ *       201:
+ *         description: Factura por consulta creada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                   example: "Factura por consulta médica registrada con éxito"
+ *                 factura:
+ *                   type: object
+ *                   properties:
+ *                     idFactura:
+ *                       type: integer
+ *                       example: 38
+ *                     archivo_pdf:
+ *                       type: string
+ *                       example: "factura_consulta_38.pdf"
+ *       400:
+ *         description: Error de validación o datos incompletos
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/factura-consulta', verificarUsuario, facturaController.crearFacturaPorConsulta);
 
 /**
  * @swagger
@@ -488,9 +624,112 @@ router.get('/factura/:id/pdf/view', verificarUsuario, async (req, res) => {
   }    
 });
 
+/**
+ * @swagger
+ * /factura/estadisticas:
+ *   get:
+ *     summary: Obtener estadísticas de facturación
+ *     security:
+ *       - BearerAuth: []
+ *     tags: [Factura]
+ *     description: Retorna estadísticas del mes actual y las últimas facturas
+ *     responses:
+ *       200:
+ *         description: Estadísticas obtenidas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 resumen:
+ *                   type: object
+ *                   properties:
+ *                     totalMes:
+ *                       type: number
+ *                       description: Total facturado en el mes actual
+ *                     emitidas:
+ *                       type: integer
+ *                       description: Total de facturas emitidas en el mes
+ *                     pendientes:
+ *                       type: integer
+ *                       description: Total de facturas pendientes
+ *                     pagadas:
+ *                       type: integer
+ *                       description: Total de facturas pagadas
+ *                     anuladas:
+ *                       type: integer
+ *                       description: Total de facturas anuladas
+ *                 porTipo:
+ *                   type: object
+ *                   properties:
+ *                     consulta:
+ *                       type: integer
+ *                       description: Facturas por consulta médica
+ *                     producto:
+ *                       type: integer
+ *                       description: Facturas por productos
+ *                     servicio:
+ *                       type: integer
+ *                       description: Facturas por servicios
+ *                     mixto:
+ *                       type: integer
+ *                       description: Facturas mixtas
+ *                 ultimasFacturas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID de la factura
+ *                       cliente:
+ *                         type: string
+ *                         description: Nombre del cliente
+ *                       fecha:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Fecha de la factura
+ *                       estado:
+ *                         type: string
+ *                         description: Estado de la factura
+ *                       total:
+ *                         type: number
+ *                         description: Total de la factura
+ *                       tipo:
+ *                         type: string
+ *                         description: Tipo de facturación
+ *       500:
+ *         description: Error del servidor
+ */
+router.get('/factura/estadisticas', verificarUsuario, facturaController.obtenerEstadisticasFacturacion);
 
-
-
+/**
+ * @swagger
+ * /factura/siguiente-numero:
+ *   get:
+ *     summary: Obtener el siguiente número de factura disponible
+ *     security:
+ *       - BearerAuth: []
+ *     tags: [Factura]
+ *     description: Retorna el siguiente número de factura basado en la última factura creada
+ *     responses:
+ *       200:
+ *         description: Siguiente número obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 siguienteNumero:
+ *                   type: integer
+ *                   description: Siguiente número de factura disponible
+ *                 mensaje:
+ *                   type: string
+ *                   description: Mensaje de confirmación
+ *       500:
+ *         description: Error del servidor
+ */
+router.get('/factura/siguiente-numero', verificarUsuario, facturaController.obtenerSiguienteNumeroFactura);
 
 module.exports = router;
 

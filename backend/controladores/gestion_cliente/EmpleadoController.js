@@ -50,30 +50,41 @@ exports.obtenerEmpleados = async (req, res) => {
     const { Pnombre, Papellido } = req.query;
     const wherePersona = {};
     
-    if (Pnombre) {
+    // Solo aplicar filtros si se proporcionan
+    if (Pnombre && Pnombre.trim()) {
       wherePersona[Op.or] = [
         { Pnombre: { [Op.like]: `%${Pnombre}%` } },
         { Snombre: { [Op.like]: `%${Pnombre}%` } }
       ];
     }
     
-    if (Papellido) {
-      wherePersona[Op.or] = [
-        ...(wherePersona[Op.or] || []),
-        { Papellido: { [Op.like]: `%${Papellido}%` } },
-        { Sapellido: { [Op.like]: `%${Papellido}%` } }
-      ];
+    if (Papellido && Papellido.trim()) {
+      if (wherePersona[Op.or]) {
+        wherePersona[Op.or] = [
+          ...wherePersona[Op.or],
+          { Papellido: { [Op.like]: `%${Papellido}%` } },
+          { Sapellido: { [Op.like]: `%${Papellido}%` } }
+        ];
+      } else {
+        wherePersona[Op.or] = [
+          { Papellido: { [Op.like]: `%${Papellido}%` } },
+          { Sapellido: { [Op.like]: `%${Papellido}%` } }
+        ];
+      }
     }
 
     const empleados = await Empleado.findAll({
       include: [{
         model: Persona,
         as: 'persona',
-        where: Object.keys(wherePersona).length ? wherePersona : undefined
-      }]
+        where: Object.keys(wherePersona).length > 0 ? wherePersona : undefined
+      }],
+      order: [['idEmpleado', 'ASC']]
     });
+    
     res.json(empleados);
   } catch (error) {
+    console.error('Error al obtener empleados:', error);
     res.status(500).json({ mensaje: 'Error al obtener empleados', error: error.message });
   }
 };

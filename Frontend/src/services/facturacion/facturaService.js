@@ -15,6 +15,12 @@ export const facturaService = {
     return response.data;
   },  
     
+  // Crear factura por consulta médica
+  crearFacturaPorConsulta: async (data) => {
+    const response = await axiosInstance.post('/factura-consulta', data);
+    return response.data;
+  },
+    
   // Obtener factura por ID  
   obtenerFacturaPorId: async (id) => {  
     const response = await axiosInstance.get(`/factura/${id}`);
@@ -23,13 +29,42 @@ export const facturaService = {
     
   // Anular factura  
   anularFactura: async (id) => {  
-    const response = await axiosInstance.put(`/factura/${id}/anular`);
+    const response = await axiosInstance.patch(`/facturas/${id}/anular`);
     return response.data;
   },  
     
+  // Obtener estadísticas de facturación
+  obtenerEstadisticas: async () => {
+    const response = await axiosInstance.get('/factura/estadisticas');
+    return response.data;
+  },
+    
+  // Obtener siguiente número de factura
+  obtenerSiguienteNumeroFactura: async () => {  
+    const response = await axiosInstance.get('/factura/siguiente-numero');  
+    return response.data;  
+  },
+    
   // Descargar PDF de factura  
-  descargarPDF: (id) => {  
-    const token = authService.getToken();
-    window.open(`${axiosInstance.defaults.baseURL}/factura/${id}/pdf?token=${token}`, '_blank');  
+  descargarPDF: async (id) => {  
+    try {
+      const response = await axiosInstance.get(`/factura/${id}/pdf`, {
+        responseType: 'blob'
+      });
+      
+      // Crear un blob y descargarlo
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `factura_${id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar PDF:', error);
+      alert('Error al descargar el PDF: ' + (error.response?.data?.error || error.message));
+    }
   }  
 };

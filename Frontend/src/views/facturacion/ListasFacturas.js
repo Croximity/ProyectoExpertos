@@ -42,9 +42,32 @@ const ListaFacturas = () => {
     }  
   };  
   
-  const handleDescargarPDF = (idFactura) => {  
-    facturaService.descargarPDF(idFactura);  
-  };  
+  const handleDescargarPDF = async (idFactura) => {  
+    try {
+      await facturaService.descargarPDF(idFactura);
+    } catch (error) {
+      console.error('Error al descargar PDF:', error);
+      alert('Error al descargar el PDF: ' + (error.message || 'Error desconocido'));
+    }
+  };
+
+  const handleAnularFactura = async (factura) => {
+    if (window.confirm(`¿Está seguro de que desea anular la factura #${factura.idFactura}? Esta acción no se puede deshacer.`)) {
+      try {
+        setLoading(true);
+        await facturaService.anularFactura(factura.idFactura);
+        // Recargar la lista de facturas
+        await cargarFacturas();
+        // Mostrar mensaje de éxito
+        alert('Factura anulada exitosamente');
+      } catch (error) {
+        console.error('Error al anular factura:', error);
+        alert('Error al anular la factura: ' + (error.response?.data?.mensaje || error.message));
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
   
   const facturasFiltradas = facturas.filter(factura =>  
     factura.idFactura.toString().includes(filtro) ||  
@@ -79,7 +102,7 @@ const ListaFacturas = () => {
                   <Col xs="4" className="text-right">  
                     <Button  
                       color="primary"  
-                      href="/admin/crear-factura"  
+                      href="/admin/crear-factura-nueva"  
                       size="sm"  
                     >  
                       Nueva Factura  
@@ -191,10 +214,7 @@ const ListaFacturas = () => {
                                 color="warning"  
                                 size="sm"  
                                 className="ml-2"  
-                                onClick={() => {  
-                                  // Implementar anulación de factura  
-                                  console.log('Anular factura:', factura.idFactura);  
-                                }}  
+                                onClick={() => handleAnularFactura(factura)}  
                               >  
                                 <i className="fas fa-ban" /> Anular  
                               </Button>  

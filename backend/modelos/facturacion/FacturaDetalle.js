@@ -17,8 +17,23 @@ const FacturaDetalle = db.define('FacturaDetalle', {
     allowNull: true
   },
   Cantidad: {
-    type: DataTypes.STRING(45),
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1
+  },
+  precioUnitario: {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+    defaultValue: 0
+  },
+  descripcion: {
+    type: DataTypes.STRING(255),
     allowNull: true
+  },
+  totalLinea: {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+    defaultValue: 0
   },
   idFactura: {
     type: DataTypes.INTEGER,

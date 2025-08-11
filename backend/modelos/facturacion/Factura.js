@@ -22,6 +22,11 @@ const Factura = db.define('Factura', {
     type: DataTypes.STRING(45),
     allowNull: true
   },
+  tipoFacturacion: {
+    type: DataTypes.ENUM('consulta', 'producto', 'servicio', 'mixto'),
+    allowNull: true,
+    defaultValue: 'mixto'
+  },
   idCliente: {
     type: DataTypes.INTEGER,
     allowNull: false
@@ -39,8 +44,8 @@ const Factura = db.define('Factura', {
     allowNull: true
   },
   estadoFactura: {
-  type: DataTypes.STRING,
-  defaultValue: 'activa' // o 'anulada'
+  type: DataTypes.ENUM('activa', 'anulada', 'cobrada', 'pendiente'),    
+    defaultValue: 'activa' 
 },
 }, {
   tableName: 'factura',
@@ -48,13 +53,19 @@ const Factura = db.define('Factura', {
 });
 
 // Relaciones
-Factura.belongsTo(Cliente, { foreignKey: 'idCliente' });
-Factura.belongsTo(FormaPago, { foreignKey: 'idFormaPago' });
-Factura.belongsTo(Empleado, { foreignKey: 'idEmpleado' });
+Factura.belongsTo(Cliente, { 
+  foreignKey: 'idCliente',
+  as: 'cliente'
+});
 
+Factura.belongsTo(FormaPago, { 
+  foreignKey: 'idFormaPago',
+  as: 'formaPago'
+});
 
-Cliente.hasMany(Factura, { foreignKey: 'idCliente', sourceKey: 'idCliente'});
-FormaPago.hasMany(Factura, { foreignKey: 'idFormaPago', sourceKey: 'idFormaPago'  });
-Empleado.hasMany(Factura, { foreignKey: 'idEmpleado', sourceKey: 'idEmpleado'  });
+Factura.belongsTo(Empleado, { 
+  foreignKey: 'idEmpleado',
+  as: 'empleado'
+});
 
 module.exports = Factura;
