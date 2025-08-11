@@ -1,0 +1,22 @@
+.main-content {
+  padding-top: 20px;
+  min-height: calc(100vh - 76px);
+}
+
+.main-content .card {
+  margin-bottom: 20px;
+}
+
+.main-content .btn {
+  z-index: 1;
+  position: relative;
+}
+
+.main-content .modal {
+  z-index: 1050;
+}
+
+.main-content .table-responsive {
+  z-index: 1;
+  position: relative;
+}
