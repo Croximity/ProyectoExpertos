@@ -3,10 +3,25 @@ import axiosInstance from '../../utils/axiosConfig';
 export const empleadoService = {
   obtenerEmpleados: async (filtros = {}) => {
     const params = new URLSearchParams();
-    if (filtros.Pnombre) params.append('Pnombre', filtros.Pnombre);
-    if (filtros.Papellido) params.append('Papellido', filtros.Papellido);
-
-    const response = await axiosInstance.get(`/gestion_cliente/empleados/empleado?${params.toString()}`);
+    
+    // Solo agregar parámetros si tienen valor
+    if (filtros.Pnombre && filtros.Pnombre.trim()) {
+      params.append('Pnombre', filtros.Pnombre.trim());
+    }
+    if (filtros.Papellido && filtros.Papellido.trim()) {
+      params.append('Papellido', filtros.Papellido.trim());
+    }
+    if (filtros.correo && filtros.correo.trim()) {
+      params.append('correo', filtros.correo.trim());
+    }
+    if (filtros.DNI && filtros.DNI.trim()) {
+      params.append('DNI', filtros.DNI.trim());
+    }
+    
+    const url = `/gestion_cliente/empleados/empleado${params.toString() ? `?${params.toString()}` : ''}`;
+    console.log('URL de búsqueda empleados:', url);
+    
+    const response = await axiosInstance.get(url);
     return response.data;
   },
 

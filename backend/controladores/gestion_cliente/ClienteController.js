@@ -66,43 +66,73 @@ const crearCliente = [
   }
 ];
 
-// Obtener todos los clientes con búsqueda por nombre/apellido de Persona
+// Obtener todos los clientes con búsqueda por nombre/apellido/correo/DNI de Persona
 const obtenerClientes = async (req, res) => {
   try {
-    const { Pnombre, Papellido } = req.query;
-    const wherePersona = {};
+    const { Pnombre, Papellido, correo, DNI } = req.query;
+    console.log('Filtros recibidos en backend:', { Pnombre, Papellido, correo, DNI });
     
-    // Solo aplicar filtros si se proporcionan
-    if (Pnombre && Pnombre.trim()) {
-      wherePersona[Op.or] = [
-        { Pnombre: { [Op.like]: `%${Pnombre}%` } },
-        { Snombre: { [Op.like]: `%${Pnombre}%` } }
-      ];
-    }
+    let whereClause = {};
     
-    if (Papellido && Papellido.trim()) {
-      if (wherePersona[Op.or]) {
-        wherePersona[Op.or] = [
-          ...wherePersona[Op.or],
-          { Papellido: { [Op.like]: `%${Papellido}%` } },
-          { Sapellido: { [Op.like]: `%${Papellido}%` } }
-        ];
-      } else {
-        wherePersona[Op.or] = [
-          { Papellido: { [Op.like]: `%${Papellido}%` } },
-          { Sapellido: { [Op.like]: `%${Papellido}%` } }
-        ];
+    // Si se proporcionan filtros, construir la consulta
+    if ((Pnombre && Pnombre.trim()) || (Papellido && Papellido.trim()) || (correo && correo.trim()) || (DNI && DNI.trim())) {
+      whereClause = {
+        include: [{
+          model: Persona,
+          as: 'persona',
+          where: {
+            [Op.or]: []
+          }
+        }]
+      };
+      
+      // Agregar filtros de nombre
+      if (Pnombre && Pnombre.trim()) {
+        whereClause.include[0].where[Op.or].push(
+          { Pnombre: { [Op.like]: `%${Pnombre.trim()}%` } },
+          { Snombre: { [Op.like]: `%${Pnombre.trim()}%` } }
+        );
       }
+      
+      // Agregar filtros de apellido
+      if (Papellido && Papellido.trim()) {
+        whereClause.include[0].where[Op.or].push(
+          { Papellido: { [Op.like]: `%${Papellido.trim()}%` } },
+          { Sapellido: { [Op.like]: `%${Papellido.trim()}%` } }
+        );
+      }
+      
+      // Agregar filtro de correo
+      if (correo && correo.trim()) {
+        whereClause.include[0].where[Op.or].push(
+          { correo: { [Op.like]: `%${correo.trim()}%` } }
+        );
+      }
+      
+      // Agregar filtro de DNI
+      if (DNI && DNI.trim()) {
+        whereClause.include[0].where[Op.or].push(
+          { DNI: { [Op.like]: `%${DNI.trim()}%` } }
+        );
+      }
+      
+      // Agregar ordenamiento
+      whereClause.order = [['idCliente', 'ASC']];
+      
+      console.log('Where clause construido:', JSON.stringify(whereClause, null, 2));
+    } else {
+      // Sin filtros, traer todos
+      whereClause = {
+        include: [{
+          model: Persona,
+          as: 'persona'
+        }],
+        order: [['idCliente', 'ASC']]
+      };
     }
 
-    const clientes = await Cliente.findAll({
-      include: [{
-        model: Persona,
-        as: 'persona',
-        where: Object.keys(wherePersona).length > 0 ? wherePersona : undefined
-      }],
-      order: [['idCliente', 'ASC']]
-    });
+    const clientes = await Cliente.findAll(whereClause);
+    console.log(`Clientes encontrados: ${clientes.length}`);
     
     res.json(clientes);
   } catch (error) {
