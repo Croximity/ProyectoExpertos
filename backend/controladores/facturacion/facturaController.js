@@ -225,86 +225,73 @@ exports.crearFacturaCompleta = async (req, res) => {
     
     const nuevaFactura = await Factura.create(facturaSinId, { transaction: t });
       
-    // 2. Agregar ID de factura a cada detalle y mapear idProducto a idProductoAtributo
-    const ProductoAtributo = require('../../modelos/productos/ProductoAtributo');
-    
-    for (let d of detalles) {    
-      d.idFactura = nuevaFactura.idFactura;    
-      
-      // Si hay un idProducto, buscar el idProductoAtributo correspondiente
-      if (d.idProducto) {
-        try {
-          const productoAtributo = await ProductoAtributo.findOne({
-            where: { idProducto: d.idProducto }
-          });
+        // 2. Agregar ID de factura a cada detalle (sin ProductoAtributo)
+        for (let d of detalles) {    
+          d.idFactura = nuevaFactura.idFactura;    
+          // Removemos toda la lógica de ProductoAtributo para evitar errores
+        }    
+               
+        // 3. Crear detalles    
+        await FacturaDetalle.bulkCreate(detalles, { transaction: t });      
           
-          if (productoAtributo) {
-            d.idProductoAtributo = productoAtributo.idProductoAtributo;
-          } else {
-            // Si no existe ProductoAtributo, crear uno por defecto
-            const nuevoProductoAtributo = await ProductoAtributo.create({
-              idProducto: d.idProducto,
-              idAtributo: 1, // Atributo por defecto
-              stockActual: 0
-            }, { transaction: t });
-            d.idProductoAtributo = nuevoProductoAtributo.idProductoAtributo;
-          }
-        } catch (error) {
-          console.error('Error al buscar/crear ProductoAtributo:', error);
-          // Continuar sin ProductoAtributo si hay error
-        }
-      }
-    }    
-        
-    // 3. Crear detalles    
-    await FacturaDetalle.bulkCreate(detalles, { transaction: t });      
-      
-    // 4. Agregar ID de factura a cada descuento      
-    for (let d of descuentos) {      
-      d.idFactura = nuevaFactura.idFactura;      
-    }      
-      
-    // 5. Crear descuentos      
-    await DetalleDescuento.bulkCreate(descuentos, { transaction: t });      
-      
-    // -- OBTENER DATOS COMPLETOS DE LA BASE DE DATOS ---      
+        // 4. Agregar ID de factura a cada descuento      
+        for (let d of descuentos) {      
+          d.idFactura = nuevaFactura.idFactura;      
+        }      
           
-    // Obtener cliente con sus datos de persona      
-    const cliente = await Cliente.findByPk(nuevaFactura.idCliente, {      
-      include: [{      
-        model: Persona,      
-        as: 'persona'      
-      }]      
-    });      
-      
-    // Obtener empleado con sus datos de persona      
-    const empleado = await Empleado.findByPk(nuevaFactura.idEmpleado, {      
-      include: [{      
-        model: Persona,      
-        as: 'persona'     
-      }]      
-    });      
-      
-    // Obtener productos directamente del modelo ProductoModel (solo para detalles con idProducto)
-    const ProductoModel = require('../../modelos/productos/ProductoModel');        
-    const detallesConProductos = await Promise.all(          
-      detalles.map(async (detalle) => {          
-        // Si es entrada manual, no hay producto que buscar
-        if (!detalle.idProducto) {
-          return {          
-            ...detalle,          
-            producto: null      
-          };          
-        }
+        // 5. Crear descuentos      
+        await DetalleDescuento.bulkCreate(descuentos, { transaction: t });      
+          
+        // -- OBTENER DATOS COMPLETOS DE LA BASE DE DATOS ---      
+              
+        // Obtener cliente con sus datos de persona      
+        const cliente = await Cliente.findByPk(nuevaFactura.idCliente, {      
+          include: [{      
+            model: Persona,      
+            as: 'persona'      
+          }]      
+        });      
+          
+        // Obtener empleado con sus datos de persona      
+        const empleado = await Empleado.findByPk(nuevaFactura.idEmpleado, {      
+          include: [{      
+            model: Persona,      
+            as: 'persona'     
+          }]      
+        });      
+          
+        // Obtener productos directamente del modelo ProductoModel (solo para detalles con idProducto)
+        const ProductoModel = require('../../modelos/productos/ProductoModel');
         
-        const producto = await ProductoModel.findByPk(detalle.idProducto);        
-        return {          
-          ...detalle,          
-          producto: producto      
-        };          
-      })          
-    );   
-      
+        const detallesConProductos = await Promise.all(          
+          detalles.map(async (detalle) => {          
+            // Si es entrada manual, no hay producto que buscar
+            if (!detalle.idProducto) {
+              return {          
+                ...detalle,          
+                producto: null      
+              };          
+            }
+            
+            try {
+              const producto = await ProductoModel.findByPk(detalle.idProducto, {
+                attributes: ['idProducto', 'Nombre', 'precioVenta', 'marca', 'idCategoriaProducto']
+              });
+              
+              return {          
+                ...detalle,          
+                producto: producto      
+              };
+            } catch (error) {
+              // Si hay error al buscar producto, continuar sin él
+              return {
+                ...detalle,
+                producto: null
+              };
+            }          
+          })          
+        );
+
     // --- Generar PDF de la factura ---      
     const nombreArchivo = `factura_${nuevaFactura.idFactura}.pdf`;      
     const rutaPDF = path.join(__dirname, '../../uploads', nombreArchivo);      
@@ -319,68 +306,64 @@ exports.crearFacturaCompleta = async (req, res) => {
     // ===== ENCABEZADO MEJORADO =====
     // Fondo del encabezado
     doc.rect(0, 0, 595, 120)
-      .fill('#1E3A8A'); // Azul profesional
+      .fill('#374151'); // Gris oscuro igual que la tabla
     
-    // Logo placeholder (círculo con iniciales)
-    doc.circle(80, 60, 25)
-      .fill('#3B82F6')
-      .stroke('#60A5FA', 2);
-    
-    doc.fontSize(16).font('Helvetica-Bold')
-      .fillColor('white')
-      .text('OV', 70, 50, { align: 'center' });
-    
+
     // Logo/Texto de la empresa con mejor tipografía
-    doc.fontSize(24).font('Helvetica-Bold')
+    doc.fontSize(22).font('Helvetica-Bold')
       .fillColor('white')
-      .text('ÓPTICA VELÁSQUEZ', { align: 'center' }, 40, 25);
-    
-    // Información de la empresa
+      .text('ÓPTICA VELÁSQUEZ', { align: 'left' }, 40, 25);
+
+                // Información de la empresa
     doc.fontSize(10).font('Helvetica')
+    .fillColor('#E5E7EB')
+    .text('Especialistas en Salud Visual', { align: 'left' }, 60, 50); // Aumentado de 55 a 60
+
+    // Información de contacto
+    doc.fontSize(8).font('Helvetica')
       .fillColor('#E5E7EB')
-      .text('Especialistas en Salud Visual', { align: 'center' }, 40, 55);
+      .text('Barrio Abajo, Comayagua, Honduras', { align: 'right' }, 40, 115); // Aumentado de 110 a 115
     
+    doc.fontSize(8).font('Helvetica')
+      .text('88277998 | opticavelazques@gmail.com', { align: 'right' }, 50, 125); // Aumentado de 120 a 125
+    
+
     // Información fiscal en dos columnas
     doc.fontSize(8).font('Helvetica-Bold')
       .fillColor('white');
     
-    // Columna izquierda
-    doc.text('RTN:', 50, 80)
+    // Columna 1
+    doc.text('RTN:', 50, 85) // Aumentado de 80 a 85
       .font('Helvetica')
-      .text('0301201505686', 80, 80);
+      .text('0301201505686', 80, 85); // Aumentado de 80 a 85
     
     doc.font('Helvetica-Bold')
-      .text('CAI:', 50, 95)
+      .text('CAI:', 50, 100) // Aumentado de 95 a 100
       .font('Helvetica')
-      .text('ACD2155QWJJ254254', 80, 95);
+      .text('ACD2155QWJJ254254', 80, 100); // Aumentado de 95 a 100
     
-    // Columna derecha
+    // Columna 2
     doc.font('Helvetica-Bold')
-      .text('RANGO:', 300, 80)
+      .text('RANGO:', 300, 85) // Aumentado de 80 a 85
       .font('Helvetica')
-      .text('00000001 - 99999999', 350, 80);
+      .text('00000001 - 99999999', 350, 85); // Aumentado de 80 a 85
     
     doc.font('Helvetica-Bold')
-      .text('VENCE:', 300, 95)
+      .text('VENCE:', 300, 100) // Aumentado de 95 a 100
       .font('Helvetica')
-      .text('31/12/2025', 350, 95);
+      .text('31/12/2025', 350, 100); // Aumentado de 95 a 100
+
+    // Columna 3
     
-    // Información de contacto
-    doc.fontSize(8).font('Helvetica')
-      .fillColor('#E5E7EB')
-      .text('📍 Barrio Abajo, Comayagua, Honduras', { align: 'center' }, 40, 110);
-    
-    doc.fontSize(8).font('Helvetica')
-      .text('📞 88277998 | ✉️ opticavelazques@gmail.com', { align: 'center' }, 40, 120);
-    
-    // ===== TÍTULO DE LA FACTURA =====
+
+      // ===== TÍTULO DE LA FACTURA =====
     doc.fillColor('#1F2937'); // Gris oscuro para el título
     doc.fontSize(20).font('Helvetica-Bold')
-      .text('FACTURA', { align: 'center' }, 40, 150);
-    
+      .text('FACTURA', 40, 150, { width: 515, align: 'center' }); // Corregido el centrado
+      
     // Línea decorativa bajo el título
-    doc.strokeColor('#3B82F6')
-      .lineWidth(2)
+    doc.strokeColor('#1F2937')
+      .lineWidth(1)
       .moveTo(150, 175)
       .lineTo(445, 175)
       .stroke();
@@ -456,22 +439,16 @@ exports.crearFacturaCompleta = async (req, res) => {
     const nombreEmpleado = empleadoPersona ?       
       `${empleadoPersona.Pnombre} ${empleadoPersona.Snombre || ''} ${empleadoPersona.Papellido} ${empleadoPersona.Sapellido || ''}`.trim() : 'N/A';
     
-    doc.fontSize(9).font('Helvetica-Bold')
-      .fillColor('#374151')
-      .text('Atendido por:', 50, infoY + 90)
-      .font('Helvetica')
-      .fillColor('#6B7280')
-      .text(nombreEmpleado, 130, infoY + 90);
-    
+
     // ===== TABLA DE PRODUCTOS/SERVICIOS =====
     const tableY = infoY + 120;
     
     // Encabezado de la tabla con fondo
     doc.rect(40, tableY - 10, 515, 25)
-      .fillAndStroke('#1E3A8A', '#1E3A8A');
+      .fillAndStroke('#374151', '#374151'); // Gris oscuro para el encabezado
     
     doc.fontSize(10).font('Helvetica-Bold')
-      .fillColor('white')
+      .fillColor('white') // Texto blanco para contraste con fondo gris
       .text('CÓDIGO', 50, tableY)
       .text('DESCRIPCIÓN', 120, tableY)
       .text('CANT.', 320, tableY)
@@ -481,20 +458,43 @@ exports.crearFacturaCompleta = async (req, res) => {
     // Líneas de la tabla
     let currentY = tableY + 25;
     doc.fontSize(9).font('Helvetica')
-      .fillColor('#374151');
+      .fillColor('black'); // Cambiado a negro puro para mejor visibilidad
+    
     
     for (let i = 0; i < detallesConProductos.length; i++) {      
       const detalle = detallesConProductos[i];      
       const producto = detalle.producto;      
+      
             
-      // Validación defensiva para precios
-      const precioReal = Number(producto?.precioVenta || detalle.precioUnitario || 0);    
+      // Validación defensiva para precios y cantidad
+      let precioReal;
+      if (producto && producto.precioVenta) {
+        precioReal = Number(producto.precioVenta);
+      } else if (detalle.precioUnitario) {
+        precioReal = Number(detalle.precioUnitario);
+      } else {
+        precioReal = 0;
+      }
+      
       const cantidad = Number(detalle.Cantidad || 0);    
       const totalLinea = cantidad * precioReal;
             
       // Para entrada manual, usar información del detalle; para productos, usar información del producto
-      const codigoProducto = producto ? producto.idProducto.toString().padStart(3, '0') : (detalle.idProducto || '000').toString().padStart(3, '0');
-      const nombreProducto = producto ? producto.Nombre : (detalle.nombreProducto || 'Producto/Servicio');
+      let codigoProducto, nombreProducto;
+      
+      if (producto && producto.idProducto && producto.Nombre) {
+        // Es un producto de la base de datos
+        codigoProducto = producto.idProducto.toString().padStart(3, '0');
+        nombreProducto = producto.Nombre.length > 30 ? producto.Nombre.substring(0, 30) + '...' : producto.Nombre;
+      } else if (detalle.nombreProducto) {
+        // Es entrada manual
+        codigoProducto = (detalle.idProducto || '000').toString().padStart(3, '0');
+        nombreProducto = detalle.nombreProducto.length > 30 ? detalle.nombreProducto.substring(0, 30) + '...' : detalle.nombreProducto;
+      } else {
+        // Fallback para casos donde no hay información clara
+        codigoProducto = (detalle.idProducto || '000').toString().padStart(3, '0');
+        nombreProducto = 'Producto/Servicio';
+      }
       
       // Fondo alternado para las filas
       if (i % 2 === 0) {
@@ -502,6 +502,11 @@ exports.crearFacturaCompleta = async (req, res) => {
           .fill('#F9FAFB');
       }
       
+      
+      // Asegurar que el texto de los productos sea negro
+      doc.fillColor('black');
+      
+
       doc.text(codigoProducto, 50, currentY);      
       doc.text(nombreProducto, 120, currentY);      
       doc.text(cantidad.toString(), 320, currentY);      
@@ -511,23 +516,35 @@ exports.crearFacturaCompleta = async (req, res) => {
       currentY += 25;      
     }
     
-    // Borde de la tabla
+    // Borde de la tabla con gris
     doc.rect(40, tableY - 10, 515, currentY - tableY + 15)
-      .stroke('#E5E7EB');
+      .stroke('#6B7280'); // Borde gris medio
     
     // ===== TOTALES =====
     const totalsY = currentY + 20;
     
     // Panel de totales con fondo
-    doc.rect(350, totalsY - 10, 205, 120)
+    doc.rect(350, totalsY - 10, 205, 150)
       .fillAndStroke('#F3F4F6', '#E5E7EB');
     
     // Calcular totales
     const subtotal = detallesConProductos.reduce((sum, detalle) => {        
       const producto = detalle.producto;        
-      const precioReal = Number(producto?.precioVenta || detalle.precioUnitario || 0);      
-      const cantidad = Number(detalle.Cantidad || 0);      
-      return sum + (cantidad * precioReal);        
+      
+      let precioReal;
+      if (producto && producto.precioVenta) {
+        precioReal = Number(producto.precioVenta);
+      } else if (detalle.precioUnitario) {
+        precioReal = Number(detalle.precioUnitario);
+      } else {
+        precioReal = 0;
+      }
+      
+      const cantidad = Number(detalle.Cantidad || 0);
+      const totalLinea = cantidad * precioReal;
+      
+      
+      return sum + totalLinea;        
     }, 0);   
             
     const totalDescuentos = descuentos.reduce((sum, desc) => sum + Number(desc.Monto || 0), 0);        
@@ -551,7 +568,7 @@ exports.crearFacturaCompleta = async (req, res) => {
         .fillColor('#6B7280')
         .text('Descuentos:', 360, totalsY + 40)
         .font('Helvetica-Bold')
-        .fillColor('#DC2626')
+        .fillColor('#374151')
         .text(`-L. ${formatearNumero.format(totalDescuentos)}`, 480, totalsY + 40);
       
       doc.font('Helvetica')
@@ -591,14 +608,14 @@ exports.crearFacturaCompleta = async (req, res) => {
     
     // Panel de información legal
     doc.rect(40, legalY - 10, 515, 80)
-      .fillAndStroke('#FEF3C7', '#F59E0B');
+      .fillAndStroke('#F3F4F6', '#E5E7EB');
     
     doc.fontSize(8).font('Helvetica-Bold')
-      .fillColor('#92400E')
+      .fillColor('#374151')
       .text('INFORMACIÓN LEGAL Y TÉRMINOS', 50, legalY);
     
     doc.fontSize(7).font('Helvetica')
-      .fillColor('#92400E')
+      .fillColor('#374151')
       .text('• Esta factura es válida por 30 días desde la fecha de emisión', 50, legalY + 20)
       .text('• Resolución SAR No. 45145 | CAI: ACD2155QWJJ254254', 50, legalY + 32)
       .text('• Rango Autorizado: Del 00000001 al 99999999 | Fecha límite: 31/12/2025', 50, legalY + 44)
@@ -626,21 +643,23 @@ exports.crearFacturaCompleta = async (req, res) => {
       .fillColor('#6B7280')
       .text(`Atendido por: ${nombreEmpleado}`, 420, legalY + 60);
     
-    // ===== PIE DE PÁGINA =====
-    const footerY = legalY + 90;
-    
-    doc.strokeColor('#E5E7EB')
-      .lineWidth(1)
-      .moveTo(40, footerY)
-      .lineTo(555, footerY)
-      .stroke();
-    
-    doc.fontSize(8).font('Helvetica')
-      .fillColor('#9CA3AF')
-      .text('Gracias por confiar en Óptica Velásquez para su salud visual', { align: 'center' }, 40, footerY + 10)
-      .text('📞 88277998 | ✉️ opticavelazques@gmail.com | 🌐 www.opticavelasquez.com', { align: 'center' }, 40, footerY + 25);
     
     doc.end();
+    
+    // Verificar que el archivo se haya creado
+    setTimeout(async () => {
+      try {
+        const fs = require('fs');
+        if (fs.existsSync(rutaPDF)) {
+          const stats = fs.statSync(rutaPDF);
+          console.log(`✅ PDF creado exitosamente - Tamaño: ${stats.size} bytes`);
+        } else {
+          console.log('❌ PDF no se creó');
+        }
+      } catch (error) {
+        console.error('Error verificando PDF:', error);
+      }
+    }, 1000);
   
     // Guardar el nombre del archivo PDF en la factura  
     nuevaFactura.archivo_pdf = nombreArchivo;  
