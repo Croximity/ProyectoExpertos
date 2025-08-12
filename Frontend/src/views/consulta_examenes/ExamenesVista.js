@@ -23,7 +23,7 @@ import {
   faStethoscope,
   faArrowLeft
 } from '@fortawesome/free-solid-svg-icons';
-import UserHeader from 'components/Headers/UserHeader.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { examenVistaService } from '../../services/consulta_examenes/examenVistaService';
 import { useNavigate } from 'react-router-dom';
 
@@ -121,7 +121,7 @@ const ExamenesVista = () => {
 
   return (
     <>
-      <UserHeader />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Row>
           <Col>

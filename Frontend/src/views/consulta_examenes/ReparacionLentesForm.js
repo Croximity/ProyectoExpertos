@@ -22,7 +22,7 @@ import {
   faTools
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import UserHeader from 'components/Headers/UserHeader.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { reparacionLentesService } from '../../services/consulta_examenes/reparacionLentesService';
 
 const ReparacionLentesForm = () => {
@@ -164,7 +164,7 @@ const ReparacionLentesForm = () => {
   if (loading) {
     return (
       <>
-        <UserHeader />
+        <HeaderBlanco />
         <Container className="mt--7" fluid>
           <Row>
             <Col>
@@ -183,7 +183,7 @@ const ReparacionLentesForm = () => {
 
   return (
     <>
-      <UserHeader />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Row>
           <Col>

@@ -17,7 +17,7 @@ import {
   faVirus
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import UserHeader from 'components/Headers/UserHeader.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { tipoEnfermedadService } from '../../services/consulta_examenes/tipoEnfermedadService';
 
 const TipoEnfermedadVer = () => {
@@ -56,7 +56,7 @@ const TipoEnfermedadVer = () => {
   if (loading) {
     return (
       <>
-        <UserHeader />
+        <HeaderBlanco />
         <Container className="mt--7" fluid>
           <Row>
             <Col>
@@ -76,7 +76,7 @@ const TipoEnfermedadVer = () => {
   if (error) {
     return (
       <>
-        <UserHeader />
+        <HeaderBlanco />
         <Container className="mt--7" fluid>
           <Row>
             <Col>
@@ -101,7 +101,7 @@ const TipoEnfermedadVer = () => {
   if (!tipoEnfermedad) {
     return (
       <>
-        <UserHeader />
+        <HeaderBlanco />
         <Container className="mt--7" fluid>
           <Row>
             <Col>
@@ -125,7 +125,7 @@ const TipoEnfermedadVer = () => {
 
   return (
     <>
-      <UserHeader />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Row>
           <Col>
