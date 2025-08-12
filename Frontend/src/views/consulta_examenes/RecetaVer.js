@@ -14,16 +14,25 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faArrowLeft,
-  faPrescription
+  faPrescription,
+  faUser,
+  faUserTie,
+  faGlasses,
+  faCalendarAlt,
+  faEye
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { recetaService } from '../../services/consulta_examenes/recetaService';
+import { clienteService } from '../../services/gestion_cliente/clienteService';
+import { empleadoService } from '../../services/gestion_cliente/empleadoService';
 
 const RecetaVer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [receta, setReceta] = useState(null);
+  const [cliente, setCliente] = useState(null);
+  const [empleado, setEmpleado] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,6 +46,25 @@ const RecetaVer = () => {
       setError(null);
       const data = await recetaService.obtenerRecetaPorId(id);
       setReceta(data);
+      
+      // Cargar información del cliente y empleado
+      if (data.idCliente) {
+        try {
+          const clienteData = await clienteService.obtenerClientePorId(data.idCliente);
+          setCliente(clienteData);
+        } catch (error) {
+          console.error('Error al cargar cliente:', error);
+        }
+      }
+      
+      if (data.idEmpleado) {
+        try {
+          const empleadoData = await empleadoService.obtenerEmpleadoPorId(data.idEmpleado);
+          setEmpleado(empleadoData);
+        } catch (error) {
+          console.error('Error al cargar empleado:', error);
+        }
+      }
     } catch (error) {
       console.error('Error al cargar receta:', error);
       setError('Error al cargar los datos de la receta');
@@ -51,6 +79,33 @@ const RecetaVer = () => {
 
   const handleEditar = () => {
     navigate(`/admin/consulta-examenes/recetas/editar/${id}`);
+  };
+
+  const formatearFecha = (fecha) => {
+    if (!fecha) return 'N/A';
+    try {
+      return new Date(fecha).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Fecha inválida';
+    }
+  };
+
+  const getNombreCompletoCliente = (cliente) => {
+    if (!cliente || !cliente.persona) return 'N/A';
+    const persona = cliente.persona;
+    return `${persona.Pnombre || ''} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim() || 'N/A';
+  };
+
+  const getNombreCompletoEmpleado = (empleado) => {
+    if (!empleado || !empleado.persona) return 'N/A';
+    const persona = empleado.persona;
+    return `${persona.Pnombre || ''} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim() || 'N/A';
   };
 
   if (loading) {
@@ -165,45 +220,95 @@ const RecetaVer = () => {
                       </Col>
                       <Col sm="8">
                         <Badge color="primary" pill>
-                          {receta.idReceta || receta.id}
+                          {receta.idReceta}
                         </Badge>
                       </Col>
                     </Row>
                     <Row className="mt-2">
                       <Col sm="4">
-                        <strong>ID Consulta:</strong>
+                        <strong>Cliente:</strong>
                       </Col>
                       <Col sm="8">
-                        <Badge color="info" pill>
-                          {receta.idConsulta || 'N/A'}
-                        </Badge>
+                        <FontAwesomeIcon icon={faUser} className="mr-1" />
+                        {getNombreCompletoCliente(cliente)}
+                        <br />
+                        <small className="text-muted">ID: {receta.idCliente}</small>
                       </Col>
                     </Row>
                     <Row className="mt-2">
                       <Col sm="4">
-                        <strong>Fecha:</strong>
+                        <strong>Empleado:</strong>
                       </Col>
                       <Col sm="8">
-                        {receta.Fecha || receta.fecha || 'N/A'}
+                        <FontAwesomeIcon icon={faUserTie} className="mr-1" />
+                        {getNombreCompletoEmpleado(empleado)}
+                        <br />
+                        <small className="text-muted">ID: {receta.idEmpleado}</small>
                       </Col>
                     </Row>
                     <Row className="mt-2">
                       <Col sm="4">
-                        <strong>Estado:</strong>
+                        <strong>Fecha de Creación:</strong>
                       </Col>
                       <Col sm="8">
-                        <Badge color={receta.Estado === 'Activa' ? 'success' : 'warning'} pill>
-                          {receta.Estado || receta.estado || 'N/A'}
-                        </Badge>
+                        <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
+                        {formatearFecha(receta.Fecha)}
+                      </Col>
+                    </Row>
+                    <Row className="mt-2">
+                      <Col sm="4">
+                        <strong>Agudeza Visual:</strong>
+                      </Col>
+                      <Col sm="8">
+                        <FontAwesomeIcon icon={faEye} className="mr-1" />
+                        {receta.Agudeza_Visual || 'N/A'}
+                      </Col>
+                    </Row>
+                    <Row className="mt-2">
+                      <Col sm="4">
+                        <strong>Tipo de Lente:</strong>
+                      </Col>
+                      <Col sm="8">
+                        {receta.Tipo_Lente ? (
+                          <Badge color="info" pill>
+                            {receta.Tipo_Lente}
+                          </Badge>
+                        ) : (
+                          'N/A'
+                        )}
                       </Col>
                     </Row>
                   </Col>
                   <Col md="6">
-                    <h5>Descripción</h5>
+                    <h5>
+                      <FontAwesomeIcon icon={faGlasses} className="mr-2" />
+                      Medidas Ópticas
+                    </h5>
                     <hr />
-                    <p>
-                      {receta.Descripcion || receta.descripcion || 'No hay descripción disponible'}
-                    </p>
+                    <Row>
+                      <Col sm="6">
+                        <h6>Ojo Izquierdo</h6>
+                        <p><strong>Esfera:</strong> {receta.EsferaIzquierdo || 'N/A'}</p>
+                        <p><strong>Cilindro:</strong> {receta.Cilindro_Izquierdo || 'N/A'}</p>
+                        <p><strong>Eje:</strong> {receta.Eje_Izquierdo || 'N/A'}</p>
+                      </Col>
+                      <Col sm="6">
+                        <h6>Ojo Derecho</h6>
+                        <p><strong>Esfera:</strong> {receta.Esfera_Derecho || 'N/A'}</p>
+                        <p><strong>Cilindro:</strong> {receta.Cilindro_Derecho || 'N/A'}</p>
+                        <p><strong>Eje:</strong> {receta.Eje_Derecho || 'N/A'}</p>
+                      </Col>
+                    </Row>
+                    <Row className="mt-3">
+                      <Col sm="12">
+                        <h6>Información Adicional</h6>
+                        <p><strong>Distancia Pupilar:</strong> {receta.Distancia_Pupilar ? `${receta.Distancia_Pupilar} mm` : 'N/A'}</p>
+                        <p><strong>Diagnóstico:</strong></p>
+                        <div className="border rounded p-2 bg-light">
+                          {receta.Diagnostico || 'No hay diagnóstico especificado'}
+                        </div>
+                      </Col>
+                    </Row>
                   </Col>
                 </Row>
               </CardBody>

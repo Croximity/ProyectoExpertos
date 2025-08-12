@@ -14,16 +14,20 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faArrowLeft,
-  faStethoscope
+  faStethoscope,
+  faVirus,
+  faCalendarAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { diagnosticoService } from '../../services/consulta_examenes/diagnosticoService';
+import { tipoEnfermedadService } from '../../services/consulta_examenes/tipoEnfermedadService';
 
 const DiagnosticoVer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [diagnostico, setDiagnostico] = useState(null);
+  const [tipoEnfermedad, setTipoEnfermedad] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,6 +41,16 @@ const DiagnosticoVer = () => {
       setError(null);
       const data = await diagnosticoService.obtenerDiagnosticoPorId(id);
       setDiagnostico(data);
+      
+      // Cargar información del tipo de enfermedad si existe
+      if (data.idTipoEnfermedad) {
+        try {
+          const tipoData = await tipoEnfermedadService.obtenerTipoEnfermedadPorId(data.idTipoEnfermedad);
+          setTipoEnfermedad(tipoData);
+        } catch (error) {
+          console.error('Error al cargar tipo de enfermedad:', error);
+        }
+      }
     } catch (error) {
       console.error('Error al cargar diagnóstico:', error);
       setError('Error al cargar los datos del diagnóstico');
@@ -51,6 +65,21 @@ const DiagnosticoVer = () => {
 
   const handleEditar = () => {
     navigate(`/admin/consulta-examenes/diagnosticos/editar/${id}`);
+  };
+
+  const formatearFecha = (fecha) => {
+    if (!fecha) return 'N/A';
+    try {
+      return new Date(fecha).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Fecha inválida';
+    }
   };
 
   if (loading) {
@@ -165,48 +194,42 @@ const DiagnosticoVer = () => {
                       </Col>
                       <Col sm="8">
                         <Badge color="primary" pill>
-                          {diagnostico.idDiagnostico || diagnostico.id}
+                          {diagnostico.idDiagnostico}
                         </Badge>
                       </Col>
                     </Row>
                     <Row className="mt-2">
                       <Col sm="4">
-                        <strong>ID Consulta:</strong>
+                        <strong>ID Examen:</strong>
                       </Col>
                       <Col sm="8">
                         <Badge color="info" pill>
-                          {diagnostico.idConsulta || 'N/A'}
+                          {diagnostico.idExamen}
                         </Badge>
                       </Col>
                     </Row>
-                    <Row className="mt-2">
-                      <Col sm="4">
-                        <strong>Fecha:</strong>
-                      </Col>
-                      <Col sm="8">
-                        {diagnostico.Fecha || diagnostico.fecha || 'N/A'}
-                      </Col>
-                    </Row>
-                    <Row className="mt-2">
-                      <Col sm="4">
-                        <strong>Estado:</strong>
-                      </Col>
-                      <Col sm="8">
-                        <Badge color={diagnostico.Estado === 'Confirmado' ? 'success' : 'warning'} pill>
-                          {diagnostico.Estado || diagnostico.estado || 'N/A'}
-                        </Badge>
-                      </Col>
-                    </Row>
+
                   </Col>
                   <Col md="6">
-                    <h5>Diagnóstico</h5>
+                    <h5>Información del Tipo de Enfermedad</h5>
                     <hr />
                     <Row>
                       <Col sm="4">
-                        <strong>Tipo de Enfermedad:</strong>
+                        <strong>ID Tipo Enfermedad:</strong>
                       </Col>
                       <Col sm="8">
-                        {diagnostico.TipoEnfermedad || diagnostico.tipoEnfermedad || 'N/A'}
+                        <Badge color="warning" pill>
+                          {diagnostico.idTipoEnfermedad}
+                        </Badge>
+                      </Col>
+                    </Row>
+                    <Row className="mt-2">
+                      <Col sm="4">
+                        <strong>Nombre:</strong>
+                      </Col>
+                      <Col sm="8">
+                        <FontAwesomeIcon icon={faVirus} className="mr-1" />
+                        {tipoEnfermedad ? (tipoEnfermedad.Nombre || tipoEnfermedad.nombre) : 'N/A'}
                       </Col>
                     </Row>
                     <Row className="mt-2">
@@ -214,15 +237,7 @@ const DiagnosticoVer = () => {
                         <strong>Descripción:</strong>
                       </Col>
                       <Col sm="8">
-                        {diagnostico.Descripcion || diagnostico.descripcion || 'No hay descripción disponible'}
-                      </Col>
-                    </Row>
-                    <Row className="mt-2">
-                      <Col sm="4">
-                        <strong>Tratamiento:</strong>
-                      </Col>
-                      <Col sm="8">
-                        {diagnostico.Tratamiento || diagnostico.tratamiento || 'No hay tratamiento especificado'}
+                        {tipoEnfermedad ? (tipoEnfermedad.Descripcion || tipoEnfermedad.descripcion || 'Sin descripción') : 'N/A'}
                       </Col>
                     </Row>
                   </Col>

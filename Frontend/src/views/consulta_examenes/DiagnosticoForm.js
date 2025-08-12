@@ -20,10 +20,12 @@ import {
   faTimes, 
   faArrowLeft,
   faClipboardCheck,
-  faStethoscope
+  faStethoscope,
+  faVirus
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { diagnosticoService } from '../../services/consulta_examenes/diagnosticoService';
+import { tipoEnfermedadService } from '../../services/consulta_examenes/tipoEnfermedadService';
 
 const DiagnosticoForm = () => {
   const { id } = useParams();
@@ -35,21 +37,44 @@ const DiagnosticoForm = () => {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   
+  // Estados para los datos de referencia
+  const [tiposEnfermedad, setTiposEnfermedad] = useState([]);
+  const [tipoEnfermedadSeleccionado, setTipoEnfermedadSeleccionado] = useState(null);
+  
   const [formData, setFormData] = useState({
     idExamen: '',
     idTipoEnfermedad: ''
   });
 
   useEffect(() => {
-    if (isEditing) {
+    cargarDatosReferencia();
+  }, []);
+
+  useEffect(() => {
+    if (isEditing && tiposEnfermedad.length > 0) {
       cargarDiagnostico();
     }
-  }, [id, isEditing]);
+  }, [id, isEditing, tiposEnfermedad]);
+
+  const cargarDatosReferencia = async () => {
+    try {
+      const tiposData = await tipoEnfermedadService.obtenerTiposEnfermedad();
+      setTiposEnfermedad(Array.isArray(tiposData) ? tiposData : []);
+    } catch (error) {
+      console.error('Error al cargar tipos de enfermedad:', error);
+      setErrors({ general: 'Error al cargar los tipos de enfermedad' });
+    }
+  };
 
   const cargarDiagnostico = async () => {
     try {
       setLoading(true);
       const diagnostico = await diagnosticoService.obtenerDiagnosticoPorId(id);
+      
+      // Buscar el tipo de enfermedad correspondiente
+      const tipoEnfermedad = tiposEnfermedad.find(t => t.idTipoEnfermedad === diagnostico.idTipoEnfermedad);
+      setTipoEnfermedadSeleccionado(tipoEnfermedad || null);
+      
       setFormData({
         idExamen: diagnostico.idExamen || '',
         idTipoEnfermedad: diagnostico.idTipoEnfermedad || ''
@@ -78,6 +103,24 @@ const DiagnosticoForm = () => {
     }
   };
 
+  const handleTipoEnfermedadChange = (e) => {
+    const tipoId = e.target.value;
+    const tipoEnfermedad = tiposEnfermedad.find(t => t.idTipoEnfermedad === parseInt(tipoId));
+    
+    setTipoEnfermedadSeleccionado(tipoEnfermedad || null);
+    setFormData(prev => ({
+      ...prev,
+      idTipoEnfermedad: tipoId
+    }));
+    
+    if (errors.idTipoEnfermedad) {
+      setErrors(prev => ({
+        ...prev,
+        idTipoEnfermedad: ''
+      }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -88,6 +131,8 @@ const DiagnosticoForm = () => {
     if (!formData.idTipoEnfermedad) {
       newErrors.idTipoEnfermedad = 'El tipo de enfermedad es requerido';
     }
+
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -105,7 +150,12 @@ const DiagnosticoForm = () => {
       setErrors({});
       setSuccessMessage('');
 
-      const dataToSend = { ...formData };
+      // Preparar datos para envío (excluir fecha si no está disponible en el backend)
+      const dataToSend = {
+        idExamen: formData.idExamen,
+        idTipoEnfermedad: formData.idTipoEnfermedad
+        // La fecha se agregará cuando el backend esté actualizado
+      };
 
       if (isEditing) {
         await diagnosticoService.editarDiagnostico(id, dataToSend);
@@ -219,27 +269,43 @@ const DiagnosticoForm = () => {
                   </Col>
                   <Col md={6}>
                     <FormGroup>
-                      <Label for="idTipoEnfermedad">ID Tipo Enfermedad *</Label>
+                      <Label for="idTipoEnfermedad">
+                        <FontAwesomeIcon icon={faVirus} className="mr-1" />
+                        Tipo de Enfermedad *
+                      </Label>
                       <Input
-                        type="number"
+                        type="select"
                         name="idTipoEnfermedad"
                         id="idTipoEnfermedad"
                         value={formData.idTipoEnfermedad}
-                        onChange={handleChange}
+                        onChange={handleTipoEnfermedadChange}
                         invalid={!!errors.idTipoEnfermedad}
-                        placeholder="Ingrese ID del tipo de enfermedad"
-                      />
+                      >
+                        <option value="">Seleccione un tipo de enfermedad</option>
+                        {tiposEnfermedad.map(tipo => (
+                          <option key={tipo.idTipoEnfermedad} value={tipo.idTipoEnfermedad}>
+                            {tipo.Nombre || tipo.nombre}
+                          </option>
+                        ))}
+                      </Input>
                       {errors.idTipoEnfermedad && <span className="text-danger">{errors.idTipoEnfermedad}</span>}
+                      {tipoEnfermedadSeleccionado && (
+                        <small className="text-muted">
+                          ID: {tipoEnfermedadSeleccionado.idTipoEnfermedad} | Descripción: {tipoEnfermedadSeleccionado.Descripcion || tipoEnfermedadSeleccionado.descripcion || 'Sin descripción'}
+                        </small>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
+
+
 
                 {/* Información adicional */}
                 <Alert color="info">
                   <h5>Información:</h5>
                   <p className="mb-0">
                     El diagnóstico vincula un examen específico con un tipo de enfermedad. 
-                    Asegúrese de que tanto el ID del examen como el ID del tipo de enfermedad existan en el sistema.
+                    Asegúrese de que tanto el ID del examen como el tipo de enfermedad existan en el sistema.
                   </p>
                 </Alert>
 

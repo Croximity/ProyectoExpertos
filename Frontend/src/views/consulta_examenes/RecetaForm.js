@@ -21,10 +21,14 @@ import {
   faArrowLeft,
   faPrescription,
   faEye,
-  faGlasses
+  faGlasses,
+  faUser,
+  faUserTie
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { recetaService } from '../../services/consulta_examenes/recetaService';
+import { clienteService } from '../../services/gestion_cliente/clienteService';
+import { empleadoService } from '../../services/gestion_cliente/empleadoService';
 
 const RecetaForm = () => {
   const { id } = useParams();
@@ -35,6 +39,12 @@ const RecetaForm = () => {
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // Estados para los datos de referencia
+  const [clientes, setClientes] = useState([]);
+  const [empleados, setEmpleados] = useState([]);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+  const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
   
   const [formData, setFormData] = useState({
     idCliente: '',
@@ -53,15 +63,56 @@ const RecetaForm = () => {
   });
 
   useEffect(() => {
-    if (isEditing) {
+    cargarDatosReferencia();
+  }, []);
+
+  useEffect(() => {
+    if (isEditing && clientes.length > 0 && empleados.length > 0) {
       cargarReceta();
     }
-  }, [id, isEditing]);
+  }, [id, isEditing, clientes, empleados]);
+
+  const cargarDatosReferencia = async () => {
+    try {
+      // Cargar clientes y empleados en paralelo
+      const [clientesData, empleadosData] = await Promise.all([
+        clienteService.obtenerClientes(),
+        empleadoService.obtenerEmpleados()
+      ]);
+      
+      setClientes(Array.isArray(clientesData) ? clientesData : []);
+      setEmpleados(Array.isArray(empleadosData) ? empleadosData : []);
+    } catch (error) {
+      console.error('Error al cargar datos de referencia:', error);
+      setErrors({ general: 'Error al cargar los datos de referencia' });
+    }
+  };
 
   const cargarReceta = async () => {
     try {
       setLoading(true);
       const receta = await recetaService.obtenerRecetaPorId(id);
+      
+      // Buscar el cliente y empleado correspondientes
+      const cliente = clientes.find(c => c.idCliente === receta.idCliente);
+      const empleado = empleados.find(e => e.idEmpleado === receta.idEmpleado);
+      
+      setClienteSeleccionado(cliente || null);
+      setEmpleadoSeleccionado(empleado || null);
+      
+      // Formatear la fecha correctamente
+      let fechaFormateada = new Date().toISOString().split('T')[0];
+      if (receta.Fecha) {
+        try {
+          const fecha = new Date(receta.Fecha);
+          if (!isNaN(fecha.getTime())) {
+            fechaFormateada = fecha.toISOString().split('T')[0];
+          }
+        } catch (error) {
+          console.error('Error al formatear fecha:', error);
+        }
+      }
+      
       setFormData({
         idCliente: receta.idCliente || '',
         idEmpleado: receta.idEmpleado || '',
@@ -75,7 +126,7 @@ const RecetaForm = () => {
         Distancia_Pupilar: receta.Distancia_Pupilar || '',
         Tipo_Lente: receta.Tipo_Lente || '',
         Diagnostico: receta.Diagnostico || '',
-        Fecha: receta.Fecha ? new Date(receta.Fecha).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+        Fecha: fechaFormateada
       });
     } catch (error) {
       console.error('Error al cargar receta:', error);
@@ -101,15 +152,63 @@ const RecetaForm = () => {
     }
   };
 
+  const handleClienteChange = (e) => {
+    const clienteId = e.target.value;
+    const cliente = clientes.find(c => c.idCliente === parseInt(clienteId));
+    
+    setClienteSeleccionado(cliente || null);
+    setFormData(prev => ({
+      ...prev,
+      idCliente: clienteId
+    }));
+    
+    if (errors.idCliente) {
+      setErrors(prev => ({
+        ...prev,
+        idCliente: ''
+      }));
+    }
+  };
+
+  const handleEmpleadoChange = (e) => {
+    const empleadoId = e.target.value;
+    const empleado = empleados.find(e => e.idEmpleado === parseInt(empleadoId));
+    
+    setEmpleadoSeleccionado(empleado || null);
+    setFormData(prev => ({
+      ...prev,
+      idEmpleado: empleadoId
+    }));
+    
+    if (errors.idEmpleado) {
+      setErrors(prev => ({
+        ...prev,
+        idEmpleado: ''
+      }));
+    }
+  };
+
+  const getNombreCompletoCliente = (cliente) => {
+    if (!cliente || !cliente.persona) return '';
+    const persona = cliente.persona;
+    return `${persona.Pnombre || ''} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim();
+  };
+
+  const getNombreCompletoEmpleado = (empleado) => {
+    if (!empleado || !empleado.persona) return '';
+    const persona = empleado.persona;
+    return `${persona.Pnombre || ''} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim();
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData.idCliente) {
-      newErrors.idCliente = 'El ID del cliente es requerido';
+      newErrors.idCliente = 'El cliente es requerido';
     }
 
     if (!formData.idEmpleado) {
-      newErrors.idEmpleado = 'El ID del empleado es requerido';
+      newErrors.idEmpleado = 'El empleado es requerido';
     }
 
     if (!formData.Fecha) {
@@ -246,34 +345,59 @@ const RecetaForm = () => {
                   <Col md={6}>
                     <FormGroup>
                       <Label for="idCliente">
-                        <FontAwesomeIcon icon={faEye} className="mr-1" />
-                        ID Cliente *
+                        <FontAwesomeIcon icon={faUser} className="mr-1" />
+                        Cliente *
                       </Label>
                       <Input
-                        type="number"
+                        type="select"
                         name="idCliente"
                         id="idCliente"
                         value={formData.idCliente}
-                        onChange={handleChange}
+                        onChange={handleClienteChange}
                         invalid={!!errors.idCliente}
-                        placeholder="Ingrese ID del cliente"
-                      />
+                      >
+                        <option value="">Seleccione un cliente</option>
+                        {clientes.map(cliente => (
+                          <option key={cliente.idCliente} value={cliente.idCliente}>
+                            {getNombreCompletoCliente(cliente)} - DNI: {cliente.persona?.DNI || 'N/A'}
+                          </option>
+                        ))}
+                      </Input>
                       {errors.idCliente && <span className="text-danger">{errors.idCliente}</span>}
+                      {clienteSeleccionado && (
+                        <small className="text-muted">
+                          ID: {clienteSeleccionado.idCliente} | Email: {clienteSeleccionado.persona?.correo || 'N/A'}
+                        </small>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md={6}>
                     <FormGroup>
-                      <Label for="idEmpleado">ID Empleado *</Label>
+                      <Label for="idEmpleado">
+                        <FontAwesomeIcon icon={faUserTie} className="mr-1" />
+                        Empleado *
+                      </Label>
                       <Input
-                        type="number"
+                        type="select"
                         name="idEmpleado"
                         id="idEmpleado"
                         value={formData.idEmpleado}
-                        onChange={handleChange}
+                        onChange={handleEmpleadoChange}
                         invalid={!!errors.idEmpleado}
-                        placeholder="Ingrese ID del empleado"
-                      />
+                      >
+                        <option value="">Seleccione un empleado</option>
+                        {empleados.map(empleado => (
+                          <option key={empleado.idEmpleado} value={empleado.idEmpleado}>
+                            {getNombreCompletoEmpleado(empleado)} - DNI: {empleado.persona?.DNI || 'N/A'}
+                          </option>
+                        ))}
+                      </Input>
                       {errors.idEmpleado && <span className="text-danger">{errors.idEmpleado}</span>}
+                      {empleadoSeleccionado && (
+                        <small className="text-muted">
+                          ID: {empleadoSeleccionado.idEmpleado} | Email: {empleadoSeleccionado.persona?.correo || 'N/A'}
+                        </small>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -295,7 +419,7 @@ const RecetaForm = () => {
                   </Col>
                   <Col md={6}>
                     <FormGroup>
-                      <Label for="Fecha">Fecha *</Label>
+                      <Label for="Fecha">Fecha de Creación *</Label>
                       <Input
                         type="date"
                         name="Fecha"

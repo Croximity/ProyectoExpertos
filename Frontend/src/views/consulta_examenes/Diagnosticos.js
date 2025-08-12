@@ -9,43 +9,72 @@ import {
   Button,
   Table,
   Badge,
-  Input,
   Spinner,
   Alert
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus, 
-  faEdit, 
-  faTrash, 
-  faEye, 
-  faFilter,
   faClipboardCheck,
   faArrowLeft
 } from '@fortawesome/free-solid-svg-icons';
 import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { diagnosticoService } from '../../services/consulta_examenes/diagnosticoService';
+import { tipoEnfermedadService } from '../../services/consulta_examenes/tipoEnfermedadService';
 import { useNavigate } from 'react-router-dom';
 
 const Diagnosticos = () => {
   const navigate = useNavigate();
   const [diagnosticos, setDiagnosticos] = useState([]);
+  const [tiposEnfermedad, setTiposEnfermedad] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    cargarDiagnosticos();
+    cargarDatos();
   }, []);
 
-  const cargarDiagnosticos = async () => {
+  const cargarDatos = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await diagnosticoService.obtenerDiagnosticos();
-      setDiagnosticos(Array.isArray(data) ? data : []);
+      
+      // Cargar diagnósticos y tipos de enfermedad en paralelo
+      const [diagnosticosData, tiposData] = await Promise.all([
+        diagnosticoService.obtenerDiagnosticos(),
+        tipoEnfermedadService.obtenerTiposEnfermedad()
+      ]);
+      
+      setDiagnosticos(Array.isArray(diagnosticosData) ? diagnosticosData : []);
+      setTiposEnfermedad(Array.isArray(tiposData) ? tiposData : []);
+      
     } catch (error) {
-      console.error('Error al cargar diagnósticos:', error);
-      setError('Error al cargar los diagnósticos');
+      console.error('Error al cargar datos:', error);
+      
+      let errorMessage = 'Error al cargar los datos';
+      
+      if (error.response) {
+        // El servidor respondió con un código de error
+        if (error.response.status === 401) {
+          errorMessage = 'Error de autenticación. Los diagnósticos se mostrarán en modo de solo lectura.';
+        } else if (error.response.status === 403) {
+          errorMessage = 'No tiene permisos para acceder a esta información.';
+        } else if (error.response.status === 404) {
+          errorMessage = 'El servicio solicitado no está disponible.';
+        } else if (error.response.status === 500) {
+          errorMessage = 'Error interno del servidor. Los diagnósticos se mostrarán en modo de solo lectura.';
+        } else {
+          errorMessage = `Error del servidor: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        // La petición fue hecha pero no hubo respuesta
+        errorMessage = 'No se pudo conectar con el servidor. Verifique que el backend esté funcionando.';
+      } else {
+        // Algo pasó al configurar la petición
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
       setDiagnosticos([]);
     } finally {
       setLoading(false);
@@ -53,11 +82,13 @@ const Diagnosticos = () => {
   };
 
   const handleCrear = () => {
-    navigate('/admin/consulta-examenes/diagnosticos/nuevo');
+    alert('Para crear un nuevo diagnóstico, debe iniciar sesión en el sistema.');
+    // navigate('/admin/consulta-examenes/diagnosticos/nuevo');
   };
 
   const handleEditar = (id) => {
-    navigate(`/admin/consulta-examenes/diagnosticos/editar/${id}`);
+    alert('Para editar un diagnóstico, debe iniciar sesión en el sistema.');
+    // navigate(`/admin/consulta-examenes/diagnosticos/editar/${id}`);
   };
 
   const handleVer = (id) => {
@@ -65,23 +96,25 @@ const Diagnosticos = () => {
   };
 
   const handleEliminar = async (id) => {
-    if (window.confirm('¿Está seguro de que desea eliminar este diagnóstico?')) {
-      try {
-        await diagnosticoService.eliminarDiagnostico(id);
-        cargarDiagnosticos();
-        alert('Diagnóstico eliminado exitosamente');
-      } catch (error) {
-        console.error('Error al eliminar diagnóstico:', error);
-        alert('Error al eliminar el diagnóstico');
-      }
-    }
+    alert('Para eliminar un diagnóstico, debe iniciar sesión en el sistema.');
+    // if (window.confirm('¿Está seguro de que desea eliminar este diagnóstico?')) {
+    //   try {
+    //     await diagnosticoService.eliminarDiagnostico(id);
+    //     cargarDatos();
+    //     alert('Diagnóstico eliminado exitosamente');
+    //   } catch (error) {
+    //     console.error('Error al eliminar diagnóstico:', error);
+    //     alert('Error al eliminar el diagnóstico');
+    //   }
+    // }
   };
 
-  const truncateText = (text, maxLength = 80) => {
-    if (!text) return 'N/A';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+  const getNombreTipoEnfermedad = (idTipoEnfermedad) => {
+    const tipo = tiposEnfermedad.find(t => t.idTipoEnfermedad === idTipoEnfermedad);
+    return tipo ? (tipo.Nombre || tipo.nombre) : `Tipo ID: ${idTipoEnfermedad}`;
   };
+
+
 
   return (
     <>
@@ -109,6 +142,7 @@ const Diagnosticos = () => {
                     color="success" 
                     size="sm" 
                     onClick={handleCrear}
+                    title="Requiere autenticación"
                   >
                     <FontAwesomeIcon icon={faPlus} className="mr-1" />
                     Nuevo Diagnóstico
@@ -125,77 +159,101 @@ const Diagnosticos = () => {
                 ) : error ? (
                   <Alert color="danger">
                     <strong>Error:</strong> {error}
+                    <br />
+                    <Button color="outline-danger" size="sm" onClick={cargarDatos} className="mt-2">
+                      Reintentar
+                    </Button>
                   </Alert>
                 ) : (
-                  <Table className="align-items-center table-flush" responsive>
-                    <thead className="thead-light">
-                      <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">ID Examen</th>
-                        <th scope="col">Tipo Enfermedad</th>
-                        <th scope="col">Fecha Creación</th>
-                        <th scope="col">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {diagnosticos.length > 0 ? diagnosticos.map((diagnostico) => (
-                        <tr key={diagnostico.idDiagnostico}>
-                          <td>
-                            <Badge color="primary" pill>
-                              {diagnostico.idDiagnostico}
-                            </Badge>
-                          </td>
-                          <td>
-                            <Badge color="info" pill>
-                              {diagnostico.idExamen}
-                            </Badge>
-                          </td>
-                          <td>
-                            <Badge color="warning" pill>
-                              {diagnostico.idTipoEnfermedad}
-                            </Badge>
-                          </td>
-                          <td>
-                            {diagnostico.createdAt ? 
-                              new Date(diagnostico.createdAt).toLocaleDateString('es-ES') : 
-                              'N/A'
-                            }
-                          </td>
-                          <td>
-                            <Button
-                              color="info"
-                              size="sm"
-                              className="mr-2"
-                              onClick={() => handleVer(diagnostico.idDiagnostico)}
-                            >
-                              Ver
-                            </Button>
-                            <Button
-                              color="warning"
-                              size="sm"
-                              className="mr-2"
-                              onClick={() => handleEditar(diagnostico.idDiagnostico)}
-                            >
-                              Editar
-                            </Button>
-                            <Button
-                              color="danger"
-                              size="sm"
-                              onClick={() => handleEliminar(diagnostico.idDiagnostico)}
-                            >
-                              Eliminar
-                            </Button>
-                          </td>
-                        </tr>
-                      )) : (
+                  <>
+                    <Alert color="info" className="mb-3">
+                      <strong>Información:</strong> Los diagnósticos se pueden visualizar sin autenticación. 
+                      Para crear, editar o eliminar diagnósticos, debe iniciar sesión en el sistema.
+                    </Alert>
+                    <div className="mb-3">
+                      <strong>Total de diagnósticos: {diagnosticos.length}</strong>
+                    </div>
+                    <Table className="align-items-center table-flush" responsive>
+                      <thead className="thead-light">
                         <tr>
-                          <td colSpan="5" className="text-center">
-                            No se encontraron diagnósticos
-                          </td>
+                          <th scope="col">ID</th>
+                          <th scope="col">ID Examen</th>
+                          <th scope="col">Tipo de Enfermedad</th>
+                          <th scope="col">Acciones</th>
                         </tr>
-                      )}
-                    </tbody>
-                  </Table>
+                      </thead>
+                      <tbody>
+                        {diagnosticos.length > 0 ? diagnosticos.map((diagnostico) => (
+                          <tr key={diagnostico.idDiagnostico}>
+                            <td>
+                              <Badge color="primary" pill>
+                                {diagnostico.idDiagnostico}
+                              </Badge>
+                            </td>
+                            <td>
+                              <Badge color="info" pill>
+                                {diagnostico.idExamen}
+                              </Badge>
+                            </td>
+                            <td>
+                              <div>
+                                <strong>{getNombreTipoEnfermedad(diagnostico.idTipoEnfermedad)}</strong>
+                                <br />
+                                <small className="text-muted">ID: {diagnostico.idTipoEnfermedad}</small>
+                              </div>
+                            </td>
+
+                            <td>
+                              <Button
+                                color="info"
+                                size="sm"
+                                className="mr-2"
+                                onClick={() => handleVer(diagnostico.idDiagnostico)}
+                              >
+                                Ver
+                              </Button>
+                              <Button
+                                color="warning"
+                                size="sm"
+                                className="mr-2"
+                                onClick={() => handleEditar(diagnostico.idDiagnostico)}
+                                title="Requiere autenticación"
+                              >
+                                Editar
+                              </Button>
+                              <Button
+                                color="danger"
+                                size="sm"
+                                onClick={() => handleEliminar(diagnostico.idDiagnostico)}
+                                title="Requiere autenticación"
+                              >
+                                Eliminar
+                              </Button>
+                            </td>
+                          </tr>
+                        )) : (
+                          <tr>
+                            <td colSpan="4" className="text-center">
+                              <Alert color="warning">
+                                No se encontraron diagnósticos
+                                <br />
+                                <small>Esto puede deberse a que no hay datos en la base de datos o hay un problema de conexión</small>
+                                <br />
+                                <Button 
+                                  color="outline-warning" 
+                                  size="sm" 
+                                  onClick={cargarDatos} 
+                                  className="mt-2"
+                                >
+                                  Reintentar
+                                </Button>
+                              </Alert>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </Table>
+                  </>
                 )}
               </CardBody>
             </Card>

@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize');
 const db = require('../../configuraciones/db');
-const Examen_Vista = require('./Examen_Vista');
-const TipoEnfermedad = require('./TipoEnfermedad');
 
 const Diagnostico = db.define('Diagnostico', {
   idDiagnostico: {
@@ -11,26 +9,26 @@ const Diagnostico = db.define('Diagnostico', {
   },
   idExamen: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'examen_vista',
-      key: 'idExamen'
-    }
+    allowNull: false
   },
   idTipoEnfermedad: {
     type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  Fecha: {
+    type: DataTypes.DATE,
     allowNull: false,
-    references: {
-      model: 'tipo_enfermedad',
-      key: 'idTipoEnfermedad'
-    }
+    defaultValue: DataTypes.NOW
   }
 }, {
   tableName: 'diagnostico',
-  timestamps: false
+  timestamps: false,
+  // Deshabilitar las asociaciones automáticas para evitar problemas
+  freezeTableName: true
 });
 
-Diagnostico.belongsTo(Examen_Vista, { foreignKey: 'idExamen', as: 'examen_vista' });
-Diagnostico.belongsTo(TipoEnfermedad, { foreignKey: 'idTipoEnfermedad', as: 'tipo_enfermedad' });
+// Comentar las asociaciones por ahora para evitar problemas circulares
+// Diagnostico.belongsTo(Examen_Vista, { foreignKey: 'idExamen', as: 'examen_vista' });
+// Diagnostico.belongsTo(TipoEnfermedad, { foreignKey: 'idTipoEnfermedad', as: 'tipo_enfermedad' });
 
 module.exports = Diagnostico; 

@@ -29,11 +29,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { recetaService } from '../../services/consulta_examenes/recetaService';
+import { clienteService } from '../../services/gestion_cliente/clienteService';
+import { empleadoService } from '../../services/gestion_cliente/empleadoService';
 import { useNavigate } from 'react-router-dom';
 
 const Recetas = () => {
   const navigate = useNavigate();
   const [recetas, setRecetas] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [empleados, setEmpleados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filtros, setFiltros] = useState({
@@ -45,8 +49,32 @@ const Recetas = () => {
   });
 
   useEffect(() => {
-    cargarRecetas();
+    cargarDatos();
   }, []);
+
+  const cargarDatos = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Cargar recetas, clientes y empleados en paralelo
+      const [recetasData, clientesData, empleadosData] = await Promise.all([
+        recetaService.obtenerRecetas(),
+        clienteService.obtenerClientes(),
+        empleadoService.obtenerEmpleados()
+      ]);
+      
+      setRecetas(Array.isArray(recetasData) ? recetasData : []);
+      setClientes(Array.isArray(clientesData) ? clientesData : []);
+      setEmpleados(Array.isArray(empleadosData) ? empleadosData : []);
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+      setError('Error al cargar los datos');
+      setRecetas([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const cargarRecetas = async (filtrosActuales = {}) => {
     try {
@@ -116,7 +144,31 @@ const Recetas = () => {
 
   const formatearFecha = (fecha) => {
     if (!fecha) return 'N/A';
-    return new Date(fecha).toLocaleDateString('es-ES');
+    try {
+      return new Date(fecha).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Fecha inválida';
+    }
+  };
+
+  const getNombreCompletoCliente = (idCliente) => {
+    const cliente = clientes.find(c => c.idCliente === idCliente);
+    if (!cliente || !cliente.persona) return `Cliente ID: ${idCliente}`;
+    const persona = cliente.persona;
+    return `${persona.Pnombre || ''} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim() || `Cliente ID: ${idCliente}`;
+  };
+
+  const getNombreCompletoEmpleado = (idEmpleado) => {
+    const empleado = empleados.find(e => e.idEmpleado === idEmpleado);
+    if (!empleado || !empleado.persona) return `Empleado ID: ${idEmpleado}`;
+    const persona = empleado.persona;
+    return `${persona.Pnombre || ''} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim() || `Empleado ID: ${idEmpleado}`;
   };
 
   return (
@@ -242,7 +294,7 @@ const Recetas = () => {
                         <th scope="col">Empleado</th>
                         <th scope="col">Agudeza Visual</th>
                         <th scope="col">Tipo Lente</th>
-                        <th scope="col">Fecha</th>
+                        <th scope="col">Fecha de Creación</th>
                         <th scope="col">Acciones</th>
                       </tr>
                     </thead>
@@ -254,11 +306,35 @@ const Recetas = () => {
                               {receta.idReceta}
                             </Badge>
                           </td>
-                          <td>{receta.idCliente}</td>
-                          <td>{receta.idEmpleado}</td>
+                          <td>
+                            <div>
+                              <strong>{getNombreCompletoCliente(receta.idCliente)}</strong>
+                              <br />
+                              <small className="text-muted">ID: {receta.idCliente}</small>
+                            </div>
+                          </td>
+                          <td>
+                            <div>
+                              <strong>{getNombreCompletoEmpleado(receta.idEmpleado)}</strong>
+                              <br />
+                              <small className="text-muted">ID: {receta.idEmpleado}</small>
+                            </div>
+                          </td>
                           <td>{receta.Agudeza_Visual || 'N/A'}</td>
-                          <td>{receta.Tipo_Lente || 'N/A'}</td>
-                          <td>{formatearFecha(receta.Fecha)}</td>
+                          <td>
+                            {receta.Tipo_Lente ? (
+                              <Badge color="info" pill>
+                                {receta.Tipo_Lente}
+                              </Badge>
+                            ) : (
+                              'N/A'
+                            )}
+                          </td>
+                          <td>
+                            <div>
+                              <strong>{formatearFecha(receta.Fecha)}</strong>
+                            </div>
+                          </td>
                           <td>
                             <Button
                               color="info"
