@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, CardHeader, CardBody, Container, Row, Col, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { categoriaProductoService } from '../../services/productos/categoriaProductoService';
 import { useToast } from '../../hooks/useToast';
-import Header from 'components/Headers/Header.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import Toast from 'components/Toast/Toast';
 
 const Categorias = () => {
@@ -49,7 +49,7 @@ const Categorias = () => {
 
   return (
     <>
-      <Header />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Toast show={toast.show} message={toast.message} type={toast.type} onClose={hideToast} />
         <Row>

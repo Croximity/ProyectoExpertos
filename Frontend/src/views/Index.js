@@ -1,4 +1,4 @@
-// Dashboard mejorado para Canal 40
+// Dashboard mejorado 
 import { useState } from "react";
 import classnames from "classnames";
 import { Line, Bar } from "react-chartjs-2";

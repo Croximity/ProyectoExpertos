@@ -1,11 +1,14 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 export const useToast = () => {
-  const [toast, setToast] = useState({
+  // Memoizar el estado inicial para evitar recreaciones
+  const initialState = useMemo(() => ({
     show: false,
     message: '',
     type: 'success'
-  });
+  }), []);
+
+  const [toast, setToast] = useState(initialState);
 
   const showToast = useCallback((message, type = 'success', duration = 3000) => {
     setToast({
@@ -36,7 +39,8 @@ export const useToast = () => {
     showToast(message, 'info');
   }, [showToast]);
 
-  return {
+  // Memoizar el objeto de retorno para evitar recreaciones innecesarias
+  const toastActions = useMemo(() => ({
     toast,
     showToast,
     hideToast,
@@ -44,5 +48,7 @@ export const useToast = () => {
     showError,
     showWarning,
     showInfo
-  };
+  }), [toast, showToast, hideToast, showSuccess, showError, showWarning, showInfo]);
+
+  return toastActions;
 };

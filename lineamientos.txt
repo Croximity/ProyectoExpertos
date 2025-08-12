@@ -1,0 +1,78 @@
+# Lineamientos para el Despliegue y Evaluación del Sistema de Facturación en React
+
+## Requisitos Previos
+- Sistema operativo: Linux (Ubuntu recomendado)
+- Node.js y npm instalados
+- Apache2 instalado y activo
+- PM2 instalado globalmente (`npm install -g pm2`)
+- Proyecto React (frontend) y Node.js (backend) listos para producción
+
+## Preparar el Backend (Node.js)
+1. Instalar dependencias: `npm install`
+2. Configurar archivo de entrada (ej. `index.js` o `server.js`)
+3. Ejecutar con PM2: `pm2 start index.js --name facturación-backend`
+4. Guardar procesos de PM2: `pm2 save`
+5. Habilitar PM2 al reiniciar: `pm2 startup`
+
+## Preparar el Frontend (React)
+1. Compilar para producción: `npm run build`
+2. Mover el contenido de `/build` a una carpeta pública: `sudo mv build /var/www/html/facturación`
+
+## Configurar Apache como Proxy
+1. Habilitar módulos necesarios:
+   - `sudo a2enmod proxy`
+   - `sudo a2enmod proxy_http`
+   - `sudo a2enmod rewrite`
+2. Crear archivo de configuración del sitio (ej. `/etc/apache2/sites-available/facturacion.conf`) con contenido:
+
+<VirtualHost *:80>
+ServerName facturacion.local
+DocumentRoot /var/www/html/facturacion
+<Directory /var/www/html/facturacion>
+Options Indexes FollowSymLinks
+AllowOverride All
+Require all granted
+</Directory>
+ProxyPass /api http://localhost:3000/api
+ProxyPassReverse /api http://localhost:3000/api
+</VirtualHost>
+
+3. Activar el sitio:
+- `sudo a2ensite facturacion.conf`
+- `sudo systemctl reload apache2`
+
+## Configurar `.htaccess` para React Routing
+Crear archivo `.htaccess` en `/var/www/html/facturacion` con:
+
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+
+## Verificar el Despliegue
+- Acceder a `http://localhost` o `http://facturacion.local`
+- Verificar que el frontend carga correctamente y las rutas `/api` se redirigen al backend.
+
+## Adicionales
+- Monitorear el backend: `pm2 monit`
+- Reiniciar el backend: `pm2 restart facturacion-backend`
+- Ver logs: `pm2 logs facturacion-backend`
+
+## Rúbrica de Evaluación
+| Criterio | Excelente | Bueno | Aceptable | Insuficiente |
+|---|---|---|---|---|
+| **Autenticación con Token (5%)** | JWT con almacenamiento seguro, expiración y renovación | JWT funcional sin expiración | Autenticación básica con token | Token mal implementado o ausente |
+| **Migración a MongoDB (10%)** | Migración exitosa con hashing, roles y seguridad | Migración funcional sin roles | Migración parcial con fallos | Migración ausente o con errores graves |
+| **Uso de Hooks (10%)** | Uso eficiente de todos los hooks | Uso correcto de hooks principales | Uso básico de useState y useEffect | Uso incorrecto o ausente |
+| **Validación de Formularios (10%)** | Validaciones completas con mensajes claros | Validaciones funcionales pero limitadas | Validaciones mínimas | Sin validaciones o no funcionales |
+| **Conexión con API (5%)** | Conexión robusta con manejo de errores | Conexión funcional con manejo básico | Conexión estable sin manejo de errores | Conexión inestable o ausente |
+| **Modificación de la API (5%)** | API adaptada con endpoints bien estructurados | API modificada parcialmente | API modificada mínimamente | API no modificada |
+| **Manejo de Imágenes (5%)** | Subir, visualizar, modificar y eliminar imágenes | Subir y visualizar imágenes sin edición | Subir imágenes sin control | No permite manejo de imágenes |
+| **Envío de Correos (5%)** | Envío con plantillas dinámicas y validación | Envío funcional con contenido básico | Envío básico sin validación | No implementa envío de correos |
+| **Despliegue con PM2 y Apache (15%)** | Despliegue exitoso y documentado | Despliegue funcional sin configuración completa | Despliegue parcial | No se realizó el despliegue |
+| **Interfaz de Usuario (10%)** | UI intuitiva, responsiva y profesional | UI funcional con diseño básico | UI con navegación confusa | UI incompleta |
+| **Modularidad del Código (10%)** | Componentes bien estructurados y reutilizables | Componentes organizados con acoplamiento | Código funcional pero mezclado | Código desorganizado |
+| **Exposición Oral (10%)** | Claridad, dominio técnico y vestimenta formal | Seguridad con lenguaje técnico limitado | Dificultad en exposición | No expone o sin preparación |

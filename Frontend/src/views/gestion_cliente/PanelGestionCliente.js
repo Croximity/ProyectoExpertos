@@ -33,6 +33,7 @@ import { useNavigate } from 'react-router-dom';
 import { clienteService } from '../../services/gestion_cliente/clienteService';
 import { empleadoService } from '../../services/gestion_cliente/empleadoService';
 import { useToast } from '../../hooks/useToast';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 
 const PanelGestionCliente = () => {
   const [stats, setStats] = useState({
@@ -102,22 +103,20 @@ const PanelGestionCliente = () => {
   };
 
   return (
-    <Container fluid>
-      {/* Header */}
-      <Row className="mb-4">
+    <>
+    <HeaderBlanco />
+    <Container className="mt--7" fluid>
+      <Row><Col><Card className="shadow">     {/* Header */}
+      <Row className="mb-2">
         <Col>
-          <h1 className="display-4 text-primary">
-            <FontAwesomeIcon icon={faUsers} className="me-3" />
-            Gestión de Clientes
-          </h1>
-          <p className="lead text-muted">
+          <h2 className=" text-primary p-3">
             Administra clientes y empleados de la óptica
-          </p>
+          </h2>
         </Col>
       </Row>
 
       {/* Estadísticas */}
-      <Row className="mb-4">
+      <Row className="mb-4 p-2">
         <Col lg={3} md={6} className="mb-3">
           <Card className="border-left-primary shadow h-100">
             <CardBody>
@@ -200,7 +199,7 @@ const PanelGestionCliente = () => {
       </Row>
 
       {/* Acciones Rápidas */}
-      <Row className="mb-4">
+      <Row className="mb-4 p-2">
         <Col>
           <Card className="shadow">
             <CardHeader className="bg-primary text-white">
@@ -240,7 +239,7 @@ const PanelGestionCliente = () => {
       </Row>
 
       {/* Contenido Reciente */}
-      <Row>
+      <Row className="p-2">
         {/* Clientes Recientes */}
         <Col lg={6} className="mb-4">
           <Card className="shadow">
@@ -351,7 +350,7 @@ const PanelGestionCliente = () => {
       </Row>
 
       {/* Información Adicional */}
-      <Row>
+      <Row className="p-2">
         <Col>
           <Card className="shadow">
             <CardHeader className="bg-light">
@@ -394,7 +393,10 @@ const PanelGestionCliente = () => {
           </Card>
         </Col>
       </Row>
+      </Card></Col></Row> 
     </Container>
+
+    </>
   );
 };
 

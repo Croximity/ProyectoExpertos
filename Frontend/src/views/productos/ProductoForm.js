@@ -4,7 +4,7 @@ import { Button, Card, CardHeader, CardBody, Container, Row, Col, Form, FormGrou
 import { productoService } from '../../services/productos/productoService';
 import { categoriaProductoService } from '../../services/productos/categoriaProductoService';
 import { useToast } from '../../hooks/useToast';
-import Header from 'components/Headers/Header.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import Toast from 'components/Toast/Toast';
 import axiosInstance from '../../utils/axiosConfig';
 
@@ -106,7 +106,7 @@ const ProductoForm = () => {
 
   return (
     <>
-      <Header />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Toast show={toast.show} message={toast.message} type={toast.type} onClose={hideToast} />
         <Row>

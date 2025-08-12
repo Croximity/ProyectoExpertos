@@ -321,7 +321,7 @@ const Profile = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardBody className="pt-0 pt-md-4">
+              <CardBody className="pt-0 pt-md-6">
                 <div className="text-center">
                   <h3>
                     {getNombreCompleto()}

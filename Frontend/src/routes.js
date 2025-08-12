@@ -21,7 +21,7 @@ import PanelGestionCliente from "views/gestion_cliente/PanelGestionCliente.js";
 
 // Facturación
 import PanelFacturacion from "views/facturacion/PanelFacturacion";
-import CrearFactura from "views/facturacion/CrearFactura";
+
 import HistorialFactura from "views/facturacion/HistorialFactura";
 import Factura from "views/facturacion/Factura";
 import RegistrarPago from "views/facturacion/RegistrarPago";
@@ -185,14 +185,6 @@ const routes = [
     icon: "ni ni-single-copy-04 text-pink",  
     component: ListaFacturas,  
     layout: "/admin",  
-  }, 
-  {
-    path: "/facturacion/crear",
-    name: "Crear Factura",
-    icon: "ni ni-fat-add text-green",
-    component: CrearFactura,
-    layout: "/admin",
-    hidden: true,
   },
   {
     path: "/facturacion/historial",
@@ -408,7 +400,7 @@ const routes = [
 
   // Seguridad
   {
-    path: "/profile",
+    path: "/user-profile",
     name: "Perfil",
     icon: "ni ni-single-02 text-yellow",
     component: Profile,

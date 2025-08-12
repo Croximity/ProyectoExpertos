@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 
 // Header del dashboard
-import Header from "components/Headers/Header.js";
+import HeaderBlanco from "components/Headers/HeaderBlanco.js";
 import { useNavigate } from 'react-router-dom';
 import { clienteService } from '../../services/gestion_cliente/clienteService';
 import { useToast } from '../../hooks/useToast';
@@ -135,7 +135,7 @@ const Clientes = () => {
 
   return (
     <>
-      <Header />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Row>
           <Col>

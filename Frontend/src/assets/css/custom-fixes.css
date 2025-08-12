@@ -1,0 +1,19 @@
+/* =========================================================
+* Custom Fixes for ProyectoExpertos
+* =========================================================
+* This file contains custom CSS fixes for specific issues
+*/
+
+
+/* Ensure the main content area starts immediately after navbar */
+.main-content {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+
+/* Fix for any parent containers */
+#root, .App {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, CardHeader, CardBody, Container, Row, Col, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { productoService } from '../../services/productos/productoService';
 import { useToast } from '../../hooks/useToast';
-import Header from 'components/Headers/Header.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import Toast from 'components/Toast/Toast';
 import axiosInstance from '../../utils/axiosConfig';
 
@@ -58,7 +58,7 @@ const Productos = () => {
 
   return (
     <>
-      <Header />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Toast show={toast.show} message={toast.message} type={toast.type} onClose={hideToast} />
         <Row>

@@ -15,7 +15,7 @@ const AdminFooter = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Canal 40
+              Óptica Velasquez 
             </a>{" "}
             - Todos los derechos reservados
           </div>
@@ -25,7 +25,7 @@ const AdminFooter = () => {
           <Nav className="nav-footer justify-content-center justify-content-xl-end">
             <NavItem>
               <NavLink
-                href="https://www.facebook.com/profile.php?id=100079642344803"
+                href="https://www.facebook.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-default"
@@ -36,7 +36,7 @@ const AdminFooter = () => {
 
             <NavItem>
               <NavLink
-                href="https://www.instagram.com/television_comayagua?igsh=amo0YzV2MTRvbW5t"
+                href="https://www.instagram.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-default"
@@ -47,7 +47,7 @@ const AdminFooter = () => {
 
             <NavItem>
               <NavLink
-                href="http://www.tiktok.com/@canal40comayagua" // Cambia por tu número real
+                href="http://www.tiktok.com/" // Cambia por tu número real
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-pdefault"
@@ -58,7 +58,7 @@ const AdminFooter = () => {
 
             <NavItem>
               <NavLink
-                href="https://wa.me/50489871034?text=Hola,%20Canal%2040,%20me%20interesa%20sus%20servicios."
+                href=""
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-default"
@@ -69,7 +69,7 @@ const AdminFooter = () => {
 
             <NavItem>
               <NavLink
-                href="https://www.televisioncomayagua.com"
+                href=""
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-default"

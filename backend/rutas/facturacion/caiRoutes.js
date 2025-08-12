@@ -41,7 +41,7 @@ const { body, param, validationResult, query } = require('express-validator');
  *                 fechaEmision: "2025-01-01"  
  *                 fechaVencimiento: "2025-12-31"  
  *                 resolucionSAR: "SAR No. 45145"  
- *                 nombreEmpresa: "Televisión Comayagua Canal 40"  
+ *                 nombreEmpresa: "Óptica Velasquez "  
  *                 rtnEmpresa: "12171961001526"  
  *                 activo: true  
  *                 facturasEmitidas: 0  
@@ -92,7 +92,7 @@ router.get('/cai/activo', verificarUsuario, caiController.obtenerCAIActivo);
  *             fechaEmision: "2025-01-01"  
  *             fechaVencimiento: "2025-12-31"  
  *             resolucionSAR: "SAR No. 45145"  
- *             nombreEmpresa: "Televisión Comayagua Canal 40"  
+ *             nombreEmpresa: "Óptica Velasquez "  
  *             rtnEmpresa: "12171961001526"  
  *             activo: true  
  *             facturasEmitidas: 0  
@@ -231,7 +231,7 @@ router.post('/cai',
  *             fechaEmision: "2025-01-01"  
  *             fechaVencimiento: "2025-12-31"  
  *             resolucionSAR: "SAR No. 45145"  
- *             nombreEmpresa: "Televisión Comayagua Canal 40"  
+ *             nombreEmpresa: "Óptica Velasquez "  
  *             rtnEmpresa: "12171961001526"  
  *             activo: false  
  *             facturasEmitidas: 150  

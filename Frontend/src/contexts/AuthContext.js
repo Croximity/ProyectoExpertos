@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo, useCallback } from 'react';
 import { authService } from '../services/seguridad/authService';
 import { useAuthPersistence } from '../hooks/useAuthPersistence';
 
@@ -8,33 +8,44 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const { user, setUser, loading } = useAuthPersistence();
 
-  const login = async (credentials) => {
+  // Memoizar funciones para evitar recreaciones en cada render
+  const login = useCallback(async (credentials) => {
     const response = await authService.login(credentials);
     if (!response.requiere_2fa) {
       const currentUser = authService.getCurrentUser();
       setUser(currentUser);
     }
     return response;
-  };
+  }, [setUser]);
 
-  const verifyPin = async (pinData) => {
+  const verifyPin = useCallback(async (pinData) => {
     const response = await authService.verifyPin(pinData);
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
     return response;
-  };
+  }, [setUser]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     authService.logout();
     setUser(null);
-  };
+  }, [setUser]);
 
-  const isAuthenticated = () => {
+  const isAuthenticated = useCallback(() => {
     return !!user;
-  };
+  }, [user]);
+
+  // Memoizar el valor del contexto para evitar re-renders innecesarios
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    login,
+    logout,
+    verifyPin,
+    isAuthenticated
+  }), [user, loading, login, logout, verifyPin, isAuthenticated]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, verifyPin, isAuthenticated }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

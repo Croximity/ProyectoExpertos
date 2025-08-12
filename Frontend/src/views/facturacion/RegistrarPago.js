@@ -94,7 +94,7 @@ const RegistrarPago = () => {
     const doc = new jsPDF();
 
     doc.setFontSize(18);
-    doc.text("Recibo de Pago - Canal 40", 14, 20);
+    doc.text("Recibo de Pago - Óptica Velásquez", 14, 20);
 
     doc.setFontSize(12);
     doc.text(`Factura: ${pago.factura}`, 14, 30);
