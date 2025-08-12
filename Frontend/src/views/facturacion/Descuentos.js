@@ -21,7 +21,7 @@ import {
   InputGroup,
   InputGroupText
 } from "reactstrap";
-import HeaderResponsive from "components/Headers/HeaderResponsive";
+import HeaderBlanco from "components/Headers/HeaderBlanco";
 import { descuentoService } from "../../services/facturacion/descuentoService";
 import "./Descuentos.css";
 
@@ -209,7 +209,7 @@ const Descuentos = () => {
 
   return (
     <>
-      <HeaderResponsive />
+      <HeaderBlanco />
       <div className="main-content">
         <Container fluid>
           <Row>

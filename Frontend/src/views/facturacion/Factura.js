@@ -10,7 +10,7 @@ import {
   Alert,
   Spinner
 } from 'reactstrap';
-import Header from 'components/Headers/Header.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 
 const Factura = () => {
   const { id } = useParams();
@@ -46,7 +46,7 @@ const Factura = () => {
   if (loading) {
     return (
       <>
-        <Header />
+        <HeaderBlanco/>
         <Container className="mt--7" fluid>
           <Row>
             <Col>
@@ -66,7 +66,7 @@ const Factura = () => {
   if (error) {
     return (
       <>
-        <Header />
+        <HeaderBlanco />
         <Container className="mt--7" fluid>
           <Row>
             <Col>
@@ -82,7 +82,7 @@ const Factura = () => {
 
   return (
     <>
-      <Header />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Row>
           <Col>

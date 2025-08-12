@@ -16,7 +16,7 @@ import {
   Alert
 } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import HeaderResponsive from "components/Headers/HeaderResponsive";
+import HeaderBlanco from "components/Headers/HeaderBlanco";
 import { facturaService } from "../../services/facturacion/facturaService";
 
 const PanelFacturacion = () => {
@@ -152,7 +152,7 @@ const PanelFacturacion = () => {
   if (loading) {
     return (
       <>
-        <HeaderResponsive />
+        <HeaderBlanco />
         <Container className="mt-4">
           <Row className="justify-content-center">
             <Col className="text-center">
@@ -167,7 +167,7 @@ const PanelFacturacion = () => {
 
   return (
     <>
-      <HeaderResponsive />
+      <HeaderBlanco />
       <Container className="mt-4">
         {error && (
           <Alert color="danger" className="mb-4">

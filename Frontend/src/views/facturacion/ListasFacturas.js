@@ -15,7 +15,7 @@ import {
   InputGroupAddon,  
   InputGroupText  
 } from 'reactstrap';  
-import Header from 'components/Headers/Header.js';  
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';  
 import { facturaService } from 'services/facturacion/facturaService.js';  
   
 const ListaFacturas = () => {  
@@ -89,7 +89,7 @@ const ListaFacturas = () => {
   
   return (  
     <>  
-      <Header />  
+      <HeaderBlanco />  
       <Container className="mt--7" fluid>  
         <Row>  
           <Col>  
