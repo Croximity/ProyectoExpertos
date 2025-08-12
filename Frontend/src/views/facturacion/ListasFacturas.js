@@ -32,6 +32,19 @@ const ListaFacturas = () => {
     try {  
       setLoading(true);  
       const response = await facturaService.obtenerFacturas();  
+      console.log('Datos de facturas recibidos:', response);
+      console.log('Primera factura (si existe):', response.facturas?.[0]);
+      
+      // Log detallado de fechas para depuración
+      if (response.facturas && response.facturas.length > 0) {
+        response.facturas.forEach((factura, index) => {
+          console.log(`Factura ${index + 1} - ID: ${factura.idFactura}`);
+          console.log(`  Fecha original:`, factura.Fecha);
+          console.log(`  Tipo de fecha:`, typeof factura.Fecha);
+          console.log(`  Fecha como objeto:`, new Date(factura.Fecha));
+        });
+      }
+      
       setFacturas(response.facturas || []);  
       setError(null);  
     } catch (error) {  
@@ -51,7 +64,7 @@ const ListaFacturas = () => {
     }
   };
 
-  const handleAnularFactura = async (factura) => {
+    const handleAnularFactura = async (factura) => {
     if (window.confirm(`¿Está seguro de que desea anular la factura #${factura.idFactura}? Esta acción no se puede deshacer.`)) {
       try {
         setLoading(true);
@@ -69,19 +82,65 @@ const ListaFacturas = () => {
     }
   };
   
-  const facturasFiltradas = facturas.filter(factura =>  
-    factura.idFactura.toString().includes(filtro) ||  
-    (factura.cliente?.persona?.nombre || '').toLowerCase().includes(filtro.toLowerCase()) ||  
-    factura.estadoFactura.toLowerCase().includes(filtro.toLowerCase())  
-  );  
-  
   const formatearFecha = (fecha) => {  
-    return new Date(fecha).toLocaleDateString('es-HN');  
+    if (!fecha) return 'Fecha no disponible';
+    
+    try {
+      // Crear objeto Date directamente (funciona bien con formato ISO)
+      const fechaObj = new Date(fecha);
+      
+      // Verificar si la fecha es válida
+      if (isNaN(fechaObj.getTime())) {
+        console.warn('Fecha inválida recibida:', fecha);
+        return 'Fecha inválida';
+      }
+      
+      // Formatear la fecha y hora en formato español de Honduras
+      const fechaFormateada = fechaObj.toLocaleDateString('es-HN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+      
+      // Formatear la hora
+      const horaFormateada = fechaObj.toLocaleTimeString('es-HN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      // Retornar fecha y hora
+      return `${fechaFormateada} ${horaFormateada}`;
+    } catch (error) {
+      console.error('Error formateando fecha:', error);
+      return 'Error en fecha';
+    }
   };  
   
   const formatearMoneda = (monto) => {  
     return `L. ${parseFloat(monto).toFixed(2)}`;  
-  };  
+  };
+  
+  const facturasFiltradas = facturas.filter(factura => {
+    const nombreCliente = factura.cliente?.persona ? 
+      `${factura.cliente.persona.Pnombre || ''} ${factura.cliente.persona.Snombre || ''} ${factura.cliente.persona.Papellido || ''} ${factura.cliente.persona.Sapellido || ''}`.trim()
+      : '';
+    
+    // Formatear fecha para búsqueda
+    const fechaFormateada = formatearFecha(factura.Fecha);
+    
+    // Formatear total para búsqueda
+    const totalFormateado = formatearMoneda(factura.Total_Facturado);
+    
+    // Convertir filtro a minúsculas para búsqueda insensible a mayúsculas
+    const filtroLower = filtro.toLowerCase();
+    
+    return factura.idFactura.toString().includes(filtro) ||  
+           nombreCliente.toLowerCase().includes(filtroLower) ||  
+           factura.estadoFactura.toLowerCase().includes(filtroLower) ||
+           fechaFormateada.toLowerCase().includes(filtroLower) ||
+           totalFormateado.toLowerCase().includes(filtroLower) ||
+           factura.Total_Facturado.toString().includes(filtro);
+  });  
   
   const getBadgeColor = (estado) => {  
     return estado === 'activa' ? 'success' : 'danger';  
@@ -111,19 +170,22 @@ const ListaFacturas = () => {
                 </Row>  
                 <Row className="mt-3">  
                   <Col md="6">  
-                    <InputGroup>  
-                      <InputGroupAddon addonType="prepend">  
-                        <InputGroupText>  
-                          <i className="fas fa-search" />  
-                        </InputGroupText>  
-                      </InputGroupAddon>  
-                      <Input  
-                        placeholder="Buscar por número, cliente o estado..."  
-                        type="text"  
-                        value={filtro}  
-                        onChange={(e) => setFiltro(e.target.value)}  
-                      />  
-                    </InputGroup>  
+                                         <InputGroup>  
+                       <InputGroupAddon addonType="prepend">  
+                         <InputGroupText>  
+                           <i className="fas fa-search" />  
+                         </InputGroupText>  
+                       </InputGroupAddon>  
+                       <Input  
+                         placeholder="Buscar por número, cliente, estado, fecha/hora o total..."  
+                         type="text"  
+                         value={filtro}  
+                         onChange={(e) => setFiltro(e.target.value)}  
+                       />  
+                     </InputGroup>
+                     <small className="text-muted mt-1">
+                       Ejemplos: "2024", "Juan", "activa", "15/12", "02:18", "150.00"
+                     </small>  
                   </Col>  
                   <Col md="6" className="text-right">  
                     <Button  
@@ -177,14 +239,16 @@ const ListaFacturas = () => {
                               {factura.idFactura.toString().padStart(8, '0')}  
                             </span>  
                           </td>  
+                                                     <td>  
+                             <span className="mb-0 text-sm">  
+                               {formatearFecha(factura.Fecha)}  
+                             </span>  
+                           </td>  
                           <td>  
                             <span className="mb-0 text-sm">  
-                              {formatearFecha(factura.Fecha)}  
-                            </span>  
-                          </td>  
-                          <td>  
-                            <span className="mb-0 text-sm">  
-                              {factura.cliente?.persona?.nombre || 'Cliente no disponible'}  
+                              {factura.cliente?.persona ? 
+                                `${factura.cliente.persona.Pnombre || ''} ${factura.cliente.persona.Snombre || ''} ${factura.cliente.persona.Papellido || ''} ${factura.cliente.persona.Sapellido || ''}`.trim() || 'Cliente no disponible'
+                                : 'Cliente no disponible'}  
                             </span>  
                           </td>  
                           <td>  

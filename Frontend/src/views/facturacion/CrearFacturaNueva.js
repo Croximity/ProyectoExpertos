@@ -1,6 +1,7 @@
 // views/Facturas/CrearFacturaNueva.js  
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {  
   Card,  
   CardHeader,  
@@ -18,6 +19,7 @@ import {
 } from 'reactstrap';  
 import { InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
+import Toast from 'components/Toast/Toast.js';
 import { facturaService } from '../../services/facturacion/facturaService.js';  
 import { caiService } from '../../services/facturacion/caiService.js';
 import { clienteService } from '../../services/gestion_cliente/clienteService';
@@ -45,6 +47,7 @@ const descuentoService = {
 };
   
 const CrearFacturaNueva = () => {  
+  const navigate = useNavigate();
   const [factura, setFactura] = useState({  
     idCliente: '',  
     idFormaPago: '1',
@@ -69,7 +72,10 @@ const CrearFacturaNueva = () => {
   
   const [descuentos, setDescuentos] = useState([{ idDescuento: '', monto: 0 }]);
   const [loading, setLoading] = useState(false);  
-  const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });  
+  const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');  
   
   // Estados para datos de referencia
   const [caiActivo, setCaiActivo] = useState(null);
@@ -255,6 +261,13 @@ const CrearFacturaNueva = () => {
     // Recalcular totales después de cambiar descuentos
     calcularTotales(detalles, nuevosDescuentos);
   }, [descuentos, descuentosDisponibles, detalles, calcularTotales]);
+
+  // Función para mostrar Toast
+  const mostrarToast = useCallback((mensaje, tipo = 'success') => {
+    setToastMessage(mensaje);
+    setToastType(tipo);
+    setShowToast(true);
+  }, []);
 
   // Función para obtener el DNI del cliente seleccionado
   const obtenerDNICliente = useCallback(() => {
@@ -460,7 +473,8 @@ const CrearFacturaNueva = () => {
   const handleSubmit = async (e) => {  
     e.preventDefault();  
     setLoading(true);  
-    setMensaje({ tipo: '', texto: '' });  
+    setMensaje({ tipo: '', texto: '' });
+    setShowToast(false);  
   
     try {  
       // Validaciones básicas  
@@ -525,13 +539,16 @@ const CrearFacturaNueva = () => {
       // Debug: verificar los datos finales
       console.log('Datos finales a enviar:', data);  
   
-      const response = await facturaService.crearFacturaCompleta(data);  
+            const response = await facturaService.crearFacturaCompleta(data);  
         
-      setMensaje({   
-        tipo: 'success',   
-        texto: `Factura creada exitosamente. ID: ${response.factura?.idFactura}`   
-      });  
-  
+      // Mostrar mensaje de éxito en el Toast
+      mostrarToast(`Factura creada exitosamente. ID: ${response.factura?.idFactura}. Redirigiendo a la lista de facturas...`, 'success');
+
+      // Esperar un momento para mostrar el mensaje de éxito antes de redirigir
+      setTimeout(() => {
+        navigate('/admin/facturas');
+      }, 2000);
+
       // Limpiar formulario  
       setFactura({  
         idCliente: '',  
@@ -563,10 +580,8 @@ const CrearFacturaNueva = () => {
   
     } catch (error) {  
       console.error('Error:', error);  
-      setMensaje({   
-        tipo: 'danger',   
-        texto: error.message || 'Error al crear la factura'   
-      });  
+      // Mostrar mensaje de error en el Toast
+      mostrarToast(error.message || 'Error al crear la factura', 'danger');
     } finally {  
       setLoading(false);  
     }  
@@ -588,7 +603,7 @@ const CrearFacturaNueva = () => {
 
 
 
-  if (loadingData) {
+    if (loadingData) {
     return (
       <>
         <HeaderBlanco />
@@ -601,10 +616,10 @@ const CrearFacturaNueva = () => {
                   <p>Cargando datos...</p>
                 </CardBody>
               </Card>
-            </Col>
-          </Row>
-        </Container>
-      </>
+            </Col>  
+          </Row>  
+        </Container>  
+      </>  
     );
   }
   
@@ -620,15 +635,10 @@ const CrearFacturaNueva = () => {
                   <Col>  
                     <h3 className="mb-0">Crear Nueva Factura</h3>  
                   </Col>  
+                  
                 </Row>  
               </CardHeader>  
-              <CardBody>  
-                {mensaje.texto && (  
-                  <Alert color={mensaje.tipo} className="mb-4">  
-                    {mensaje.texto}  
-                  </Alert>  
-                )}  
-  
+                            <CardBody>  
                 <Form onSubmit={handleSubmit}>  
                   {/* Información Básica de la Factura */}
                   <h6 className="heading-small text-muted mb-4">  
@@ -1085,6 +1095,15 @@ const CrearFacturaNueva = () => {
           </Col>  
         </Row>  
       </Container>  
+      
+      {/* Toast para notificaciones */}
+      <Toast
+        show={showToast}
+        message={toastMessage}
+        type={toastType}
+        duration={5000}
+        onClose={() => setShowToast(false)}
+      />
     </>  
   );  
 };  

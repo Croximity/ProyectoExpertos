@@ -45,6 +45,7 @@ exports.crearPago = async (req, res) => {
 
     // Verificar que la factura existe y no está anulada
     const factura = await Factura.findByPk(idFactura);
+    
     if (!factura) {
       return res.status(404).json({ mensaje: 'Factura no encontrada' });
     }

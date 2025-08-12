@@ -114,6 +114,16 @@ const PanelFacturacion = () => {
               {/* ACCIONES DEL MÓDULO DE FACTURACIÓN */}
               <Row className="mb-4">
                 <Col md="3" sm="6" className="mb-4">
+                    <Card className="shadow border-0 h-100">
+                      <CardBody className="text-center">
+                        <i className="ni ni-archive-2 mr-2 text-danger" />
+                        <Button color="danger" onClick={() => navigate('/admin/facturas')}>
+                          Ver Facturas
+                        </Button>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                <Col md="3" sm="6" className="mb-4">
                   <Card className="shadow border-0 h-100">
                     <CardBody className="text-center">
                       <i className="ni ni-fat-add mr-2 text-primary" />
@@ -146,16 +156,7 @@ const PanelFacturacion = () => {
                   </Card>
                 </Col>
 
-                <Col md="3" sm="6" className="mb-4">
-                  <Card className="shadow border-0 h-100">
-                    <CardBody className="text-center">
-                      <i className="ni ni-archive-2 mr-2 text-danger" />
-                      <Button color="danger" onClick={() => navigate('/admin/facturas')}>
-                        Ver Historial
-                      </Button>
-                    </CardBody>
-                  </Card>
-                </Col>
+
               </Row>
 
               </Col></Row> </Container>
