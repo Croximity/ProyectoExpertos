@@ -23,7 +23,7 @@ import {
   faClipboardCheck,
   faArrowLeft
 } from '@fortawesome/free-solid-svg-icons';
-import UserHeader from 'components/Headers/UserHeader.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { diagnosticoService } from '../../services/consulta_examenes/diagnosticoService';
 import { useNavigate } from 'react-router-dom';
 
@@ -85,7 +85,7 @@ const Diagnosticos = () => {
 
   return (
     <>
-      <UserHeader />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Row>
           <Col>

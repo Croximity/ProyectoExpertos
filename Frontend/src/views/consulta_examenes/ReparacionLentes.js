@@ -23,7 +23,7 @@ import {
   faTools,
   faArrowLeft
 } from '@fortawesome/free-solid-svg-icons';
-import UserHeader from 'components/Headers/UserHeader.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { reparacionLentesService } from '../../services/consulta_examenes/reparacionLentesService';
 import { useNavigate } from 'react-router-dom';
 
@@ -155,7 +155,7 @@ const ReparacionLentes = () => {
 
   return (
     <>
-      <UserHeader />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         <Row>
           <Col>

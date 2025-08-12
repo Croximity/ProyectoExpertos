@@ -22,7 +22,7 @@ import {
   faCalendarAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import UserHeader from 'components/Headers/UserHeader.js';
+import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 
 // Importar los servicios para obtener estadísticas
 import { recetaService } from '../../services/consulta_examenes/recetaService';
@@ -129,7 +129,7 @@ const PanelConsultaExamenes = () => {
 
   return (
     <>
-      <UserHeader />
+      <HeaderBlanco />
       <Container className="mt--7" fluid>
         {/* Resumen de estadísticas */}
         <Row className="mb-4">
