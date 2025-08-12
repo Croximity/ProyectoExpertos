@@ -76,6 +76,7 @@ const archivoRoutes = require('./rutas/facturacion/archivoRoutes');
 const descuentoRoutes = require('./rutas/facturacion/descuentoRoutes');
 const formaPagoRoutes = require('./rutas/facturacion/formaPagoRoutes');
 const caiRoutes = require('./rutas/facturacion/caiRoutes');
+const pagoRoutes = require('./rutas/facturacion/pagoRoutes');
 
 // Usar rutas de gestión cliente
 app.use('/api/optica/gestion_cliente/clientes', clienteRuta);
@@ -97,6 +98,7 @@ app.use('/api/optica', detalleDescuentoRutas);
 app.use('/api/optica', descuentoRoutes);
 app.use('/api/optica', formaPagoRoutes);
 app.use('/api/optica', caiRoutes);
+app.use('/api/optica', pagoRoutes);
 
 app.use('/api/optica', archivoRoutes);
 app.use('/api/optica', express.static('uploads')); 
@@ -139,6 +141,7 @@ const Consulta = require("./modelos/gestion_cliente/Consulta")
 const FormaPago = require('./modelos/facturacion/FormaPago');
 const Factura = require('./modelos/facturacion/Factura'); // <-- CORREGIDO
 const FacturaDetalle = require('./modelos/facturacion/FacturaDetalle');
+const Pago = require('./modelos/facturacion/Pago');
 const Descuento = require('./modelos/facturacion/Descuento');
 const DetalleDescuento = require('./modelos/facturacion/DetalleDescuento');
 const Atributo = require('./modelos/productos/Atributo');
@@ -190,6 +193,7 @@ const startServer = async () => {
     await DetalleDescuento.sync();
     await FacturaDetalle.sync();
     await Cai.sync();
+    await Pago.sync();
     console.log('✅ Modelos de  Facturacion sincronizados.');
 
     // Iniciar servidor

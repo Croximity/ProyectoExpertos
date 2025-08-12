@@ -638,21 +638,21 @@ const CrearFacturaNueva = () => {
                     <Row>  
                       <Col lg="4">  
                       <FormGroup>      
-  <Label className="form-control-label" htmlFor="idFactura">      
-    No. Factura  
-  </Label>      
-  <Input      
-    className="form-control-alternative"      
-    id="idFactura"      
-    name="idFactura"      
-    type="text"      
-    value="Se generará automáticamente"      
-    disabled      
-  />      
-  <small className="text-muted">      
-    Número generado automáticamente al crear la factura      
-  </small>      
-</FormGroup>
+                        <Label className="form-control-label" htmlFor="idFactura">      
+                          No. Factura  
+                        </Label>      
+                        <Input      
+                          className="form-control-alternative"      
+                          id="idFactura"      
+                          name="idFactura"      
+                          type="text"      
+                          value="Se generará automáticamente"      
+                          disabled      
+                        />      
+                        <small className="text-muted">      
+                          Número generado automáticamente al crear la factura      
+                        </small>      
+                      </FormGroup>
                       </Col>
                       <Col lg="4">
                         <FormGroup>
