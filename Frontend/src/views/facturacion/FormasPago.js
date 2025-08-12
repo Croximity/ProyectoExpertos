@@ -193,10 +193,9 @@ const FormasPago = () => {
   return (
     <>
       <HeaderBlanco />
-      <div className="main-content">
-        <Container fluid>
-          <Row>
-            <Col>
+      <Container className="mt--7" fluid>  
+        <Row>  
+          <Col> 
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
@@ -385,7 +384,7 @@ const FormasPago = () => {
             </Button>
           </ModalFooter>
         </Modal>
-      </div>
+      
     </>
   );
 };

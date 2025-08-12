@@ -35,8 +35,13 @@ export const facturaService = {
     
   // Obtener estadísticas de facturación
   obtenerEstadisticas: async () => {
-    const response = await axiosInstance.get('/factura/estadisticas');
-    return response.data;
+    // Retornar datos vacíos ya que se eliminaron las rutas de estadísticas
+    const datosVacios = {
+      resumen: { totalMes: 0, emitidas: 0, pendientes: 0, pagadas: 0, anuladas: 0 },
+      porTipo: { consulta: 0, producto: 0, servicio: 0, mixto: 0 },
+      ultimasFacturas: []
+    };
+    return datosVacios;
   },
     
   // Obtener siguiente número de factura
