@@ -3,7 +3,7 @@ import axiosInstance from '../../utils/axiosConfig';
 export const authService = {
   login: async (credentials) => {
     console.log('🔐 authService - login: Iniciando login con credenciales');
-    const response = await axiosInstance.post('/auth/login', credentials);
+    const response = await axiosInstance.post('/auth-mongo/login', credentials);
     
     console.log('🔐 authService - login: Respuesta del servidor:', response.data);
     
@@ -11,6 +11,8 @@ export const authService = {
       console.log('🔐 authService - login: Token recibido, guardando en localStorage');
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('usuario', JSON.stringify(response.data.user));
+      const roleName = response.data.user?.idrol?.nombre || response.data.user?.rol?.nombre || response.data.user?.role?.nombre || response.data.user?.rolNombre || 'Colaborador';
+      localStorage.setItem('rol', roleName);
       
       console.log('🔐 authService - login: Token guardado:', response.data.token ? 'Sí' : 'No');
       console.log('🔐 authService - login: Usuario guardado:', response.data.user ? 'Sí' : 'No');
@@ -40,7 +42,7 @@ export const authService = {
       };
       
       console.log('authService - register: Enviando datos de persona:', personaData);
-      const personaResponse = await axiosInstance.post('/auth/registrar-persona', personaData);
+      const personaResponse = await axiosInstance.post('/auth-mongo/registrar-persona', personaData);
       console.log('authService - register: Respuesta de persona:', personaResponse.data);
       
       // Paso 2: Registrar el usuario con el idPersona obtenido (ahora es ObjectId)
@@ -57,7 +59,7 @@ export const authService = {
       console.log('authService - register: idPersona valor:', usuarioData.idPersona);
       console.log('authService - register: idrol valor:', usuarioData.idrol);
       
-      const usuarioResponse = await axiosInstance.post('/auth/registro', usuarioData);
+      const usuarioResponse = await axiosInstance.post('/auth-mongo/registro', usuarioData);
       console.log('authService - register: Respuesta de usuario:', usuarioResponse.data);
       
       return usuarioResponse.data;
@@ -77,12 +79,14 @@ export const authService = {
 
   verifyPin: async (pinData) => {
     console.log('authService - verifyPin: Verificando PIN');
-    const response = await axiosInstance.post('/auth/verificar-pin', pinData);
+    const response = await axiosInstance.post('/auth-mongo/verificar-pin', pinData);
 
     if (response.data.token) {
       console.log('authService - verifyPin: Token recibido, guardando en localStorage');
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('usuario', JSON.stringify(response.data.user));
+      const roleName = response.data.user?.idrol?.nombre || response.data.user?.rol?.nombre || response.data.user?.role?.nombre || response.data.user?.rolNombre || 'Colaborador';
+      localStorage.setItem('rol', roleName);
     } else {
       console.log('authService - verifyPin: No se recibió token en la respuesta');
     }
@@ -94,6 +98,7 @@ export const authService = {
     console.log('authService - logout: Limpiando localStorage');
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
   },
 
   getToken: () => {
@@ -109,24 +114,42 @@ export const authService = {
     return parsedUser;
   },
 
+  getCurrentRole: () => {
+    return localStorage.getItem('rol') || 'Colaborador';
+  },
+
   obtenerUsuarioActual: async () => {
     console.log('authService - obtenerUsuarioActual: Obteniendo usuario actual del servidor');
-    const response = await axiosInstance.get('/auth/usuario-actual');
+    const response = await axiosInstance.get('/auth-mongo/usuario-actual');
     console.log('authService - obtenerUsuarioActual: Respuesta del servidor:', response.data);
     return response.data;
   },
 
   obtenerUsuarios: async () => {
     console.log('authService - obtenerUsuarios: Obteniendo lista de usuarios');
-    const response = await axiosInstance.get('/auth/listar');
+    const response = await axiosInstance.get('/auth-mongo/listar');
     console.log('authService - obtenerUsuarios: Respuesta del servidor:', response.data);
     return response.data;
   },
 
   asociarPersonaAUsuario: async (data) => {
     console.log('authService - asociarPersonaAUsuario: Asociando persona a usuario');
-    const response = await axiosInstance.post('/auth/asociar-persona', data);
+    const response = await axiosInstance.post('/auth-mongo/asociar-persona', data);
     console.log('authService - asociarPersonaAUsuario: Respuesta del servidor:', response.data);
+    return response.data;
+  },
+
+  // Admin user management
+  crearUsuarioAdmin: async (payload) => {
+    const response = await axiosInstance.post('/auth-mongo/usuarios/admin', payload);
+    return response.data;
+  },
+  editarUsuarioAdmin: async (id, payload) => {
+    const response = await axiosInstance.put(`/auth-mongo/usuarios/admin/${id}`, payload);
+    return response.data;
+  },
+  eliminarUsuarioAdmin: async (id) => {
+    const response = await axiosInstance.delete(`/auth-mongo/usuarios/admin/${id}`);
     return response.data;
   },
 

@@ -30,6 +30,7 @@ import {
   Col,
   Collapse, // <--- ¡ESTO ES LO QUE FALTABA O SE HABÍA PERDIDO!
 } from "reactstrap";
+import { useAuth } from "../../contexts/AuthContext";
 
 var ps;
 
@@ -38,6 +39,7 @@ const Sidebar = (props) => {
   const toggleCollapse = () => {
     setCollapseOpen((data) => !data);
   };
+  const { role } = useAuth();
   // verifies if routeName is reached.
   const activeRoute = (routeName) => {
     return props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -47,6 +49,9 @@ const Sidebar = (props) => {
     return routes.map((prop, key) => {
       // Ignoramos las rutas que tienen `hidden: true` para que no aparezcan en el sidebar
       if (prop.hidden) {
+        return null;
+      }
+      if (prop.allowedRoles && !prop.allowedRoles.includes(role)) {
         return null;
       }
       if (prop.layout === "/admin") {

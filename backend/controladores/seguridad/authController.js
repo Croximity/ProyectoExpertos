@@ -5,6 +5,7 @@ const Persona = require('../../modelos/seguridad/PersonaMongo');
 const Rol = require('../../modelos/seguridad/RolMongo');
 const { getToken } = require('../../configuraciones/passport');
 const mongoose = require('mongoose');
+const enviarCorreo = require('../../configuraciones/correo').EnviarCorreo;
 
 // Función para generar PIN de 6 dígitos
 const generarPin = () => {
@@ -410,4 +411,146 @@ exports.crearRol = async (req, res) => {
 
 exports.error = (req, res) => {
   res.status(401).json({ mensaje: 'Error en la autenticación' });
+};
+
+// ============ ADMIN: GESTIÓN DE USUARIOS ============
+
+// Crear usuario (Admin). Puede recibir idPersona existente o datos de persona para crearla
+exports.crearUsuarioAdmin = async (req, res) => {
+  try {
+    const { Nombre_Usuario, contraseña, idrol, idPersona, persona } = req.body;
+
+    if (!Nombre_Usuario || !contraseña || !idrol) {
+      return res.status(400).json({ mensaje: 'Nombre_Usuario, contraseña e idrol son obligatorios' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(idrol)) {
+      return res.status(400).json({ mensaje: 'ID de rol inválido' });
+    }
+
+    const rol = await Rol.findById(idrol);
+    if (!rol) return res.status(400).json({ mensaje: 'El rol especificado no existe' });
+
+    let personaMongo = null;
+
+    if (idPersona) {
+      if (!mongoose.Types.ObjectId.isValid(idPersona)) {
+        return res.status(400).json({ mensaje: 'ID de persona inválido' });
+      }
+      personaMongo = await Persona.findById(idPersona);
+      if (!personaMongo) return res.status(400).json({ mensaje: 'La persona especificada no existe' });
+    } else if (persona) {
+      // Crear persona si no se proporciona idPersona
+      personaMongo = await Persona.create({
+        Pnombre: persona.Pnombre,
+        Snombre: persona.Snombre || '',
+        Papellido: persona.Papellido,
+        Sapellido: persona.Sapellido || '',
+        Direccion: persona.Direccion || '',
+        DNI: persona.DNI || '',
+        correo: persona.correo,
+        fechaNacimiento: persona.fechaNacimiento || null,
+        genero: persona.genero || 'M'
+      });
+    } else {
+      return res.status(400).json({ mensaje: 'Debe enviar idPersona o datos de persona' });
+    }
+
+    // Validar que el usuario no exista
+    const existeUsuario = await Usuario.findOne({ Nombre_Usuario });
+    if (existeUsuario) return res.status(400).json({ mensaje: 'El nombre de usuario ya está en uso' });
+
+    const hash = await argon2.hash(contraseña);
+
+    const nuevoUsuario = await Usuario.create({
+      Nombre_Usuario,
+      contraseña: hash,
+      idPersona: personaMongo._id,
+      idrol
+    });
+
+    // Enviar correo con credenciales si hay correo
+    if (personaMongo.correo) {
+      try {
+        await enviarCorreo({
+          para: personaMongo.correo,
+          asunto: 'Credenciales de acceso - Óptica Velasquez',
+          descripcion: `Hola ${personaMongo.Pnombre}, se ha creado un usuario para usted. Usuario: ${Nombre_Usuario}`,
+          html: `<h2>Bienvenido/a ${personaMongo.Pnombre}</h2>
+                 <p>Se han generado sus credenciales de acceso al sistema:</p>
+                 <ul>
+                   <li><strong>Usuario:</strong> ${Nombre_Usuario}</li>
+                   <li><strong>Contraseña:</strong> ${contraseña}</li>
+                   <li><strong>Rol:</strong> ${rol.nombre}</li>
+                 </ul>
+                 <p>Le recomendamos cambiar su contraseña tras el primer inicio de sesión.</p>`
+        });
+      } catch (err) {
+        console.error('❌ Error enviando correo de credenciales:', err.message);
+      }
+    }
+
+    res.status(201).json({
+      mensaje: 'Usuario creado exitosamente',
+      usuario: {
+        _id: nuevoUsuario._id,
+        Nombre_Usuario: nuevoUsuario.Nombre_Usuario,
+        idPersona: personaMongo._id,
+        idrol
+      }
+    });
+  } catch (error) {
+    console.error('❌ crearUsuarioAdmin - Error:', error);
+    res.status(500).json({ mensaje: 'Error al crear usuario', error: error.message });
+  }
+};
+
+// Editar usuario (Admin)
+exports.editarUsuarioAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { Nombre_Usuario, contraseña, idrol, estado } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ mensaje: 'ID de usuario inválido' });
+    }
+
+    const usuario = await Usuario.findById(id);
+    if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+
+    if (Nombre_Usuario) usuario.Nombre_Usuario = Nombre_Usuario;
+    if (typeof estado === 'boolean') usuario.estado = estado;
+    if (idrol) {
+      if (!mongoose.Types.ObjectId.isValid(idrol)) return res.status(400).json({ mensaje: 'ID de rol inválido' });
+      const rol = await Rol.findById(idrol);
+      if (!rol) return res.status(400).json({ mensaje: 'El rol especificado no existe' });
+      usuario.idrol = idrol;
+    }
+    if (contraseña) {
+      usuario.contraseña = await argon2.hash(contraseña);
+    }
+
+    await usuario.save();
+    res.json({ mensaje: 'Usuario actualizado', usuario: { _id: usuario._id, Nombre_Usuario: usuario.Nombre_Usuario, idrol: usuario.idrol, estado: usuario.estado } });
+  } catch (error) {
+    console.error('❌ editarUsuarioAdmin - Error:', error);
+    res.status(500).json({ mensaje: 'Error al editar usuario', error: error.message });
+  }
+};
+
+// Eliminar usuario (Admin)
+exports.eliminarUsuarioAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ mensaje: 'ID de usuario inválido' });
+    }
+    const usuario = await Usuario.findById(id);
+    if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    await usuario.deleteOne();
+    res.json({ mensaje: 'Usuario eliminado' });
+  } catch (error) {
+    console.error('❌ eliminarUsuarioAdmin - Error:', error);
+    res.status(500).json({ mensaje: 'Error al eliminar usuario', error: error.message });
+  }
 };

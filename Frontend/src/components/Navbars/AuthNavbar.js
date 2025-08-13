@@ -48,16 +48,7 @@ const AdminNavbar = () => {
             </div>
             <Nav className="ml-auto" navbar>
 
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  to="/auth/register"
-                  tag={Link}
-                >
-                  <i className="ni ni-circle-08" />
-                  <span className="nav-link-inner--text">Registrarme</span>
-                </NavLink>
-              </NavItem>
+              {/* Registro removido del inicio. Solo login aquí */}
               <NavItem>
                 <NavLink className="nav-link-icon" to="/auth/login" tag={Link}>
                   <i className="ni ni-key-25" />

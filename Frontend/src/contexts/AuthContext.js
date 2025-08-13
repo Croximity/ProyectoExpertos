@@ -36,15 +36,25 @@ export const AuthProvider = ({ children }) => {
     return authenticated;
   }, [user]);
 
+  const role = useMemo(() => (
+    user?.idrol?.nombre || user?.rol?.nombre || user?.role?.nombre || user?.rolNombre || authService.getCurrentRole()
+  ), [user]);
+
   // Memoizar el valor del contexto para evitar re-renders innecesarios
   const contextValue = useMemo(() => ({
     user,
     loading,
+    role,
+    hasRole: (roles) => {
+      const roleName = user?.idrol?.nombre || user?.rol?.nombre || user?.role?.nombre || user?.rolNombre || authService.getCurrentRole();
+      if (!Array.isArray(roles) || roles.length === 0) return true;
+      return roles.includes(roleName);
+    },
     login,
     logout,
     verifyPin,
     isAuthenticated
-  }), [user, loading, login, logout, verifyPin, isAuthenticated]);
+  }), [user, loading, role, login, logout, verifyPin, isAuthenticated]);
 
   return (
     <AuthContext.Provider value={contextValue}>

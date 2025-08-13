@@ -172,4 +172,9 @@ router.post('/asociar-persona', verificarUsuario, authController.asociarPersonaA
 router.get('/personas', verificarUsuario, authController.obtenerPersonas);
 router.get('/error', authController.error);
 
+// Rutas de administración de usuarios (requieren autenticación; validar rol en middleware si se desea)
+router.post('/usuarios/admin', verificarUsuario, authController.crearUsuarioAdmin);
+router.put('/usuarios/admin/:id', verificarUsuario, authController.editarUsuarioAdmin);
+router.delete('/usuarios/admin/:id', verificarUsuario, authController.eliminarUsuarioAdmin);
+
 module.exports = router;

@@ -11,6 +11,8 @@ import Login from "views/seguridad/Login.js";
 import Personas from "views/seguridad/Personas.js";
 import PersonaForm from "views/seguridad/PersonaForm.js";
 import AsociarPersona from "views/seguridad/AsociarPersona.js";
+import Usuarios from "views/seguridad/Usuarios";
+import UsuarioForm from "views/seguridad/UsuarioForm";
 
 // Gestion Clientes
 import Clientes from "views/gestion_cliente/Clientes.js";
@@ -110,6 +112,7 @@ const routes = [
     component: Empleados,
     layout: "/admin",
     hidden: true,
+    allowedRoles: ["Administrador"],
   },
   {
     path: "/empleados/nuevo",
@@ -117,6 +120,7 @@ const routes = [
     component: EmpleadoForm,
     layout: "/admin",
     hidden: true,
+    allowedRoles: ["Administrador"],
   },
   {
     path: "/empleados/editar/:id",
@@ -124,6 +128,7 @@ const routes = [
     component: EmpleadoForm,
     layout: "/admin",
     hidden: true,
+    allowedRoles: ["Administrador"],
   },
 
   // Productos
@@ -234,6 +239,7 @@ const routes = [
     component: CAI,
     layout: "/admin",
     hidden: true,
+    allowedRoles: ["Administrador"],
   },
   {
     path: "/facturacion/contratos",
@@ -266,6 +272,7 @@ const routes = [
     component: Descuentos,
     layout: "/admin",
     hidden: true,
+    allowedRoles: ["Administrador"],
   },
 
   // Consulta Exámenes
@@ -459,6 +466,30 @@ const routes = [
     component: Profile,
     layout: "/admin",
     hidden: true,
+  },
+  {
+    path: "/usuarios",
+    name: "Usuarios",
+    icon: "ni ni-single-02 text-yellow",
+    component: Usuarios,
+    layout: "/admin",
+    allowedRoles: ["Administrador"],
+  },
+  {
+    path: "/usuarios/nuevo",
+    name: "Nuevo Usuario",
+    component: UsuarioForm,
+    layout: "/admin",
+    hidden: true,
+    allowedRoles: ["Administrador"],
+  },
+  {
+    path: "/usuarios/editar/:id",
+    name: "Editar Usuario",
+    component: UsuarioForm,
+    layout: "/admin",
+    hidden: true,
+    allowedRoles: ["Administrador"],
   },
   {
     path: "/register",
