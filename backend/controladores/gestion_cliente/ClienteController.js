@@ -42,7 +42,7 @@ const crearCliente = [
         const adminCorreo = process.env.correousuario || "admin@optica.com"
         await enviarCorreo({
           para: persona.correo,
-          asunto: "¡Bienvenido a Óptica Expertos!",
+          asunto: "¡Bienvenido a Óptica Velasquez!",
           descripcion: `Hola ${persona.Pnombre}, su registro como cliente fue exitoso por el administrador (${adminCorreo}).`,
           html: `
             <!DOCTYPE html>
@@ -50,79 +50,88 @@ const crearCliente = [
             <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Bienvenido a Óptica Expertos</title>
+              <title>Bienvenido a Óptica Velasquez</title>
               <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+              <style>
+                @media only screen and (max-width: 600px) {
+                  .container { width: 100% !important; margin: 0 !important; }
+                  .header { padding: 25px 20px !important; }
+                  .content { padding: 25px 20px !important; }
+                  .footer { padding: 20px !important; }
+                  .title { font-size: 24px !important; }
+                  .subtitle { font-size: 20px !important; }
+                  .service-grid { display: block !important; }
+                  .service-item { margin-bottom: 15px !important; }
+                }
+              </style>
             </head>
-            <body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
-              <div style="padding: 40px 20px;">
-                <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden;">
+            <body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+              <div style="padding: 20px 10px;">
+                <div class="container" style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;">
                   
-                  <!-- Header simplificado -->
-                  <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 40px 30px; text-align: center; position: relative;">
-                    <div style="position: relative; z-index: 1;">
-                      <h1 style="color: #ffffff; font-size: 32px; font-weight: 700; margin: 0 0 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">👓 Óptica Expertos</h1>
-                      <p style="color: rgba(255,255,255,0.9); font-size: 16px; margin: 0; font-weight: 300;">Tu visión, nuestra pasión</p>
-                    </div>
+                  <!-- Header compacto -->
+                  <div class="header" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px 25px; text-align: center;">
+                    <h1 class="title" style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 0 0 8px 0;">👓 Óptica Velasquez</h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 0; font-weight: 300;">Tu visión, nuestra pasión</p>
                   </div>
 
-                  <!-- Contenido principal -->
-                  <div style="padding: 40px 30px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                      <div style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; padding: 15px; margin-bottom: 20px;">
-                        <span style="color: white; font-size: 24px;">✓</span>
+                  <!-- Contenido principal compacto -->
+                  <div class="content" style="padding: 30px 25px;">
+                    <div style="text-align: center; margin-bottom: 25px;">
+                      <div style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; padding: 12px; margin-bottom: 15px;">
+                        <span style="color: white; font-size: 20px;">✓</span>
                       </div>
-                      <h2 style="color: #1f2937; font-size: 28px; font-weight: 600; margin: 0 0 15px 0;">¡Bienvenido, ${persona.Pnombre}!</h2>
-                      <p style="color: #6b7280; font-size: 18px; line-height: 1.6; margin: 0;">Tu registro como cliente ha sido completado exitosamente</p>
+                      <h2 class="subtitle" style="color: #1f2937; font-size: 24px; font-weight: 600; margin: 0 0 10px 0;">¡Bienvenido, ${persona.Pnombre}!</h2>
+                      <p style="color: #6b7280; font-size: 16px; line-height: 1.5; margin: 0;">Tu registro como cliente ha sido completado exitosamente</p>
                     </div>
 
-                    <!-- Características del servicio -->
-                    <div style="background: #f8fafc; border-radius: 12px; padding: 25px; margin: 30px 0;">
-                      <h3 style="color: #374151; font-size: 20px; font-weight: 600; margin: 0 0 20px 0; text-align: center;">¿Qué puedes esperar de nosotros?</h3>
-                      <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-                        <div style="flex: 1; min-width: 200px; text-align: center;">
-                          <div style="background: #dbeafe; border-radius: 8px; padding: 12px; display: inline-block; margin-bottom: 10px;">
-                            <span style="color: #3b82f6; font-size: 20px;">👁️</span>
+                    <!-- Servicios optimizados para móvil -->
+                    <div style="background: #f8fafc; border-radius: 10px; padding: 20px; margin: 25px 0;">
+                      <h3 style="color: #374151; font-size: 18px; font-weight: 600; margin: 0 0 15px 0; text-align: center;">¿Qué puedes esperar?</h3>
+                      <div class="service-grid" style="text-align: center;">
+                        <div class="service-item" style="display: inline-block; width: 45%; vertical-align: top; margin: 0 2% 10px 2%;">
+                          <div style="background: #dbeafe; border-radius: 6px; padding: 8px; display: inline-block; margin-bottom: 8px;">
+                            <span style="color: #3b82f6; font-size: 16px;">👁️</span>
                           </div>
-                          <h4 style="color: #374151; font-size: 16px; font-weight: 500; margin: 0 0 5px 0;">Exámenes Profesionales</h4>
-                          <p style="color: #6b7280; font-size: 14px; margin: 0;">Tecnología de vanguardia</p>
+                          <h4 style="color: #374151; font-size: 14px; font-weight: 500; margin: 0 0 3px 0;">Exámenes Profesionales</h4>
+                          <p style="color: #6b7280; font-size: 12px; margin: 0;">Tecnología avanzada</p>
                         </div>
-                        <div style="flex: 1; min-width: 200px; text-align: center;">
-                          <div style="background: #dcfce7; border-radius: 8px; padding: 12px; display: inline-block; margin-bottom: 10px;">
-                            <span style="color: #10b981; font-size: 20px;">⭐</span>
+                        <div class="service-item" style="display: inline-block; width: 45%; vertical-align: top; margin: 0 2% 10px 2%;">
+                          <div style="background: #dcfce7; border-radius: 6px; padding: 8px; display: inline-block; margin-bottom: 8px;">
+                            <span style="color: #10b981; font-size: 16px;">⭐</span>
                           </div>
-                          <h4 style="color: #374151; font-size: 16px; font-weight: 500; margin: 0 0 5px 0;">Calidad Premium</h4>
-                          <p style="color: #6b7280; font-size: 14px; margin: 0;">Marcas reconocidas</p>
+                          <h4 style="color: #374151; font-size: 14px; font-weight: 500; margin: 0 0 3px 0;">Calidad Premium</h4>
+                          <p style="color: #6b7280; font-size: 12px; margin: 0;">Marcas reconocidas</p>
                         </div>
                       </div>
                     </div>
 
-                    <!-- Call to action -->
-                    <div style="text-align: center; margin: 30px 0;">
-                      <a href="tel:+1234567890" style="display: inline-block; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                    <!-- Call to action compacto -->
+                    <div style="text-align: center; margin: 20px 0;">
+                      <a href="tel:+1234567890" style="display: inline-block; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; font-size: 14px; box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);">
                         📞 Agenda tu Cita
                       </a>
                     </div>
 
-                    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 0 8px 8px 0; margin: 25px 0;">
-                      <p style="color: #92400e; font-size: 14px; margin: 0; font-weight: 500;">
-                        💡 <strong>Tip:</strong> Recuerda traer tu receta médica actual para un mejor servicio personalizado.
+                    <div style="background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px; border-radius: 0 6px 6px 0; margin: 20px 0;">
+                      <p style="color: #92400e; font-size: 13px; margin: 0; font-weight: 500;">
+                        💡 <strong>Tip:</strong> Recuerda traer tu receta médica actual.
                       </p>
                     </div>
                   </div>
 
-                  <!-- Footer -->
-                  <div style="background: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                    <div style="margin-bottom: 20px;">
-                      <h4 style="color: #374151; font-size: 16px; font-weight: 600; margin: 0 0 10px 0;">Información de Contacto</h4>
-                      <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">📧 Administrador: <strong>${adminCorreo}</strong></p>
-                      <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">📍 Dirección: Av. Principal 123, Ciudad</p>
-                      <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">🕒 Horarios: Lun-Vie 9:00-18:00, Sáb 9:00-14:00</p>
+                  <!-- Footer compacto -->
+                  <div class="footer" style="background: #f9fafb; padding: 25px; text-align: center; border-top: 1px solid #e5e7eb;">
+                    <div style="margin-bottom: 15px;">
+                      <h4 style="color: #374151; font-size: 14px; font-weight: 600; margin: 0 0 8px 0;">Contacto</h4>
+                      <p style="color: #6b7280; font-size: 12px; margin: 3px 0;">📧 ${adminCorreo}</p>
+                      <p style="color: #6b7280; font-size: 12px; margin: 3px 0;">📍 Av. Principal 123, Ciudad</p>
+                      <p style="color: #6b7280; font-size: 12px; margin: 3px 0;">🕒 Lun-Vie 9:00-18:00, Sáb 9:00-14:00</p>
                     </div>
                     
-                    <div style="border-top: 1px solid #e5e7eb; padding-top: 20px;">
-                      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                        © 2024 Óptica Expertos. Todos los derechos reservados.<br>
-                        Este correo fue enviado porque te registraste como cliente en nuestro sistema.
+                    <div style="border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                      <p style="color: #9ca3af; font-size: 11px; margin: 0; line-height: 1.4;">
+                        © 2024 Óptica Velasquez. Todos los derechos reservados.
                       </p>
                     </div>
                   </div>
