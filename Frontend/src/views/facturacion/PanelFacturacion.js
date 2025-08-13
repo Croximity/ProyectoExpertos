@@ -171,16 +171,7 @@ const PanelFacturacion = () => {
               {/* ACCIONES ADICIONALES DE FACTURACIÓN */}
               <Row className="mb-4">
 
-                <Col md="3" sm="6" className="mb-4">
-                  <Card className="shadow border-0 h-100">
-                    <CardBody className="text-center">
-                      <i className="ni ni-briefcase-24 mr-2 text-info" />
-                      <Button color="info" onClick={() => navigate('/admin/facturacion/contratos')}>
-                        Contratos
-                      </Button>
-                    </CardBody>
-                  </Card>
-                </Col>
+
 
                 <Col md="3" sm="6" className="mb-4">
                   <Card className="shadow border-0 h-100">
