@@ -5,6 +5,8 @@ import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faArrowLeft, faSave } from '@fortawesome/free-solid-svg-icons';
 import { authService } from '../../services/seguridad/authService';
+import { rolService } from '../../services/seguridad/rolService';
+import { personaService } from '../../services/seguridad/personaService';
 
 const UsuarioForm = () => {
   const navigate = useNavigate();
@@ -35,13 +37,12 @@ const UsuarioForm = () => {
       try {
         setLoading(true);
         const [rolesData, personasData] = await Promise.all([
-          fetch('http://localhost:4051/api/optica/auth-mongo/roles', { credentials: 'include' }).then(r => r.json()),
+          rolService.obtenerRoles(),
           authService.obtenerUsuarioActual().then(() => authService.obtenerUsuarios()).catch(() => []),
         ]);
         setRoles(Array.isArray(rolesData) ? rolesData : []);
         // Para selector de personas, pedimos al backend
-        const respPersonas = await fetch('http://localhost:4051/api/optica/auth-mongo/personas', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }, credentials: 'include' });
-        const personasJson = await respPersonas.json();
+        const personasJson = await personaService.obtenerPersonas();
         setPersonas(Array.isArray(personasJson) ? personasJson : []);
       } catch (err) {
         setError('No se pudieron cargar roles/personas');

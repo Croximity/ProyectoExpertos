@@ -2,38 +2,38 @@ import axiosInstance from '../../utils/axiosConfig';
 
 export const personaService = {
   obtenerPersonas: async () => {
-    const response = await axiosInstance.get('/auth/personas');
+    const response = await axiosInstance.get('/auth-mongo/personas');
     return response.data;
   },
 
   obtenerPersonaPorId: async (id) => {
-    const response = await axiosInstance.get(`/auth/personas/${id}`);
+    const response = await axiosInstance.get(`/auth-mongo/personas/${id}`);
     return response.data;
   },
 
   crearPersona: async (personaData) => {
-    const response = await axiosInstance.post('/auth/registrar-persona', personaData);
+    const response = await axiosInstance.post('/auth-mongo/registrar-persona', personaData);
     return response.data;
   },
 
   actualizarPersona: async (id, personaData) => {
-    const response = await axiosInstance.put(`/auth/personas/${id}`, personaData);
+    const response = await axiosInstance.put(`/auth-mongo/personas/${id}`, personaData);
     return response.data;
   },
 
   eliminarPersona: async (id) => {
-    const response = await axiosInstance.delete(`/auth/personas/${id}`);
+    const response = await axiosInstance.delete(`/auth-mongo/personas/${id}`);
     return response.data;
   },
 
   // Verificar si un DNI ya existe
   verificarDNIExistente: async (dni, personaIdExcluir = null) => {
     try {
-      const response = await axiosInstance.get(`/auth/personas/verificar-dni/${dni}${personaIdExcluir ? `?excluir=${personaIdExcluir}` : ''}`);
+      const response = await axiosInstance.get(`/auth-mongo/personas/verificar-dni/${dni}${personaIdExcluir ? `?excluir=${personaIdExcluir}` : ''}`);
       return response.data;
     } catch (error) {
       // Si no existe el endpoint, hacer búsqueda manual
-      const personas = await axiosInstance.get('/auth/personas');
+      const personas = await axiosInstance.get('/auth-mongo/personas');
       const personaExistente = personas.data.find(p => p.DNI === dni && p._id !== personaIdExcluir);
       return { existe: !!personaExistente, persona: personaExistente };
     }

@@ -3,8 +3,8 @@ import axiosInstance from '../../utils/axiosConfig';
 export const rolService = {
   obtenerRoles: async () => {
     try {
-      console.log('rolService - obtenerRoles: Iniciando petición a /auth/roles');
-      const response = await axiosInstance.get('/auth/roles');
+      console.log('rolService - obtenerRoles: Iniciando petición a /roles/roles');
+      const response = await axiosInstance.get('/roles/roles');
       console.log('rolService - obtenerRoles: Respuesta exitosa:', response.data);
       return response.data;
     } catch (error) {
@@ -16,7 +16,7 @@ export const rolService = {
   obtenerRolPorId: async (id) => {
     try {
       console.log('rolService - obtenerRolPorId: Obteniendo rol con ID:', id);
-      const response = await axiosInstance.get(`/auth/roles/${id}`);
+      const response = await axiosInstance.get(`/roles/rol/${id}`);
       console.log('rolService - obtenerRolPorId: Respuesta exitosa:', response.data);
       return response.data;
     } catch (error) {
@@ -28,7 +28,7 @@ export const rolService = {
   crearRol: async (rolData) => {
     try {
       console.log('rolService - crearRol: Creando rol con datos:', rolData);
-      const response = await axiosInstance.post('/auth/crear-rol', rolData);
+      const response = await axiosInstance.post('/roles/rol', rolData);
       console.log('rolService - crearRol: Rol creado exitosamente:', response.data);
       return response.data;
     } catch (error) {
@@ -40,7 +40,7 @@ export const rolService = {
   actualizarRol: async (id, rolData) => {
     try {
       console.log('rolService - actualizarRol: Actualizando rol con ID:', id);
-      const response = await axiosInstance.put(`/auth/roles/${id}`, rolData);
+      const response = await axiosInstance.put(`/roles/rol/${id}`, rolData);
       console.log('rolService - actualizarRol: Rol actualizado exitosamente:', response.data);
       return response.data;
     } catch (error) {
@@ -52,7 +52,7 @@ export const rolService = {
   eliminarRol: async (id) => {
     try {
       console.log('rolService - eliminarRol: Eliminando rol con ID:', id);
-      const response = await axiosInstance.delete(`/auth/roles/${id}`);
+      const response = await axiosInstance.delete(`/roles/rol/${id}`);
       console.log('rolService - eliminarRol: Rol eliminado exitosamente:', response.data);
       return response.data;
     } catch (error) {

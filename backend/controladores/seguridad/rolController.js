@@ -30,7 +30,7 @@ const crearRol = [
     const { nombre } = req.body;
 
     try {
-      const existente = await Rol.findOne({ where: { nombre } });
+      const existente = await Rol.findOne({ nombre });
       if (existente) {
         return res.status(400).json({ mensaje: 'Ya existe un rol con ese nombre' });
       }
@@ -47,7 +47,7 @@ const crearRol = [
 // Obtener todos los roles
 const obtenerRoles = async (req, res) => {
   try {
-    const roles = await Rol.findAll();
+    const roles = await Rol.find().sort({ createdAt: -1 });
     res.json(roles);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener roles', error: error.message });
@@ -65,20 +65,20 @@ const editarRol = [
 
     const { id } = req.params;
     try {
-      const rol = await Rol.findByPk(id);
+      const rol = await Rol.findById(id);
       if (!rol) return res.status(404).json({ mensaje: 'Rol no encontrado' });
 
       const { nombre } = req.body;
 
       if (nombre) {
-        const duplicado = await Rol.findOne({ where: { nombre } });
-        if (duplicado && duplicado.idRol !== parseInt(id)) {
+        const duplicado = await Rol.findOne({ nombre, _id: { $ne: id } });
+        if (duplicado) {
           return res.status(400).json({ mensaje: 'Ya existe otro rol con ese nombre' });
         }
       }
 
-      await rol.update(req.body);
-      res.json({ mensaje: 'Rol actualizado', rol });
+      const rolActualizado = await Rol.findByIdAndUpdate(id, req.body, { new: true });
+      res.json({ mensaje: 'Rol actualizado', rol: rolActualizado });
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al editar rol', error: error.message });
     }
@@ -89,10 +89,9 @@ const editarRol = [
 const eliminarRol = async (req, res) => {
   const { id } = req.params;
   try {
-    const rol = await Rol.findByPk(id);
+    const rol = await Rol.findByIdAndDelete(id);
     if (!rol) return res.status(404).json({ mensaje: 'Rol no encontrado' });
 
-    await rol.destroy();
     res.json({ mensaje: 'Rol eliminado' });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al eliminar rol', error: error.message });

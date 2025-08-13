@@ -16,12 +16,12 @@ export const backendConfig = {
       diagnosticos: '/diagnostico/listar'
     },
     seguridad: {
-      auth: '/auth',
-      login: '/auth/login',
-      registro: '/auth/registro',
-      usuarios: '/auth/listar',
-      personas: '/auth/personas',
-      roles: '/auth/roles'
+      auth: '/auth-mongo',
+      login: '/auth-mongo/login',
+      registro: '/auth-mongo/registro',
+      usuarios: '/auth-mongo/listar',
+      personas: '/auth-mongo/personas',
+      roles: '/roles/roles'
     }
   },
 
@@ -80,15 +80,15 @@ export const backendConfig = {
      '/contrato/listar',
      
      // Seguridad (MongoDB)
-     '/auth/login',
-     '/auth/registro',
-     '/auth/listar',
-     '/auth/personas',
-     '/auth/roles',
-     '/auth/crear-rol',
-     '/auth/registrar-persona',
-     '/auth/usuario-actual',
-     '/auth/asociar-persona'
+     '/auth-mongo/login',
+     '/auth-mongo/registro',
+     '/auth-mongo/listar',
+     '/auth-mongo/personas',
+     '/roles/roles',
+     '/roles/rol',
+     '/auth-mongo/registrar-persona',
+     '/auth-mongo/usuario-actual',
+     '/auth-mongo/asociar-persona'
    ],
 
      // 🎯 DATOS DISPONIBLES ACTUALMENTE
