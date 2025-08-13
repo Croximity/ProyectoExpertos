@@ -16,12 +16,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus, 
   faClipboardCheck,
-  faArrowLeft
+  faArrowLeft,
+  faCheckCircle,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 import HeaderBlanco from 'components/Headers/HeaderBlanco.js';
 import { diagnosticoService } from '../../services/consulta_examenes/diagnosticoService';
 import { tipoEnfermedadService } from '../../services/consulta_examenes/tipoEnfermedadService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Diagnosticos = () => {
   const navigate = useNavigate();
@@ -29,6 +32,8 @@ const Diagnosticos = () => {
   const [tiposEnfermedad, setTiposEnfermedad] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
 
   useEffect(() => {
     cargarDatos();
@@ -82,13 +87,12 @@ const Diagnosticos = () => {
   };
 
   const handleCrear = () => {
-    alert('Para crear un nuevo diagnóstico, debe iniciar sesión en el sistema.');
-    // navigate('/admin/consulta-examenes/diagnosticos/nuevo');
+      navigate('/admin/consulta-examenes/diagnosticos/nuevo');
   };
 
   const handleEditar = (id) => {
-    alert('Para editar un diagnóstico, debe iniciar sesión en el sistema.');
-    // navigate(`/admin/consulta-examenes/diagnosticos/editar/${id}`);
+      navigate(`/admin/consulta-examenes/diagnosticos/editar/${id}`);
+
   };
 
   const handleVer = (id) => {
@@ -96,17 +100,18 @@ const Diagnosticos = () => {
   };
 
   const handleEliminar = async (id) => {
-    alert('Para eliminar un diagnóstico, debe iniciar sesión en el sistema.');
-    // if (window.confirm('¿Está seguro de que desea eliminar este diagnóstico?')) {
-    //   try {
-    //     await diagnosticoService.eliminarDiagnostico(id);
-    //     cargarDatos();
-    //     alert('Diagnóstico eliminado exitosamente');
-    //   } catch (error) {
-    //     console.error('Error al eliminar diagnóstico:', error);
-    //     alert('Error al eliminar el diagnóstico');
-    //   }
-    // }
+
+      if (window.confirm('¿Está seguro de que desea eliminar este diagnóstico?')) {
+        try {
+          await diagnosticoService.eliminarDiagnostico(id);
+          cargarDatos();
+          alert('Diagnóstico eliminado exitosamente');
+        } catch (error) {
+          console.error('Error al eliminar diagnóstico:', error);
+          alert('Error al eliminar el diagnóstico');
+        }
+      }
+
   };
 
   const getNombreTipoEnfermedad = (idTipoEnfermedad) => {
@@ -127,7 +132,7 @@ const Diagnosticos = () => {
                 <h3 className="mb-0">
                   <FontAwesomeIcon icon={faClipboardCheck} className="mr-2" />
                   Gestión de Diagnósticos
-                </h3>
+                </h3> 
                 <div>
                   <Button 
                     color="secondary" 
@@ -141,8 +146,7 @@ const Diagnosticos = () => {
                   <Button 
                     color="success" 
                     size="sm" 
-                    onClick={handleCrear}
-                    title="Requiere autenticación"
+                    onClick={handleCrear} 
                   >
                     <FontAwesomeIcon icon={faPlus} className="mr-1" />
                     Nuevo Diagnóstico
@@ -166,10 +170,6 @@ const Diagnosticos = () => {
                   </Alert>
                 ) : (
                   <>
-                    <Alert color="info" className="mb-3">
-                      <strong>Información:</strong> Los diagnósticos se pueden visualizar sin autenticación. 
-                      Para crear, editar o eliminar diagnósticos, debe iniciar sesión en el sistema.
-                    </Alert>
                     <div className="mb-3">
                       <strong>Total de diagnósticos: {diagnosticos.length}</strong>
                     </div>
@@ -212,23 +212,27 @@ const Diagnosticos = () => {
                               >
                                 Ver
                               </Button>
-                              <Button
-                                color="warning"
-                                size="sm"
-                                className="mr-2"
-                                onClick={() => handleEditar(diagnostico.idDiagnostico)}
-                                title="Requiere autenticación"
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                color="danger"
-                                size="sm"
-                                onClick={() => handleEliminar(diagnostico.idDiagnostico)}
-                                title="Requiere autenticación"
-                              >
-                                Eliminar
-                              </Button>
+                              
+                                <>
+                                  <Button
+                                    color="warning"
+                                    size="sm"
+                                    className="mr-2"
+                                    onClick={() => handleEditar(diagnostico.idDiagnostico)}
+                                    title="Editar diagnóstico"
+                                  >
+                                    Editar
+                                  </Button>
+                                  <Button
+                                    color="danger"
+                                    size="sm"
+                                    onClick={() => handleEliminar(diagnostico.idDiagnostico)}
+                                    title="Eliminar diagnóstico"
+                                  >
+                                    Eliminar
+                                  </Button>
+                                </>
+                              
                             </td>
                           </tr>
                         )) : (
