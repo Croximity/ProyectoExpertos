@@ -11,15 +11,26 @@ export const useAuthPersistence = () => {
       const storedUser = authService.getCurrentUser();
       const token = authService.getToken();
       
+      console.log('useAuthPersistence - checkAuthStatus:', {
+        storedUser,
+        token: token ? 'Presente' : 'Ausente',
+        hasUser: !!storedUser,
+        hasToken: !!token
+      });
+      
       if (storedUser && token) {
         setUser(storedUser);
+        console.log('useAuthPersistence - Usuario autenticado:', storedUser);
       } else {
         // Si no hay token o usuario, limpiar localStorage
+        console.log('useAuthPersistence - No hay usuario o token, limpiando...');
         authService.logout();
+        setUser(null);
       }
     } catch (error) {
-      console.error('Error checking auth status:', error);
+      console.error('useAuthPersistence - Error checking auth status:', error);
       authService.logout();
+      setUser(null);
     } finally {
       setLoading(false);
     }

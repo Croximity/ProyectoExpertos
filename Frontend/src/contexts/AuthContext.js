@@ -31,7 +31,9 @@ export const AuthProvider = ({ children }) => {
   }, [setUser]);
 
   const isAuthenticated = useCallback(() => {
-    return !!user;
+    const authenticated = !!user;
+    console.log('AuthContext - isAuthenticated:', { user, authenticated });
+    return authenticated;
   }, [user]);
 
   // Memoizar el valor del contexto para evitar re-renders innecesarios
