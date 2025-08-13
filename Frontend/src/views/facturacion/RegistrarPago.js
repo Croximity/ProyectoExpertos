@@ -37,7 +37,7 @@ const RegistrarPago = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
 
-  const cargarDatosIniciales = async () => {
+  const cargarDatosIniciales = useCallback(async () => {
     try {
       setLoadingFacturas(true);
       setLoadingFormasPago(true);
@@ -65,7 +65,7 @@ const RegistrarPago = () => {
       setLoadingFacturas(false);
       setLoadingFormasPago(false);
     }
-  };
+  }, []);
 
   const calcularSaldoPendiente = useCallback(async () => {
     if (!facturaSeleccionada) return;
@@ -241,31 +241,18 @@ const RegistrarPago = () => {
     doc.text("ÓPTICA VELÁSQUEZ", 105, 18, { align: 'center' });
     
     doc.setFontSize(14);
-    doc.setFont('helvetica', 'normal');
-    doc.text("Recibo de Pago", 105, 28, { align: 'center' });
-
-    // Información de la empresa
-    doc.setTextColor(...secondaryColor);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text("Dirección: Colonia Centro, Tegucigalpa, Honduras", 14, 45);
-    doc.text("Teléfono: (504) 2222-0000 | Email: info@optica.com", 14, 52);
-    doc.text("RUC: 0801-0000-0000", 14, 59);
-
-    // Línea separadora
-    doc.setDrawColor(...primaryColor);
-    doc.setLineWidth(0.5);
-    doc.line(14, 65, 196, 65);
+    doc.setFont('helvetica-bold', 'normal');
+    doc.text("Especialistas en Salud Visual", 105, 25, { align: 'center' });
 
     // Título del recibo
     doc.setTextColor(...primaryColor);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text("RECIBO DE PAGO", 105, 80, { align: 'center' });
+    doc.text("RECIBO DE PAGO", 105, 40, { align: 'center' });
 
     // Información del pago
-    const startY = 95;
-    const lineHeight = 8;
+    const startY = 50;
+    const lineHeight = 6; // Reducido de 8 a 6
     let currentY = startY;
 
     // Número de recibo
@@ -276,7 +263,7 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(`#${pago.idPago.toString().padStart(6, '0')}`, 70, currentY);
-    currentY += lineHeight + 2;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Fecha del pago
     doc.setTextColor(...secondaryColor);
@@ -291,7 +278,7 @@ const RegistrarPago = () => {
       hour: '2-digit',
       minute: '2-digit'
     }), 70, currentY);
-    currentY += lineHeight + 2;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Información de la factura
     doc.setTextColor(...secondaryColor);
@@ -300,7 +287,7 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(`#${numeroFactura}`, 70, currentY);
-    currentY += lineHeight + 2;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Cliente
     doc.setTextColor(...secondaryColor);
@@ -309,7 +296,7 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(nombreCliente, 70, currentY);
-    currentY += lineHeight + 2;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Forma de pago
     doc.setTextColor(...secondaryColor);
@@ -318,37 +305,13 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(formaPago, 70, currentY);
-    currentY += lineHeight + 2;
-
-    // Línea separadora antes del monto
-    currentY += 5;
-    doc.setDrawColor(...primaryColor);
-    doc.setLineWidth(0.3);
-    doc.line(14, currentY, 196, currentY);
-    currentY += 8;
-
-    // Monto del pago (destacado)
-    doc.setTextColor(...successColor);
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text("MONTO PAGADO:", 14, currentY);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`L ${pago.monto.toFixed(2)}`, 70, currentY);
-    currentY += lineHeight + 5;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Línea separadora después del monto
     doc.setDrawColor(...primaryColor);
     doc.setLineWidth(0.3);
     doc.line(14, currentY, 196, currentY);
-    currentY += 8;
-
-    // RESUMEN FINANCIERO
-    currentY += 5;
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text("RESUMEN FINANCIERO", 105, currentY, { align: 'center' });
-    currentY += lineHeight + 3;
+    currentY += 8; // Reducido de 8 a 5
 
     // Total de la factura
     doc.setTextColor(...secondaryColor);
@@ -358,7 +321,7 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(`L ${totalFactura.toFixed(2)}`, 70, currentY);
-    currentY += lineHeight + 2;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Monto pagado en este recibo
     doc.setTextColor(...secondaryColor);
@@ -367,7 +330,7 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(`L ${pago.monto.toFixed(2)}`, 70, currentY);
-    currentY += lineHeight + 2;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Saldo pendiente
     doc.setTextColor(...secondaryColor);
@@ -376,7 +339,7 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(`L ${saldoPendiente.toFixed(2)}`, 70, currentY);
-    currentY += lineHeight + 2;
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Estado de la factura
     doc.setTextColor(...secondaryColor);
@@ -385,13 +348,13 @@ const RegistrarPago = () => {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
     doc.text(estadoFactura, 70, currentY);
-    currentY += lineHeight + 3;
+    currentY += lineHeight + 2; // Reducido de +3 a +2
 
     // Línea separadora después del resumen financiero
     doc.setDrawColor(...primaryColor);
     doc.setLineWidth(0.3);
     doc.line(14, currentY, 196, currentY);
-    currentY += 8;
+    currentY += 8; // Reducido de 8 a 5
 
     // Estado del pago
     doc.setTextColor(...successColor);
@@ -400,59 +363,28 @@ const RegistrarPago = () => {
     doc.text("Estado del Pago:", 14, currentY);
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
-    doc.text("PAGO CONFIRMADO", 70, currentY);
-    currentY += lineHeight + 2;
+    doc.text("Pago Confirmado", 70, currentY);
+    currentY += lineHeight + 1; // Reducido de +2 a +1
 
     // Indicador visual del progreso de pago
     if (saldoPendiente === 0) {
-      doc.setTextColor(...successColor);
-      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text("🎉 ¡FACTURA COMPLETAMENTE PAGADA! 🎉", 105, currentY, { align: 'center' });
-      currentY += lineHeight + 3;
+      doc.text("Factura Completamente Pagada", 70, currentY);
+      currentY += lineHeight + 2; // Reducido de +3 a +2
     } else {
-      doc.setTextColor(...secondaryColor);
-      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Pendiente por pagar: L ${saldoPendiente.toFixed(2)}`, 105, currentY, { align: 'center' });
-      currentY += lineHeight + 3;
+      doc.text(`Pendiente por pagar: L ${saldoPendiente.toFixed(2)}`, 70, currentY);
+      currentY += lineHeight + 2; // Reducido de +3 a +2
     }
 
-    // Barra de progreso visual del pago
-    currentY += 5;
-    const barWidth = 150;
-    const barHeight = 8;
-    const barX = 30;
-    const barY = currentY;
-    
-    // Fondo de la barra
-    doc.setFillColor(240, 240, 240);
-    doc.rect(barX, barY, barWidth, barHeight, 'F');
-    
-    // Barra de progreso
-    const porcentajePagado = totalFactura > 0 ? ((totalFactura - saldoPendiente) / totalFactura) * 100 : 0;
-    const progresoWidth = (porcentajePagado / 100) * barWidth;
-    
-    if (porcentajePagado >= 100) {
-      doc.setFillColor(...successColor);
-    } else if (porcentajePagado >= 50) {
-      doc.setFillColor(255, 193, 7); // Amarillo
-    } else {
-      doc.setFillColor(220, 53, 69); // Rojo
-    }
-    
-    doc.rect(barX, barY, progresoWidth, barHeight, 'F');
-    
-    // Texto del porcentaje
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${porcentajePagado.toFixed(1)}% Pagado`, 105, barY + barHeight + 5, { align: 'center' });
-    currentY = barY + barHeight + 10;
 
     // Observaciones (si existen)
     if (pago.observaciones && pago.observaciones.trim()) {
-      currentY += 5;
+      currentY += 3; // Reducido de 5 a 3
       doc.setTextColor(...secondaryColor);
       doc.setFont('helvetica', 'bold');
       doc.text("Observaciones:", 14, currentY);
@@ -479,33 +411,29 @@ const RegistrarPago = () => {
       lines.forEach((line, index) => {
         if (currentY < 250) { // Evitar que se salga de la página
           doc.text(line.trim(), 70, currentY);
-          currentY += lineHeight;
+          currentY += lineHeight - 1; // Reducido el espaciado entre líneas de observaciones
         }
       });
     }
 
-    // Pie de página
-    currentY = 260;
-    doc.setDrawColor(...primaryColor);
-    doc.setLineWidth(0.5);
-    doc.line(14, currentY, 196, currentY);
-    currentY += 5;
+         // Pie de página - se posiciona dinámicamente después del último contenido
+     // Agregar un poco de espacio antes del pie de página
+     currentY += 5;
+     
+     // Línea separadora del pie de página
+     doc.setDrawColor(...primaryColor);
+     doc.setLineWidth(0.5);
+     doc.line(14, currentY, 196, currentY);
+     currentY += 3; // Reducido de 5 a 3
 
-    doc.setTextColor(...secondaryColor);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text("Este documento es un comprobante oficial de pago.", 105, currentY, { align: 'center' });
-    currentY += 5;
-    doc.text("Conserve este recibo para sus registros.", 105, currentY, { align: 'center' });
-    currentY += 5;
-    doc.text("Gracias por su confianza en Óptica Velásquez", 105, currentY, { align: 'center' });
-
-    // Marca de agua o sello de confirmación
-    doc.setTextColor(200, 200, 200);
-    doc.setFontSize(60);
-    doc.setFont('helvetica', 'bold');
-    doc.text("✓", 105, 140, { align: 'center' });
-
+     doc.setTextColor(...secondaryColor);
+     doc.setFontSize(9);
+     doc.setFont('helvetica', 'normal');
+     doc.text("Este documento es un comprobante oficial de pago.", 105, currentY, { align: 'center' });
+     currentY += 3; // Reducido de 5 a 3
+     doc.text("Conserve este recibo para sus registros.", 105, currentY, { align: 'center' });
+     currentY += 3; // Reducido de 5 a 3
+     doc.text("Gracias por su confianza en Óptica Velásquez", 105, currentY, { align: 'center' });
     // Guardar el PDF
     doc.save(`recibo-pago-${numeroFactura}-${pago.idPago}.pdf`);
   };

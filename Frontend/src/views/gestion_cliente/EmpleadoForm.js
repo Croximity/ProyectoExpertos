@@ -14,24 +14,11 @@ import {
   Alert,
   Spinner
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faSave, 
-  faTimes, 
-  faUser, 
-  faEnvelope, 
-  faPhone, 
-  faIdCard, 
-  faMapMarkerAlt, 
-  faCalendarAlt, 
-  faVenusMars,
-  faArrowLeft,
-  faBriefcase
-} from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { empleadoService } from '../../services/gestion_cliente/empleadoService';
 import { personaService } from '../../services/seguridad/personaService';
 import { useToast } from '../../hooks/useToast';
+import HeaderBlanco from '../../components/Headers/HeaderBlanco';
 
 const EmpleadoForm = () => {
   const { id } = useParams();
@@ -179,83 +166,93 @@ const EmpleadoForm = () => {
 
   if (loading) {
     return (
-      <Container fluid>
-        <Row className="justify-content-center">
-          <Col md={8}>
-            <Card className="shadow">
-              <CardBody className="text-center">
-                <Spinner color="success" />
-                <p className="mt-3">Cargando...</p>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+      <>
+        <HeaderBlanco />
+        <Container className="mt--7" fluid>  
+          <Row>  
+            <Col> 
+              <Card className="shadow">
+                <CardBody className="text-center">
+                  <Spinner color="primary" />
+                  <p className="mt-2">Cargando datos...</p>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </>
     );
   }
 
   return (
-    <Container fluid>
-      <Row className="justify-content-center">
-        <Col md={10} lg={8}>
-          <Card className="shadow">
-            <CardHeader className="bg-success text-white">
-              <Row className="align-items-center">
-                <Col>
-                  <h3 className="mb-0">
-                    <FontAwesomeIcon icon={faBriefcase} className="me-2" />
-                    {isEditing ? 'Editar Empleado' : 'Nuevo Empleado'}
-                  </h3>
-                </Col>
-                <Col xs="auto">
-                  <Button color="light" outline onClick={handleCancel}>
-                    <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
-                    Volver
-                  </Button>
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardBody>
-              <Form onSubmit={handleSubmit}>
-                {/* Selección de Persona */}
-                <Row className="mb-4">
-                  <Col md={12}>
-                    <FormGroup>
-                      <Label>
-                        <FontAwesomeIcon icon={faUser} className="me-2" />
-                        Seleccionar Persona
-                      </Label>
-                      <div className="mb-3">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="personaOption"
-                            id="existingPersona"
-                            checked={!isNewPersona}
-                            onChange={() => setIsNewPersona(false)}
-                          />
-                          <label className="form-check-label" htmlFor="existingPersona">
-                            Seleccionar persona existente
-                          </label>
-                        </div>
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="personaOption"
-                            id="newPersona"
-                            checked={isNewPersona}
-                            onChange={() => setIsNewPersona(true)}
-                          />
-                          <label className="form-check-label" htmlFor="newPersona">
-                            Crear nueva persona
-                          </label>
-                        </div>
-                      </div>
-                    </FormGroup>
+    <>
+      <HeaderBlanco />
+      <Container className="mt--7" fluid>  
+        <Row>  
+          <Col> 
+            <Card className="shadow">
+              <CardHeader className="bg-transparent">
+                <Row className="align-items-center">
+                  <Col>
+                    <h6 className="text-uppercase text-muted ls-1 mb-1">
+                      Gestión
+                    </h6>
+                    <h5 className="h3 mb-0">
+                      {isEditing ? 'Editar Empleado' : 'Nuevo Empleado'}
+                    </h5>
+                  </Col>
+                  <Col className="text-right">
+                    <Button
+                      color="secondary"
+                      onClick={handleCancel}
+                    >
+                      <i className="ni ni-fat-remove mr-2"></i>
+                      Cancelar
+                    </Button>
                   </Col>
                 </Row>
+              </CardHeader>
+              <CardBody>
+                <Form onSubmit={handleSubmit}>
+                  {/* Selección de Persona */}
+                  <Row className="mb-4">
+                    <Col md={12}>
+                      <FormGroup>
+                        <Label>
+                          <i className="ni ni-single-02 mr-2"></i>
+                          Seleccionar Persona
+                        </Label>
+                        <div className="mb-3">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="personaOption"
+                              id="existingPersona"
+                              checked={!isNewPersona}
+                              onChange={() => setIsNewPersona(false)}
+                            />
+                            <label className="form-check-label" htmlFor="existingPersona">
+                              Seleccionar persona existente
+                            </label>
+                          </div>
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="personaOption"
+                              id="newPersona"
+                              checked={isNewPersona}
+                              onChange={() => setIsNewPersona(true)}
+                            />
+                            <label className="form-check-label" htmlFor="newPersona">
+                              Crear nueva persona
+                            </label>
+                          </div>
+                        </div>
+                      </FormGroup>
+                    </Col>
+                  </Row>
 
                 {!isNewPersona ? (
                   <FormGroup>
@@ -401,11 +398,11 @@ const EmpleadoForm = () => {
                       onClick={handleCancel}
                       disabled={saving}
                     >
-                      <FontAwesomeIcon icon={faTimes} className="me-2" />
+                      <i className="ni ni-fat-remove mr-2"></i>
                       Cancelar
                     </Button>
                     <Button 
-                      color="success" 
+                      color="primary" 
                       type="submit"
                       disabled={saving}
                     >
@@ -416,7 +413,7 @@ const EmpleadoForm = () => {
                         </>
                       ) : (
                         <>
-                          <FontAwesomeIcon icon={faSave} className="me-2" />
+                          <i className="ni ni-settings-gear-65 mr-2"></i>
                           {isEditing ? 'Actualizar' : 'Guardar'}
                         </>
                       )}
@@ -429,6 +426,7 @@ const EmpleadoForm = () => {
         </Col>
       </Row>
     </Container>
+    </>
   );
 };
 
