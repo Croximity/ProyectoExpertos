@@ -366,7 +366,7 @@ const Index = () => {
               <CardBody className="bg-gradient-primary text-white">
                 <Row className="align-items-center">
                   <Col>
-                    <h1 className="display-4 font-weight-bold mb-2">Panel de Control</h1>
+                    <h1 className="display-4 font-weight-bold mb-2 text-white">Panel de Control</h1>
                     <p className="mb-0 opacity-75">Bienvenido al sistema de gestión integral</p>
                   </Col>
                   <Col className="col-auto">
@@ -380,38 +380,7 @@ const Index = () => {
           </Col>
         </Row>
 
-        {/* Botón de diagnóstico */}
-        <Row className="mb-4">
-          <Col>
-            <Card className="shadow">
-              <CardBody className="text-center">
-                                 <Row>
-                   <Col md="4">
-                     <Button color="warning" onClick={ejecutarDiagnostico} className="mb-2 mb-md-0">
-                       <FontAwesomeIcon icon={faBug} className="me-2" />
-                       Diagnóstico de Conexión
-                     </Button>
-                   </Col>
-                   <Col md="4">
-                     <Button color="info" onClick={mostrarEstadoBackend}>
-                       <FontAwesomeIcon icon={faChartLine} className="me-2" />
-                       Estado del Backend
-                     </Button>
-                   </Col>
-                   <Col md="4">
-                     <Button color="success" onClick={probarServicioFacturas}>
-                       <FontAwesomeIcon icon={faFileInvoiceDollar} className="me-2" />
-                       Probar Facturas
-                     </Button>
-                   </Col>
-                 </Row>
-                                 <p className="text-muted mt-2 mb-0">
-                   Usa los botones para diagnosticar problemas y probar el servicio de facturas
-                 </p>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+        
 
         {/* Tarjetas de estadísticas principales */}
         <Row className="mb-4">
@@ -509,7 +478,7 @@ const Index = () => {
                     <p className="text-muted mb-0">Evolución de ingresos en los últimos 7 meses</p>
                   </Col>
                   <Col className="col-auto">
-                    <Button color="primary" size="sm" onClick={() => navigate('/admin/facturacion')}>
+                    <Button color="primary" size="sm" onClick={() => navigate('/admin/facturas')}>
                       Ver Detalles
                     </Button>
                   </Col>
@@ -592,7 +561,7 @@ const Index = () => {
                 <h3 className="mb-0">Facturas recientes</h3>
                   </Col>
                   <Col className="col-auto">
-                    <Button color="primary" size="sm" onClick={() => navigate('/admin/facturacion')}>
+                    <Button color="primary" size="sm" onClick={() => navigate('/admin/facturas')}>
                       Ver Todas
                     </Button>
                   </Col>
@@ -809,7 +778,7 @@ const Index = () => {
                       color="info" 
                       block 
                       className="p-3 h-100 d-flex flex-column align-items-center justify-content-center"
-                      onClick={() => navigate('/admin/facturacion')}
+                      onClick={() => navigate('/admin/facturacion/panel')}
                     >
                       <FontAwesomeIcon icon={faFileInvoiceDollar} size="2x" className="mb-2" />
                       <span>Facturación</span>
