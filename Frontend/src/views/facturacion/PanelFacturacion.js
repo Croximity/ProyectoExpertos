@@ -211,57 +211,17 @@ const PanelFacturacion = () => {
 
               </Col></Row> </Container>
 
-              {/* ESTADÍSTICAS RÁPIDAS */}
-              <Card className="shadow mb-4">
-                <CardHeader className="bg-gradient-success text-white">
-                  <h6 className="text-uppercase text-white-50 ls-1 mb-1">
-                    <i className="ni ni-chart-bar-32 mr-2"></i>
-                    Resumen del Mes
-                  </h6>
-                  <h5 className="mb-0 text-white">Estadísticas de Facturación</h5>
-                </CardHeader>
-                <CardBody>
-                  <Row>
-                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
-                      <div className="icon icon-shape bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
-                        <i className="ni ni-money-coins text-white"></i>
-                      </div>
-                      <h4 className="text-primary">L. {resumen.totalMes?.toLocaleString() || '0'}</h4>
-                      <small className="text-muted">Total del Mes</small>
-                    </Col>
-                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
-                      <div className="icon icon-shape bg-gradient-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
-                        <i className="ni ni-single-copy-04 text-white"></i>
-                      </div>
-                      <h4 className="text-success">{resumen.emitidas || '0'}</h4>
-                      <small className="text-muted">Facturas Emitidas</small>
-                    </Col>
-                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
-                      <div className="icon icon-shape bg-gradient-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
-                        <i className="ni ni-time-alarm text-white"></i>
-                      </div>
-                      <h4 className="text-warning">{resumen.pendientes || '0'}</h4>
-                      <small className="text-muted">Pendientes de Pago</small>
-                    </Col>
-                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
-                      <div className="icon icon-shape bg-gradient-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
-                        <i className="ni ni-check-bold text-white"></i>
-                      </div>
-                      <h4 className="text-info">{resumen.pagadas || '0'}</h4>
-                      <small className="text-muted">Facturas Pagadas</small>
-                    </Col>
-                  </Row>
-                </CardBody>
-              </Card>
 
               {/* ESTADO DEL CAI */}
+              <Container className="" fluid><Row><Col>
               <Card className="shadow mb-4">
-                <CardHeader className="bg-gradient-info text-white">
-                  <h6 className="text-uppercase text-white-50 ls-1 mb-1">
-                    <i className="ni ni-key-25 mr-2"></i>
+                <CardHeader className="bg-transparent">
+                  <h5 className="h3 mb-0">
                     Estado del CAI
-                  </h6>
-                  <h5 className="mb-0 text-white">Control de Autorización de Impresión</h5>
+                  </h5>
+                  <p className="text-muted mb-0 mt-2">
+                    Control de Autorización de Impresión
+                  </p>
                 </CardHeader>
                 <CardBody>
                   <Row>
@@ -298,6 +258,7 @@ const PanelFacturacion = () => {
                   </Row>
                 </CardBody>
               </Card>
+              </Col></Row></Container>
     </>
   );
 };
