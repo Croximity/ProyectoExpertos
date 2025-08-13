@@ -49,6 +49,7 @@ const EmpleadoForm = () => {
   
   const [isNewPersona, setIsNewPersona] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [empleadoOriginal, setEmpleadoOriginal] = useState(null);
 
   useEffect(() => {
     cargarDatos();
@@ -63,6 +64,8 @@ const EmpleadoForm = () => {
       if (id) {
         setIsEditing(true);
         const empleadoData = await empleadoService.obtenerEmpleadoPorId(id);
+        setEmpleadoOriginal(empleadoData);
+        
         setFormData({
           idPersona: empleadoData.idPersona,
           Fecha_Registro: empleadoData.Fecha_Registro ? new Date(empleadoData.Fecha_Registro).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
@@ -92,7 +95,8 @@ const EmpleadoForm = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (isNewPersona) {
+    // Validar campos de persona (siempre requeridos al editar)
+    if (isEditing || isNewPersona) {
       if (!personaFormData.Pnombre.trim()) {
         newErrors.Pnombre = 'El primer nombre es obligatorio';
       }
@@ -132,6 +136,10 @@ const EmpleadoForm = () => {
         // Crear nueva persona
         const nuevaPersona = await personaService.crearPersona(personaFormData);
         personaId = nuevaPersona.persona.idPersona;
+      } else if (isEditing && empleadoOriginal?.persona) {
+        // Actualizar persona existente
+        await personaService.actualizarPersona(empleadoOriginal.persona.idPersona, personaFormData);
+        personaId = empleadoOriginal.persona.idPersona;
       }
 
       // Crear o actualizar empleado
@@ -214,218 +222,223 @@ const EmpleadoForm = () => {
               </CardHeader>
               <CardBody>
                 <Form onSubmit={handleSubmit}>
-                  {/* Selección de Persona */}
-                  <Row className="mb-4">
-                    <Col md={12}>
-                      <FormGroup>
-                        <Label>
-                          <i className="ni ni-single-02 mr-2"></i>
-                          Seleccionar Persona
-                        </Label>
-                        <div className="mb-3">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="personaOption"
-                              id="existingPersona"
-                              checked={!isNewPersona}
-                              onChange={() => setIsNewPersona(false)}
-                            />
-                            <label className="form-check-label" htmlFor="existingPersona">
-                              Seleccionar persona existente
-                            </label>
+                  {/* Solo mostrar opciones de persona si no estamos editando */}
+                  {!isEditing && (
+                    <Row className="mb-4">
+                      <Col md={12}>
+                        <FormGroup>
+                          <Label>
+                            <i className="ni ni-single-02 mr-2"></i>
+                            Seleccionar Persona
+                          </Label>
+                          <div className="mb-3">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="personaOption"
+                                id="existingPersona"
+                                checked={!isNewPersona}
+                                onChange={() => setIsNewPersona(false)}
+                              />
+                              <label className="form-check-label" htmlFor="existingPersona">
+                                Seleccionar persona existente
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="personaOption"
+                                id="newPersona"
+                                checked={isNewPersona}
+                                onChange={() => setIsNewPersona(true)}
+                              />
+                              <label className="form-check-label" htmlFor="newPersona">
+                                Crear nueva persona
+                              </label>
+                            </div>
                           </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="personaOption"
-                              id="newPersona"
-                              checked={isNewPersona}
-                              onChange={() => setIsNewPersona(true)}
-                            />
-                            <label className="form-check-label" htmlFor="newPersona">
-                              Crear nueva persona
-                            </label>
-                          </div>
-                        </div>
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  )}
 
-                {!isNewPersona ? (
+                  {/* Mostrar selector de persona existente solo si no estamos editando y no es nueva persona */}
+                  {!isEditing && !isNewPersona ? (
+                    <FormGroup>
+                      <Label>Persona Existente</Label>
+                      <Input
+                        type="select"
+                        value={formData.idPersona}
+                        onChange={(e) => setFormData({ ...formData, idPersona: e.target.value })}
+                        invalid={!!errors.idPersona}
+                      >
+                        <option value="">Seleccione una persona...</option>
+                        {personas.map((persona) => (
+                          <option key={persona.idPersona} value={persona.idPersona}>
+                            {persona.Pnombre} {persona.Snombre} {persona.Papellido} {persona.Sapellido} - {persona.DNI}
+                          </option>
+                        ))}
+                      </Input>
+                      {errors.idPersona && <div className="invalid-feedback d-block">{errors.idPersona}</div>}
+                    </FormGroup>
+                  ) : (
+                    /* Mostrar formulario de persona si estamos editando o creando nueva persona */
+                    <Row>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>Primer Nombre *</Label>
+                          <Input
+                            value={personaFormData.Pnombre}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, Pnombre: e.target.value })}
+                            placeholder="Primer nombre"
+                            invalid={!!errors.Pnombre}
+                          />
+                          {errors.Pnombre && <div className="invalid-feedback d-block">{errors.Pnombre}</div>}
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>Segundo Nombre</Label>
+                          <Input
+                            value={personaFormData.Snombre}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, Snombre: e.target.value })}
+                            placeholder="Segundo nombre"
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>Primer Apellido *</Label>
+                          <Input
+                            value={personaFormData.Papellido}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, Papellido: e.target.value })}
+                            placeholder="Primer apellido"
+                            invalid={!!errors.Papellido}
+                          />
+                          {errors.Papellido && <div className="invalid-feedback d-block">{errors.Papellido}</div>}
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>Segundo Apellido</Label>
+                          <Input
+                            value={personaFormData.Sapellido}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, Sapellido: e.target.value })}
+                            placeholder="Segundo apellido"
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>DNI *</Label>
+                          <Input
+                            value={personaFormData.DNI}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, DNI: e.target.value })}
+                            placeholder="0000-0000-00000"
+                            maxLength={13}
+                            invalid={!!errors.DNI}
+                          />
+                          {errors.DNI && <div className="invalid-feedback d-block">{errors.DNI}</div>}
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>Género *</Label>
+                          <Input
+                            type="select"
+                            value={personaFormData.genero}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, genero: e.target.value })}
+                          >
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                          </Input>
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>Correo Electrónico</Label>
+                          <Input
+                            type="email"
+                            value={personaFormData.correo}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, correo: e.target.value })}
+                            placeholder="correo@ejemplo.com"
+                            invalid={!!errors.correo}
+                          />
+                          {errors.correo && <div className="invalid-feedback d-block">{errors.correo}</div>}
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label>Fecha de Nacimiento</Label>
+                          <Input
+                            type="date"
+                            value={personaFormData.fechaNacimiento}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, fechaNacimiento: e.target.value })}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={12}>
+                        <FormGroup>
+                          <Label>Dirección</Label>
+                          <Input
+                            value={personaFormData.Direccion}
+                            onChange={(e) => setPersonaFormData({ ...personaFormData, Direccion: e.target.value })}
+                            placeholder="Dirección completa"
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  )}
+
+                  {/* Campo de fecha de registro del empleado */}
                   <FormGroup>
-                    <Label>Persona Existente</Label>
+                    <Label>Fecha de Registro del Empleado</Label>
                     <Input
-                      type="select"
-                      value={formData.idPersona}
-                      onChange={(e) => setFormData({ ...formData, idPersona: e.target.value })}
-                      invalid={!!errors.idPersona}
-                    >
-                      <option value="">Seleccione una persona...</option>
-                      {personas.map((persona) => (
-                        <option key={persona.idPersona} value={persona.idPersona}>
-                          {persona.Pnombre} {persona.Snombre} {persona.Papellido} {persona.Sapellido} - {persona.DNI}
-                        </option>
-                      ))}
-                    </Input>
-                    {errors.idPersona && <div className="invalid-feedback d-block">{errors.idPersona}</div>}
+                      type="date"
+                      value={formData.Fecha_Registro}
+                      onChange={(e) => setFormData({ ...formData, Fecha_Registro: e.target.value })}
+                    />
                   </FormGroup>
-                ) : (
-                  <Row>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>Primer Nombre *</Label>
-                        <Input
-                          value={personaFormData.Pnombre}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, Pnombre: e.target.value })}
-                          placeholder="Primer nombre"
-                          invalid={!!errors.Pnombre}
-                        />
-                        {errors.Pnombre && <div className="invalid-feedback d-block">{errors.Pnombre}</div>}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>Segundo Nombre</Label>
-                        <Input
-                          value={personaFormData.Snombre}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, Snombre: e.target.value })}
-                          placeholder="Segundo nombre"
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>Primer Apellido *</Label>
-                        <Input
-                          value={personaFormData.Papellido}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, Papellido: e.target.value })}
-                          placeholder="Primer apellido"
-                          invalid={!!errors.Papellido}
-                        />
-                        {errors.Papellido && <div className="invalid-feedback d-block">{errors.Papellido}</div>}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>Segundo Apellido</Label>
-                        <Input
-                          value={personaFormData.Sapellido}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, Sapellido: e.target.value })}
-                          placeholder="Segundo apellido"
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>DNI *</Label>
-                        <Input
-                          value={personaFormData.DNI}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, DNI: e.target.value })}
-                          placeholder="0000-0000-00000"
-                          maxLength={13}
-                          invalid={!!errors.DNI}
-                        />
-                        {errors.DNI && <div className="invalid-feedback d-block">{errors.DNI}</div>}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>Género *</Label>
-                        <Input
-                          type="select"
-                          value={personaFormData.genero}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, genero: e.target.value })}
-                        >
-                          <option value="M">Masculino</option>
-                          <option value="F">Femenino</option>
-                        </Input>
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>Correo Electrónico</Label>
-                        <Input
-                          type="email"
-                          value={personaFormData.correo}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, correo: e.target.value })}
-                          placeholder="correo@ejemplo.com"
-                          invalid={!!errors.correo}
-                        />
-                        {errors.correo && <div className="invalid-feedback d-block">{errors.correo}</div>}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label>Fecha de Nacimiento</Label>
-                        <Input
-                          type="date"
-                          value={personaFormData.fechaNacimiento}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, fechaNacimiento: e.target.value })}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md={12}>
-                      <FormGroup>
-                        <Label>Dirección</Label>
-                        <Input
-                          value={personaFormData.Direccion}
-                          onChange={(e) => setPersonaFormData({ ...personaFormData, Direccion: e.target.value })}
-                          placeholder="Dirección completa"
-                        />
-                      </FormGroup>
+
+                  {/* Botones */}
+                  <Row className="mt-4">
+                    <Col className="text-end">
+                      <Button 
+                        color="secondary" 
+                        className="me-2" 
+                        onClick={handleCancel}
+                        disabled={saving}
+                      >
+                        <i className="ni ni-fat-remove mr-2"></i>
+                        Cancelar
+                      </Button>
+                      <Button 
+                        color="primary" 
+                        type="submit"
+                        disabled={saving}
+                      >
+                        {saving ? (
+                          <>
+                            <Spinner size="sm" className="me-2" />
+                            Guardando...
+                          </>
+                        ) : (
+                          <>
+                            <i className="ni ni-settings-gear-65 mr-2"></i>
+                            {isEditing ? 'Actualizar' : 'Guardar'}
+                          </>
+                        )}
+                      </Button>
                     </Col>
                   </Row>
-                )}
-
-                <FormGroup>
-                  <Label>Fecha de Registro</Label>
-                  <Input
-                    type="date"
-                    value={formData.Fecha_Registro}
-                    onChange={(e) => setFormData({ ...formData, Fecha_Registro: e.target.value })}
-                  />
-                </FormGroup>
-
-                {/* Botones */}
-                <Row className="mt-4">
-                  <Col className="text-end">
-                    <Button 
-                      color="secondary" 
-                      className="me-2" 
-                      onClick={handleCancel}
-                      disabled={saving}
-                    >
-                      <i className="ni ni-fat-remove mr-2"></i>
-                      Cancelar
-                    </Button>
-                    <Button 
-                      color="primary" 
-                      type="submit"
-                      disabled={saving}
-                    >
-                      {saving ? (
-                        <>
-                          <Spinner size="sm" className="me-2" />
-                          Guardando...
-                        </>
-                      ) : (
-                        <>
-                          <i className="ni ni-settings-gear-65 mr-2"></i>
-                          {isEditing ? 'Actualizar' : 'Guardar'}
-                        </>
-                      )}
-                    </Button>
-                  </Col>
-                </Row>
-              </Form>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+                </Form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 };
