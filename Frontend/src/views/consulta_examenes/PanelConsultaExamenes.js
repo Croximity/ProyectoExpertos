@@ -131,6 +131,22 @@ const PanelConsultaExamenes = () => {
     <>
       <HeaderBlanco />
       <Container className="mt--7" fluid>
+      <Card className="shadow">
+              <CardHeader className="bg-transparent">
+                <Row className="align-items-center">
+                  <Col>
+                    <h5 className="h3 mb-0">
+                      Panel de Control de Consulta de Exámenes
+                    </h5>
+                    <p className="text-muted mb-0 mt-2">
+                    Gestiona recetas, exámenes, diagnósticos, tipos de enfermedad y reparaciones de lentes
+                    </p>
+                  </Col>
+                </Row>
+              </CardHeader>
+            </Card>
+            
+
         {/* Resumen de estadísticas */}
         <Row className="mb-4">
           <Col lg="3" md="6">
@@ -138,11 +154,11 @@ const PanelConsultaExamenes = () => {
               <CardBody>
                 <Row>
                   <Col xs="5">
-                    <div className="icon-shape bg-danger text-white rounded-circle shadow">
-                      <FontAwesomeIcon icon={faEye} />
+                    <div className="icon-shape bg-danger text-white rounded-circle shadow" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                      <FontAwesomeIcon icon={faEye} size="sm" />
                     </div>
                   </Col>
-                  <Col xs="7">
+                  <Col xs="7 p-2">
                     <div className="numbers">
                       <p className="card-category text-uppercase text-muted mb-0 font-weight-bold">
                         Total Registros
@@ -162,11 +178,11 @@ const PanelConsultaExamenes = () => {
               <CardBody>
                 <Row>
                   <Col xs="5">
-                    <div className="icon-shape bg-warning text-white rounded-circle shadow">
-                      <FontAwesomeIcon icon={faPrescription} />
+                    <div className="icon-shape bg-warning text-white rounded-circle shadow" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                      <FontAwesomeIcon icon={faPrescription} size="sm" />
                     </div>
                   </Col>
-                  <Col xs="7">
+                  <Col xs="7 p-2">
                     <div className="numbers">
                       <p className="card-category text-uppercase text-muted mb-0 font-weight-bold">
                         Recetas
@@ -186,11 +202,11 @@ const PanelConsultaExamenes = () => {
               <CardBody>
                 <Row>
                   <Col xs="5">
-                    <div className="icon-shape bg-success text-white rounded-circle shadow">
-                      <FontAwesomeIcon icon={faStethoscope} />
+                    <div className="icon-shape bg-success text-white rounded-circle shadow" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                      <FontAwesomeIcon icon={faStethoscope} size="sm" />
                     </div>
                   </Col>
-                  <Col xs="7">
+                  <Col xs="7 p-2">
                     <div className="numbers">
                       <p className="card-category text-uppercase text-muted mb-0 font-weight-bold">
                         Exámenes
@@ -209,21 +225,21 @@ const PanelConsultaExamenes = () => {
             <Card className="card-stats mb-4 mb-lg-0 shadow">
               <CardBody>
                 <Row>
-                  <Col xs="5">
-                    <div className="icon-shape bg-info text-white rounded-circle shadow">
-                      <FontAwesomeIcon icon={faClipboardCheck} />
-                    </div>
-                  </Col>
-                  <Col xs="7">
-                    <div className="numbers">
-                      <p className="card-category text-uppercase text-muted mb-0 font-weight-bold">
-                        Diagnósticos
-                      </p>
-                      <h2 className="card-title text-default">
-                        {estadisticas.totalDiagnosticos}
-                      </h2>
-                    </div>
-                  </Col>
+                <Col xs="4">
+                     <div className="icon-shape bg-info text-white rounded-circle shadow" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                       <FontAwesomeIcon icon={faClipboardCheck} size="sm" />
+                     </div>
+                   </Col>
+                   <Col xs="8 p-2">
+                     <div className="numbers">
+                       <p className="card-category text-uppercase text-muted mb-0 font-weight-bold">
+                         Diagnósticos
+                       </p>
+                       <h2 className="card-title text-default">
+                         {estadisticas.totalDiagnosticos}
+                       </h2>
+                     </div>
+                   </Col>
                 </Row>
               </CardBody>
             </Card>
