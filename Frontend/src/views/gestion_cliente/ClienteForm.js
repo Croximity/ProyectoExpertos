@@ -50,6 +50,7 @@ const ClienteForm = () => {
   const [isNewPersona, setIsNewPersona] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [clienteOriginal, setClienteOriginal] = useState(null);
+  const [warnings, setWarnings] = useState([]);
 
   useEffect(() => {
     cargarDatos();
@@ -83,12 +84,43 @@ const ClienteForm = () => {
             fechaNacimiento: clienteData.persona.fechaNacimiento ? new Date(clienteData.persona.fechaNacimiento).toISOString().split('T')[0] : '',
             genero: clienteData.persona.genero || 'M'
           });
+
+          // Verificar problemas en datos existentes
+          await verificarProblemasExistentes(clienteData.persona);
         }
       }
     } catch (error) {
       showToast('Error al cargar los datos', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const verificarProblemasExistentes = async (persona) => {
+    const warnings = [];
+    
+    try {
+      // Verificar si el DNI está duplicado
+      const resultadoDNI = await personaService.verificarDNIExistente(persona.DNI, persona.idPersona);
+      if (resultadoDNI.existe) {
+        warnings.push({
+          type: 'warning',
+          message: `⚠️ ADVERTENCIA: El DNI ${persona.DNI} está duplicado con otra persona en el sistema. Esto puede causar problemas de identificación.`
+        });
+      }
+
+      // Verificar si la persona también es empleado (ahora permitido)
+      const resultadoEmpleado = await personaService.verificarPersonaEmpleado(persona.idPersona);
+      if (resultadoEmpleado.esEmpleado) {
+        warnings.push({
+          type: 'info',
+          message: `ℹ️ INFORMACIÓN: Esta persona (${persona.Pnombre} ${persona.Papellido}) también está registrada como EMPLEADO en el sistema. Esto está permitido.`
+        });
+      }
+
+      setWarnings(warnings);
+    } catch (error) {
+      console.error('Error al verificar problemas existentes:', error);
     }
   };
 
@@ -121,6 +153,83 @@ const ClienteForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateDNI = async (dni) => {
+    if (!dni || dni.length !== 13) return null;
+    
+    try {
+      const personaIdExcluir = isEditing && clienteOriginal?.persona ? clienteOriginal.persona.idPersona : null;
+      const resultado = await personaService.verificarDNIExistente(dni, personaIdExcluir);
+      
+      if (resultado.existe) {
+        return `El DNI ${dni} ya está registrado por otra persona`;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al verificar DNI:', error);
+      return null;
+    }
+  };
+
+  const validatePersonaUnica = async (personaId) => {
+    if (!personaId) return null;
+    
+    try {
+      // Verificar si la persona ya es cliente (excluyendo el cliente actual si estamos editando)
+      const resultadoCliente = await personaService.verificarPersonaCliente(personaId);
+      if (resultadoCliente.esCliente && (!isEditing || resultadoCliente.cliente.idCliente !== parseInt(id))) {
+        return 'Esta persona ya es cliente en el sistema';
+      }
+      
+      // Verificar si la persona ya es empleado (ahora permitido)
+      const resultadoEmpleado = await personaService.verificarPersonaEmpleado(personaId);
+      if (resultadoEmpleado.esEmpleado) {
+        // Ya no es un error, solo una información
+        return null;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error al verificar persona única:', error);
+      return null;
+    }
+  };
+
+  const handleDNIChange = async (e) => {
+    const dni = e.target.value;
+    setPersonaFormData({ ...personaFormData, DNI: dni });
+    
+    // Limpiar error previo del DNI
+    if (errors.DNI) {
+      setErrors({ ...errors, DNI: null });
+    }
+    
+    // Validar DNI en tiempo real si tiene la longitud correcta
+    if (dni.length === 13) {
+      const errorDNI = await validateDNI(dni);
+      if (errorDNI) {
+        setErrors({ ...errors, DNI: errorDNI });
+      }
+    }
+  };
+
+  const handlePersonaChange = async (e) => {
+    const personaId = e.target.value;
+    setFormData({ ...formData, idPersona: personaId });
+    
+    // Limpiar error previo de persona
+    if (errors.idPersona) {
+      setErrors({ ...errors, idPersona: null });
+    }
+    
+    // Validar que la persona no esté duplicada
+    if (personaId) {
+      const errorPersona = await validatePersonaUnica(personaId);
+      if (errorPersona) {
+        setErrors({ ...errors, idPersona: errorPersona });
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -130,6 +239,28 @@ const ClienteForm = () => {
 
     try {
       setSaving(true);
+      
+      // Validaciones adicionales antes de enviar
+      if (isEditing || isNewPersona) {
+        // Validar DNI único
+        const errorDNI = await validateDNI(personaFormData.DNI);
+        if (errorDNI) {
+          setErrors({ ...errors, DNI: errorDNI });
+          setSaving(false);
+          return;
+        }
+      }
+
+      if (!isNewPersona && formData.idPersona) {
+        // Validar persona única
+        const errorPersona = await validatePersonaUnica(formData.idPersona);
+        if (errorPersona) {
+          setErrors({ ...errors, idPersona: errorPersona });
+          setSaving(false);
+          return;
+        }
+      }
+
       let personaId = formData.idPersona;
 
       if (isNewPersona) {
@@ -150,6 +281,15 @@ const ClienteForm = () => {
 
       if (isEditing) {
         await clienteService.editarCliente(id, clienteData);
+        
+        // Verificar si se resolvieron los problemas
+        if (warnings.length > 0) {
+          await verificarProblemasExistentes({
+            ...personaFormData,
+            idPersona: personaId
+          });
+        }
+        
         showToast('Cliente actualizado exitosamente', 'success');
       } else {
         await clienteService.crearCliente(clienteData);
@@ -222,6 +362,45 @@ const ClienteForm = () => {
               </CardHeader>
               <CardBody>
                 <Form onSubmit={handleSubmit}>
+                  {/* Mensaje informativo sobre validaciones */}
+                  <Row className="mb-4">
+                    <Col md={12}>
+                      <Alert color="info" className="mb-4">
+                        <h6 className="alert-heading">
+                          <i className="ni ni-bell-55 mr-2"></i>
+                          Reglas de Validación
+                        </h6>
+                        <ul className="mb-0">
+                          <li><strong>DNI único:</strong> Cada persona debe tener un DNI diferente</li>
+                          <li><strong>Persona única:</strong> Una persona no puede ser empleado y cliente al mismo tiempo</li>
+                          <li><strong>Campos obligatorios:</strong> Primer nombre, primer apellido y DNI son requeridos</li>
+                        </ul>
+                      </Alert>
+                    </Col>
+                  </Row>
+
+                  {/* Mostrar advertencias sobre problemas existentes */}
+                  {warnings.length > 0 && (
+                    <Row className="mb-4">
+                      <Col md={12}>
+                        {warnings.map((warning, index) => (
+                          <Alert key={index} color={warning.type} className="mb-2">
+                            <div dangerouslySetInnerHTML={{ __html: warning.message }} />
+                          </Alert>
+                        ))}
+                        <Button 
+                          color="info" 
+                          size="sm" 
+                          onClick={() => verificarProblemasExistentes(clienteOriginal?.persona)}
+                          className="mt-2"
+                        >
+                          <i className="ni ni-refresh mr-2"></i>
+                          Verificar Integridad
+                        </Button>
+                      </Col>
+                    </Row>
+                  )}
+
                   {/* Solo mostrar opciones de persona si no estamos editando */}
                   {!isEditing && (
                     <Row className="mb-4">
@@ -271,7 +450,7 @@ const ClienteForm = () => {
                       <Input
                         type="select"
                         value={formData.idPersona}
-                        onChange={(e) => setFormData({ ...formData, idPersona: e.target.value })}
+                        onChange={handlePersonaChange}
                         invalid={!!errors.idPersona}
                       >
                         <option value="">Seleccione una persona...</option>
@@ -335,7 +514,7 @@ const ClienteForm = () => {
                           <Label>DNI *</Label>
                           <Input
                             value={personaFormData.DNI}
-                            onChange={(e) => setPersonaFormData({ ...personaFormData, DNI: e.target.value })}
+                            onChange={handleDNIChange}
                             placeholder="0000-0000-00000"
                             maxLength={13}
                             invalid={!!errors.DNI}
