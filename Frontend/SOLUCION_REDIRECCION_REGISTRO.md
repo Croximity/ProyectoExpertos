@@ -1,4 +1,4 @@
-# Solución: Problema de Redirección al Registro
+ # Solución: Problema de Redirección al Registro
 
 ## 🚨 Problema Identificado
 

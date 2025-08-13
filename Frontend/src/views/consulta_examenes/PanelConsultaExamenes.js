@@ -38,7 +38,8 @@ const PanelConsultaExamenes = () => {
     totalExamenes: 0,
     totalDiagnosticos: 0,
     totalTiposEnfermedad: 0,
-    totalReparaciones: 0
+    totalReparaciones: 0,
+    totalConsultas: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -70,7 +71,8 @@ const PanelConsultaExamenes = () => {
         totalExamenes: examenes.status === 'fulfilled' && Array.isArray(examenes.value) ? examenes.value.length : 0,
         totalDiagnosticos: diagnosticos.status === 'fulfilled' && Array.isArray(diagnosticos.value) ? diagnosticos.value.length : 0,
         totalTiposEnfermedad: tiposEnfermedad.status === 'fulfilled' && Array.isArray(tiposEnfermedad.value) ? tiposEnfermedad.value.length : 0,
-        totalReparaciones: reparaciones.status === 'fulfilled' && Array.isArray(reparaciones.value) ? reparaciones.value.length : 0
+        totalReparaciones: reparaciones.status === 'fulfilled' && Array.isArray(reparaciones.value) ? reparaciones.value.length : 0,
+        totalConsultas: 0
       });
 
     } catch (error) {
@@ -81,6 +83,14 @@ const PanelConsultaExamenes = () => {
   };
 
   const modulosMenu = [
+    {
+      titulo: 'Consultas',
+      descripcion: 'Gestión de consultas de clientes',
+      icono: faCalendarAlt,
+      color: 'default',
+      ruta: '/admin/consulta-examenes/consultas',
+      total: estadisticas.totalConsultas
+    },
     {
       titulo: 'Recetas Médicas',
       descripcion: 'Gestión de recetas médicas, prescripciones y graduaciones',

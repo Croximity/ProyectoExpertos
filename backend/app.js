@@ -112,7 +112,7 @@ app.use('/api/optica', express.static('uploads'));
 app.use('/uploads', express.static('uploads'));
 
 // Usar rutas de autenticación MongoDB
-app.use('/api/optica/auth', authRoutes);
+app.use('/api/optica/auth-mongo', authRoutes);
 app.use('/api/optica/personas', personaRutas);
 app.use('/api/optica/roles', rolRutas);
 

@@ -1,5 +1,6 @@
 const { body, validationResult } = require('express-validator');
 const Empleado = require('../../modelos/gestion_cliente/Empleado');
+const PersonaMongo = require('../../modelos/seguridad/PersonaMongo');
 const Persona = require('../../modelos/seguridad/Persona');
 const { Op } = require('sequelize');
 
@@ -31,14 +32,45 @@ exports.crearEmpleado = [
       return res.status(400).json({ errores: errores.array() });
     }
     try {
-      // Validar existencia de idPersona
-      const persona = await Persona.findByPk(req.body.idPersona);
-      if (!persona) {
+      console.log('🔍 EmpleadoController - crearEmpleado - Datos recibidos:', req.body);
+      const idPersonaInt = parseInt(req.body.idPersona);
+      
+      // Validar existencia de idPersona usando MongoDB
+      const personaMongo = await PersonaMongo.findOne({ idPersona: idPersonaInt });
+      if (!personaMongo) {
+        console.log('❌ EmpleadoController - crearEmpleado - Persona Mongo no encontrada con idPersona:', idPersonaInt);
         return res.status(400).json({ mensaje: 'La persona asociada (idPersona) no existe' });
       }
-      const empleado = await Empleado.create(req.body);
+      console.log('✅ EmpleadoController - crearEmpleado - Persona Mongo encontrada:', personaMongo._id);
+
+      // Asegurar existencia en SQL (para FK)
+      let personaSQL = await Persona.findByPk(idPersonaInt);
+      if (!personaSQL) {
+        console.log('⚠️ EmpleadoController - crearEmpleado - Persona SQL no existe. Creando espejo en SQL...');
+        personaSQL = await Persona.create({
+          idPersona: idPersonaInt,
+          Pnombre: (personaMongo.Pnombre || '').substring(0, 45),
+          Snombre: (personaMongo.Snombre || '').substring(0, 45),
+          Papellido: (personaMongo.Papellido || '').substring(0, 45),
+          Sapellido: (personaMongo.Sapellido || '').substring(0, 45),
+          Direccion: (personaMongo.Direccion || '').substring(0, 45),
+          DNI: (personaMongo.DNI || '').substring(0, 45),
+          correo: (personaMongo.correo || '').substring(0, 45),
+          fechaNacimiento: personaMongo.fechaNacimiento || null,
+          genero: (personaMongo.genero || 'M').substring(0, 1)
+        });
+        console.log('✅ EmpleadoController - crearEmpleado - Persona SQL creada:', personaSQL.idPersona);
+      }
+
+      const empleado = await Empleado.create({
+        idPersona: idPersonaInt,
+        Fecha_Registro: req.body.Fecha_Registro || undefined
+      });
+      console.log('✅ EmpleadoController - crearEmpleado - Empleado creado exitosamente:', empleado.idEmpleado);
+      
       res.status(201).json({ mensaje: 'Empleado creado', empleado });
     } catch (error) {
+      console.error('❌ EmpleadoController - crearEmpleado - Error:', error);
       res.status(500).json({ mensaje: 'Error al crear empleado', error: error.message });
     }
   }

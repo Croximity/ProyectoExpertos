@@ -52,6 +52,9 @@ import TipoEnfermedadVer from "views/consulta_examenes/TipoEnfermedadVer";
 import ReparacionLentes from "views/consulta_examenes/ReparacionLentes";
 import ReparacionLentesForm from "views/consulta_examenes/ReparacionLentesForm";
 import ReparacionLentesVer from "views/consulta_examenes/ReparacionLentesVer";
+import Consultas from "views/consulta_examenes/Consultas";
+import ConsultaForm from "views/consulta_examenes/ConsultaForm";
+import ConsultaVer from "views/consulta_examenes/ConsultaVer";
 
 // Productos
 import Productos from "views/productos/Productos.js";
@@ -272,6 +275,35 @@ const routes = [
     icon: "ni ni-collection text-info",
     component: PanelConsultaExamenes,
     layout: "/admin",
+  },
+  {
+    path: "/consulta-examenes/consultas",
+    name: "Consultas",
+    icon: "ni ni-time-alarm text-default",
+    component: Consultas,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/consultas/nueva",
+    name: "Nueva Consulta",
+    component: ConsultaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/consultas/editar/:id",
+    name: "Editar Consulta",
+    component: ConsultaForm,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/consulta-examenes/consultas/ver/:id",
+    name: "Ver Consulta",
+    component: ConsultaVer,
+    layout: "/admin",
+    hidden: true,
   },
   {
     path: "/consulta-examenes/recetas",

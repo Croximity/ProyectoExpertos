@@ -88,8 +88,8 @@ router.post('/empleado',
   [
     body('idPersona').isInt({ min: 1 }).withMessage('El idPersona debe ser un número entero positivo')
       .custom(async value => {
-        const Persona = require('../../modelos/seguridad/Persona');
-        const existe = await Persona.findByPk(value);
+        const PersonaMongo = require('../../modelos/seguridad/PersonaMongo');
+        const existe = await PersonaMongo.findOne({ idPersona: parseInt(value) });
         if (!existe) throw new Error('La persona asociada no existe');
         return true;
       }),
@@ -452,5 +452,55 @@ router.delete('/empleado/:id',
  *               description: Apellido de la persona
  *               example: Pérez
  */
+
+// === RUTAS DE VERIFICACIÓN ===
+
+// Verificar si una persona ya es empleado
+router.get('/empleado/verificar-persona/:idPersona',
+  verificarUsuario,
+  [
+    param('idPersona').isInt({ min: 1 }).withMessage('El ID de persona debe ser un número entero positivo')
+  ],
+  async (req, res) => {
+    try {
+      const { idPersona } = req.params;
+      const errores = validationResult(req);
+      
+      if (!errores.isEmpty()) {
+        return res.status(400).json({ errores: errores.array() });
+      }
+
+      // Verificar si la persona existe
+      const PersonaMongo = require('../../modelos/seguridad/PersonaMongo');
+      const persona = await PersonaMongo.findOne({ idPersona: parseInt(idPersona) });
+      if (!persona) {
+        return res.status(404).json({ mensaje: 'Persona no encontrada' });
+      }
+
+      // Verificar si ya es empleado
+      const Empleado = require('../../modelos/gestion_cliente/Empleado');
+      const empleado = await Empleado.findOne({ where: { idPersona: parseInt(idPersona) } });
+      
+      res.json({
+        esEmpleado: !!empleado,
+        empleado: empleado || null,
+        persona: {
+          idPersona: persona.idPersona,
+          Pnombre: persona.Pnombre,
+          Snombre: persona.Snombre,
+          Papellido: persona.Papellido,
+          Sapellido: persona.Sapellido,
+          DNI: persona.DNI,
+          correo: persona.correo
+        }
+      });
+    } catch (error) {
+      console.error('Error al verificar persona empleado:', error);
+      res.status(500).json({ mensaje: 'Error interno del servidor', error: error.message });
+    }
+  }
+);
+
+// === RUTAS PRINCIPALES ===
 
 module.exports = router;

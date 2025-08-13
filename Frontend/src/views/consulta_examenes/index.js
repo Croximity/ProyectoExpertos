@@ -25,3 +25,7 @@ export { examenVistaService } from '../../services/consulta_examenes/examenVista
 export { diagnosticoService } from '../../services/consulta_examenes/diagnosticoService';
 export { tipoEnfermedadService } from '../../services/consulta_examenes/tipoEnfermedadService';
 export { reparacionLentesService } from '../../services/consulta_examenes/reparacionLentesService';
+// Consultas
+export { default as Consultas } from './Consultas';
+export { default as ConsultaForm } from './ConsultaForm';
+export { default as ConsultaVer } from './ConsultaVer';
