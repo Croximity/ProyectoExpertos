@@ -106,14 +106,22 @@ const PanelGestionCliente = () => {
     <>
     <HeaderBlanco />
     <Container className="mt--7" fluid>
-      <Row><Col><Card className="shadow">     {/* Header */}
-      <Row className="mb-2">
-        <Col>
-          <h2 className=" text-primary p-3">
-            Administra clientes y empleados de la óptica
-          </h2>
-        </Col>
-      </Row>
+      <Row><Col>
+      <Card className="shadow">
+              <CardHeader className="bg-transparent">
+                <Row className="align-items-center">
+                  <Col>
+                    <h5 className="h3 mb-0">
+                      Panel de Control de Clientes y Empleados
+                    </h5>
+                    <p className="text-muted mb-0 mt-2">
+                    Gestiona clientes y empleados de la óptica
+                    </p>
+                  </Col>
+                </Row>
+              </CardHeader>
+            </Card>
+            <Card className="shadow mb-4">
 
       {/* Estadísticas */}
       <Row className="mb-4 p-2">

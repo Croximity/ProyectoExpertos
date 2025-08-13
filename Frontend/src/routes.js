@@ -58,6 +58,7 @@ import Productos from "views/productos/Productos.js";
 import ProductoForm from "views/productos/ProductoForm.js";
 import Categorias from "views/productos/Categorias.js";
 import CategoriaForm from "views/productos/CategoriaForm.js";
+import PanelInventario from "views/productos/PanelInventario.js";
 
 const routes = [
   // Dashboard
@@ -72,7 +73,7 @@ const routes = [
   // Gestion Clientes
   {
     path: "/gestion-cliente",
-    name: "Panel de Gestión",
+    name: "Clientes y Empleados",
     icon: "ni ni-single-02 text-primary",
     component: PanelGestionCliente,
     layout: "/admin"
@@ -82,7 +83,8 @@ const routes = [
     name: "Lista de Clientes",
     icon: "ni ni-single-02 text-primary",
     component: Clientes,
-    layout: "/admin"
+    layout: "/admin",
+    hidden: true,
   },
   {
     path: "/clientes/nuevo",
@@ -104,6 +106,7 @@ const routes = [
     icon: "ni ni-badge text-success",
     component: Empleados,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/empleados/nuevo",
@@ -122,11 +125,19 @@ const routes = [
 
   // Productos
   {
+    path: "/inventario",
+    name: "Productos",
+    icon: "ni ni-shop text-info",
+    component: PanelInventario,
+    layout: "/admin",
+  },
+  {
     path: "/productos",
     name: "Productos",
     icon: "ni ni-shop text-info",
     component: Productos,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/productos/nuevo",
@@ -148,6 +159,7 @@ const routes = [
     icon: "ni ni-tag text-warning",
     component: Categorias,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/categorias/nueva",
@@ -177,14 +189,16 @@ const routes = [
     name: "Nueva Factura",  
     icon: "ni ni-fat-add text-green",  
     component: CrearFacturaNueva,  
-    layout: "/admin",  
+    layout: "/admin",
+    hidden: true,
   },
   {  
     path: "/facturas",  
     name: "Facturas",  
     icon: "ni ni-single-copy-04 text-pink",  
     component: ListaFacturas,  
-    layout: "/admin",  
+    layout: "/admin",
+    hidden: true, 
   },
   {
     path: "/facturacion/historial",
@@ -240,6 +254,7 @@ const routes = [
     icon: "ni ni-credit-card text-success",
     component: FormasPago,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/facturacion/descuentos",
@@ -247,6 +262,7 @@ const routes = [
     icon: "ni ni-tag text-warning",
     component: Descuentos,
     layout: "/admin",
+    hidden: true,
   },
 
   // Consulta Exámenes
@@ -263,13 +279,14 @@ const routes = [
     icon: "ni ni-single-copy-04 text-primary",
     component: Recetas,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/consulta-examenes/recetas/nuevo",
     name: "Nueva Receta",
     component: RecetaForm,
     layout: "/admin",
-    hidden: true,
+    hidden: true
   },
   {
     path: "/consulta-examenes/recetas/editar/:id",
@@ -291,6 +308,7 @@ const routes = [
     icon: "ni ni-check-bold text-info",
     component: ExamenesVista,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/consulta-examenes/examenes-vista/nuevo",
@@ -319,6 +337,7 @@ const routes = [
     icon: "ni ni-chart-bar-32 text-warning",
     component: Diagnosticos,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/consulta-examenes/diagnosticos/nuevo",
@@ -347,6 +366,7 @@ const routes = [
     icon: "ni ni-badge text-danger",
     component: TiposEnfermedad,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/consulta-examenes/tipos-enfermedad/nuevo",
@@ -375,6 +395,7 @@ const routes = [
     icon: "ni ni-glasses-2 text-info",
     component: ReparacionLentes,
     layout: "/admin",
+    hidden: true,
   },
   {
     path: "/consulta-examenes/reparacion-lentes/nuevo",
@@ -461,6 +482,7 @@ const routes = [
     icon: "ni ni-pin-3 text-orange",
     component: Maps,
     layout: "/admin",
+    hidden: true,
   },
 ];
 

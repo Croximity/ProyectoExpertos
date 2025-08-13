@@ -99,10 +99,23 @@ const PanelFacturacion = () => {
       <Container className="mt--7" fluid>
         <Row>
           <Col>
-            
+            <Card className="shadow mb-4">
+            <CardHeader className="bg-transparent">
+                <Row className="align-items-center">
+                  <Col>
+                    <h5 className="h3 mb-0">
+                    Panel de Control de Facturación
 
+                    </h5>
+                    <p className="text-muted mb-0 mt-2">
+                    Gestiona facturas, pagos, CAI y configuraciones del sistema de facturación
+                    </p>
+                  </Col>
+                </Row>
+              </CardHeader>
+            </Card>
 
-              {error && (
+            {error && (
                 <Alert color="danger" className="mb-4">
                   {error}
                   <Button color="link" onClick={cargarDatos} className="p-0 ml-2">
@@ -114,15 +127,15 @@ const PanelFacturacion = () => {
               {/* ACCIONES DEL MÓDULO DE FACTURACIÓN */}
               <Row className="mb-4">
                 <Col md="3" sm="6" className="mb-4">
-                    <Card className="shadow border-0 h-100">
-                      <CardBody className="text-center">
-                        <i className="ni ni-archive-2 mr-2 text-danger" />
-                        <Button color="danger" onClick={() => navigate('/admin/facturas')}>
-                          Ver Facturas
-                        </Button>
-                      </CardBody>
-                    </Card>
-                  </Col>
+                  <Card className="shadow border-0 h-100">
+                    <CardBody className="text-center">
+                      <i className="ni ni-archive-2 mr-2 text-danger" />
+                      <Button color="danger" onClick={() => navigate('/admin/facturas')}>
+                        Ver Facturas
+                      </Button>
+                    </CardBody>
+                  </Card>
+                </Col>
                 <Col md="3" sm="6" className="mb-4">
                   <Card className="shadow border-0 h-100">
                     <CardBody className="text-center">
@@ -133,7 +146,6 @@ const PanelFacturacion = () => {
                     </CardBody>
                   </Card>
                 </Col>
-
                 <Col md="3" sm="6" className="mb-4">
                   <Card className="shadow border-0 h-100">
                     <CardBody className="text-center">
@@ -144,64 +156,148 @@ const PanelFacturacion = () => {
                     </CardBody>
                   </Card>
                 </Col>
-
                 <Col md="3" sm="6" className="mb-4">
                   <Card className="shadow border-0 h-100">
                     <CardBody className="text-center">
-                      <i className="ni ni-tag mr-2 text-default" />
-                      <Button color="default" onClick={() => navigate('/admin/facturacion/cai')}>
+                      <i className="ni ni-tag mr-2 text-warning" />
+                      <Button color="warning" onClick={() => navigate('/admin/facturacion/cai')}>
                         Administrar CAI
                       </Button>
                     </CardBody>
                   </Card>
                 </Col>
+              </Row>
 
+              {/* ACCIONES ADICIONALES DE FACTURACIÓN */}
+              <Row className="mb-4">
+
+                <Col md="3" sm="6" className="mb-4">
+                  <Card className="shadow border-0 h-100">
+                    <CardBody className="text-center">
+                      <i className="ni ni-briefcase-24 mr-2 text-info" />
+                      <Button color="info" onClick={() => navigate('/admin/facturacion/contratos')}>
+                        Contratos
+                      </Button>
+                    </CardBody>
+                  </Card>
+                </Col>
+
+                <Col md="3" sm="6" className="mb-4">
+                  <Card className="shadow border-0 h-100">
+                    <CardBody className="text-center">
+                      <i className="ni ni-credit-card mr-2 text-success" />
+                      <Button color="success" onClick={() => navigate('/admin/facturacion/formas-pago')}>
+                        Formas de Pago
+                      </Button>
+                    </CardBody>
+                  </Card>
+                </Col>
+              
+
+              {/* GESTIÓN DE DESCUENTOS */}
+              
+                <Col md="3" sm="6" className="mb-4">
+                  <Card className="shadow border-0 h-100">
+                    <CardBody className="text-center">
+                      <i className="ni ni-tag mr-2 text-warning" />
+                      <Button color="warning" onClick={() => navigate('/admin/facturacion/descuentos')}>
+                        Gestionar Descuentos
+                      </Button>
+                    </CardBody>
+                  </Card>
+                </Col>
 
               </Row>
 
               </Col></Row> </Container>
 
-              <Container className="" fluid>
-        <Row>
-          <Col>
-            <Card className="shadow">
-              {/* MÉTRICAS RESUMIDAS */}
-              <Row className="mb-4">
-                <Col md="12">
-                  <Card className="mb-4">
-                    <CardHeader>
-                      <h5 className="mb-0">Estado del CAI</h5>
-                    </CardHeader>
-                    <CardBody>
-                      <Row>
-                        <Col md={3} sm={6} xs={12} className="text-center">
-                          <h3 className={estadoCAI.activo ? "text-success" : "text-danger"}>
-                            {estadoCAI.activo ? "Activo" : "Inactivo"}
-                          </h3>
-                          <small className="text-muted">Estado del CAI</small>
-                        </Col>
-                        <Col md={3} sm={6} xs={12} className="text-center">
-                          <h3 className="text-info">{estadoCAI.rango}</h3>
-                          <small className="text-muted">Rango de Facturación</small>
-                        </Col>
-                        <Col md={3} sm={6} xs={12} className="text-center">
-                          <h3 className="text-warning">{estadoCAI.vencimiento}</h3>
-                          <small className="text-muted">Fecha de Vencimiento</small>
-                        </Col>
-                        <Col md={3} sm={6} xs={12} className="text-center">
-                          <h3 className="text-primary">{estadoCAI.emitidas}</h3>
-                          <small className="text-muted">Facturas Emitidas</small>
-                        </Col>
-                      </Row>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
+              {/* ESTADÍSTICAS RÁPIDAS */}
+              <Card className="shadow mb-4">
+                <CardHeader className="bg-gradient-success text-white">
+                  <h6 className="text-uppercase text-white-50 ls-1 mb-1">
+                    <i className="ni ni-chart-bar-32 mr-2"></i>
+                    Resumen del Mes
+                  </h6>
+                  <h5 className="mb-0 text-white">Estadísticas de Facturación</h5>
+                </CardHeader>
+                <CardBody>
+                  <Row>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className="ni ni-money-coins text-white"></i>
+                      </div>
+                      <h4 className="text-primary">L. {resumen.totalMes?.toLocaleString() || '0'}</h4>
+                      <small className="text-muted">Total del Mes</small>
+                    </Col>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className="ni ni-single-copy-04 text-white"></i>
+                      </div>
+                      <h4 className="text-success">{resumen.emitidas || '0'}</h4>
+                      <small className="text-muted">Facturas Emitidas</small>
+                    </Col>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className="ni ni-time-alarm text-white"></i>
+                      </div>
+                      <h4 className="text-warning">{resumen.pendientes || '0'}</h4>
+                      <small className="text-muted">Pendientes de Pago</small>
+                    </Col>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className="ni ni-check-bold text-white"></i>
+                      </div>
+                      <h4 className="text-info">{resumen.pagadas || '0'}</h4>
+                      <small className="text-muted">Facturas Pagadas</small>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
 
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+              {/* ESTADO DEL CAI */}
+              <Card className="shadow mb-4">
+                <CardHeader className="bg-gradient-info text-white">
+                  <h6 className="text-uppercase text-white-50 ls-1 mb-1">
+                    <i className="ni ni-key-25 mr-2"></i>
+                    Estado del CAI
+                  </h6>
+                  <h5 className="mb-0 text-white">Control de Autorización de Impresión</h5>
+                </CardHeader>
+                <CardBody>
+                  <Row>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className={`ni ${estadoCAI.activo ? 'ni-check-bold' : 'ni-fat-remove'} text-white`}></i>
+                      </div>
+                      <h4 className={estadoCAI.activo ? "text-success" : "text-danger"}>
+                        {estadoCAI.activo ? "Activo" : "Inactivo"}
+                      </h4>
+                      <small className="text-muted">Estado del CAI</small>
+                    </Col>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className="ni ni-tag text-white"></i>
+                      </div>
+                      <h4 className="text-info">{estadoCAI.rango}</h4>
+                      <small className="text-muted">Rango de Facturación</small>
+                    </Col>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className="ni ni-time-alarm text-white"></i>
+                      </div>
+                      <h4 className="text-warning">{estadoCAI.vencimiento}</h4>
+                      <small className="text-muted">Fecha de Vencimiento</small>
+                    </Col>
+                    <Col md={3} sm={6} xs={12} className="text-center mb-3">
+                      <div className="icon icon-shape bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{width: '50px', height: '50px'}}>
+                        <i className="ni ni-single-copy-04 text-white"></i>
+                      </div>
+                      <h4 className="text-primary">{estadoCAI.emitidas}</h4>
+                      <small className="text-muted">Facturas Emitidas</small>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
     </>
   );
 };
