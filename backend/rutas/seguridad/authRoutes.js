@@ -2,22 +2,21 @@ const express = require('express');
 const { check } = require('express-validator');
 const router = express.Router();
 const authController = require('../../controladores/seguridad/authController');
-const {verificarUsuario} = require('../../configuraciones/passport');
-//prueba
-// Ruta: Registro de usuario
+const { verificarUsuario } = require('../../configuraciones/passport');
+
 /**
  * @swagger
  * tags:
- *   name: Autenticación
- *   description: Rutas para registrar e iniciar sesión
+ *   name: Autenticación MongoDB
+ *   description: Rutas para registrar e iniciar sesión con MongoDB
  */
 
 /**
  * @swagger
- * /auth/registro:
+ * /auth-mongo/registro:
  *   post:
- *     summary: Registrar un nuevo usuario
- *     tags: [Autenticación]
+ *     summary: Registrar un nuevo usuario en MongoDB
+ *     tags: [Autenticación MongoDB]
  *     requestBody:
  *       required: true
  *       content:
@@ -27,8 +26,6 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *             required:
  *               - Nombre_Usuario
  *               - contraseña
- *               - idPersona
- *               - idrol
  *             properties:
  *               Nombre_Usuario:
  *                 type: string
@@ -38,45 +35,26 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *                 minLength: 6
  *                 example: password123
  *               idPersona:
- *                 type: integer
- *                 example: 1
+ *                 type: string
+ *                 example: 507f1f77bcf86cd799439011
  *               idrol:
- *                 type: integer
- *                 example: 2
+ *                 type: string
+ *                 example: 507f1f77bcf86cd799439012
  *     responses:
  *       201:
  *         description: Usuario registrado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Usuario registrado exitosamente
- *                 usuario:
- *                   type: string
- *                   example: juan123
  *       400:
  *         description: Datos inválidos o usuario ya existe
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: El nombre de usuario ya está en uso
  *       500:
  *         description: Error interno del servidor
  */
 
 /**
  * @swagger
- * /auth/login:
+ * /auth-mongo/login:
  *   post:
- *     summary: Iniciar sesión de usuario
- *     tags: [Autenticación]
+ *     summary: Iniciar sesión de usuario en MongoDB
+ *     tags: [Autenticación MongoDB]
  *     requestBody:
  *       required: true
  *       content:
@@ -96,50 +74,13 @@ const {verificarUsuario} = require('../../configuraciones/passport');
  *     responses:
  *       200:
  *         description: Inicio de sesión exitoso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 mensaje:
- *                   type: string
- *                   example: Inicio de sesión exitoso
- *                 token:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *       400:
  *         description: Credenciales inválidas
  *       500:
  *         description: Error del servidor
  */
-/**
- * @swagger
- * /auth/listar:
- *   get:
- *     summary: Listar todos los usuarios
- *     security:
- *      - BearerAuth: []
- *     tags: [Autenticación]
- *     responses:
- *       200:
- *         description: Lista de usuarios
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   idUsuario:
- *                     type: integer
- *                     example: 1
- *                   Nombre_Usuario:
- *                     type: string
- *                     example: juan123
- *       500:
- *         description: Error del servidor
- */
 
+// Ruta: Registro de usuario
 router.post(
   '/registro',
   [
@@ -190,20 +131,45 @@ router.post(
       .isIn(['M', 'F'])
       .withMessage('El género debe ser M o F'),
     check('correo')
-      .optional()
+      .optional({ nullable: true, checkFalsy: true })
       .isEmail()
       .withMessage('El correo electrónico debe tener un formato válido'),
     check('fechaNacimiento')
-      .optional()
+      .optional({ nullable: true, checkFalsy: true })
       .isISO8601()
       .withMessage('La fecha de nacimiento debe tener un formato válido')
   ],
   authController.registrarPersona
 );
 
+// Ruta: Crear Rol
+router.post(
+  '/crear-rol',
+  [
+    check('nombre')
+      .notEmpty()
+      .withMessage('El nombre del rol es obligatorio')
+      .isLength({ max: 45 })
+      .withMessage('El nombre del rol debe tener máximo 45 caracteres'),
+    check('descripcion')
+      .optional()
+      .isLength({ max: 45 })
+      .withMessage('La descripción debe tener máximo 45 caracteres')
+  ],
+  authController.crearRol
+);
+
+// Rutas públicas (no requieren autenticación)
+router.get('/roles', authController.obtenerRoles); // Pública para registro
+router.get('/test', (req, res) => {
+  res.json({ mensaje: 'Sistema funcionando correctamente', timestamp: new Date().toISOString() });
+});
+
+// Rutas protegidas
 router.get('/listar', verificarUsuario, authController.obtenerUsuarios);
 router.get('/usuario-actual', verificarUsuario, authController.obtenerUsuarioActual);
 router.post('/asociar-persona', verificarUsuario, authController.asociarPersonaAUsuario);
-router.get('/error', authController.error)
+router.get('/personas', verificarUsuario, authController.obtenerPersonas);
+router.get('/error', authController.error);
 
 module.exports = router;

@@ -1,42 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Alert } from 'reactstrap';
+import React from 'react';
+import { Toast as ToastStrap, ToastHeader, ToastBody } from 'reactstrap';
 
-const Toast = ({ show, message, type = 'success', duration = 3000, onClose }) => {
-  const [visible, setVisible] = useState(show);
+const Toast = ({ show, message, type, onClose }) => {
+  if (!show) return null;
 
-  useEffect(() => {
-    setVisible(show);
-    
-    if (show && duration > 0) {
-      const timer = setTimeout(() => {
-        setVisible(false);
-        if (onClose) onClose();
-      }, duration);
-
-      return () => clearTimeout(timer);
-    }
-  }, [show, duration, onClose]);
-
-  if (!visible) return null;
+  // Asegurar que el mensaje sea una cadena de texto
+  const displayMessage = typeof message === 'string' ? message : 
+                        typeof message === 'object' ? JSON.stringify(message) : 
+                        'Mensaje no válido';
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: '20px',
-      right: '20px',
-      zIndex: 9999,
-      minWidth: '300px'
-    }}>
-      <Alert 
-        color={type} 
-        isOpen={visible} 
-        toggle={() => {
-          setVisible(false);
-          if (onClose) onClose();
-        }}
-      >
-        {message}
-      </Alert>
+    <div className="position-fixed" style={{ top: '20px', right: '20px', zIndex: 9999 }}>
+      <ToastStrap isOpen={show} className={`bg-${type} text-white`}>
+        <ToastHeader className={`bg-${type} text-white`} toggle={onClose}>
+          {type === 'success' ? '✅ Éxito' : type === 'error' ? '❌ Error' : 'ℹ️ Información'}
+        </ToastHeader>
+        <ToastBody>
+          {displayMessage}
+        </ToastBody>
+      </ToastStrap>
     </div>
   );
 };

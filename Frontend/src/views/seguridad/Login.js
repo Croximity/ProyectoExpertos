@@ -82,7 +82,6 @@ const Login = () => {
     try {
       const response = await verifyPin(pinData);
       showSuccess('Verificación exitosa. Bienvenido!');
-
       setTimeout(() => {
         navigate('/admin/index');
       }, 1000);
@@ -93,98 +92,19 @@ const Login = () => {
     }
   };
 
-  const handleBackToLogin = () => {
-    setShowPinForm(false);
-    setFormData({ Nombre_Usuario: '', contraseña: '' });
-    setPinData({ Nombre_Usuario: '', pin: '' });
-  };
-
   return (
     <>
-      <Toast
-        show={toast.show}
-        message={toast.message}
-        type={toast.type}
-        onClose={hideToast}
-      />
+      <Toast show={toast.show} message={toast.message} type={toast.type} onClose={hideToast} />
       <Col lg="5" md="7">
         <Card className="bg-secondary shadow border-0">
           <CardHeader className="bg-transparent pb-5">
             <div className="text-muted text-center mt-2 mb-3">
-              <small>Inicia sesión con</small>
-            </div>
-            <div className="btn-wrapper text-center">
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={require("../../assets/img/icons/common/github.svg").default}
-                  />
-                </span>
-                <span className="btn-inner--text">Github</span>
-              </Button>
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={require("../../assets/img/icons/common/google.svg").default}
-                  />
-                </span>
-                <span className="btn-inner--text">Google</span>
-              </Button>
+              <small>Iniciar sesión con tus credenciales</small>
             </div>
           </CardHeader>
           <CardBody className="px-lg-5 py-lg-5">
-            {showPinForm ? (
+            {!showPinForm ? (
               <>
-                <div className="text-center text-muted mb-4">
-                  <small>Ingrese el PIN de verificación</small>
-                </div>
-                <Form role="form" onSubmit={handlePinSubmit}>
-                  <FormGroup className="mb-3">
-                    <InputGroup className="input-group-alternative">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="ni ni-key-25" />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        placeholder="PIN"
-                        type="text"
-                        name="pin"
-                        value={pinData.pin}
-                        onChange={handlePinChange}
-                        required
-                      />
-                    </InputGroup>
-                  </FormGroup>
-                  <div className="text-center">
-                    <Button className="my-4" color="primary" type="submit" disabled={loading}>
-                      {loading ? 'Verificando...' : 'Verificar PIN'}
-                    </Button>
-                  </div>
-                  <div className="text-center">
-                    <a href="#" className="text-light" onClick={handleBackToLogin}>
-                      <small>Volver al inicio de sesión</small>
-                    </a>
-                  </div>
-                </Form>
-              </>
-            ) : (
-              <>
-                <div className="text-center text-muted mb-4">
-                  <small>O inicia sesión con tus credenciales</small>
-                </div>
                 <Form role="form" onSubmit={handleSubmit}>
                   <FormGroup className="mb-3">
                     <InputGroup className="input-group-alternative">
@@ -199,7 +119,6 @@ const Login = () => {
                         name="Nombre_Usuario"
                         value={formData.Nombre_Usuario}
                         onChange={handleChange}
-                        autoComplete="username"
                         required
                       />
                     </InputGroup>
@@ -217,7 +136,6 @@ const Login = () => {
                         name="contraseña"
                         value={formData.contraseña}
                         onChange={handleChange}
-                        autoComplete="current-password"
                         required
                       />
                     </InputGroup>
@@ -243,6 +161,38 @@ const Login = () => {
                       disabled={loading}
                     >
                       {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+                    </Button>
+                  </div>
+                </Form>
+              </>
+            ) : (
+              <>
+                <Form role="form" onSubmit={handlePinSubmit}>
+                  <FormGroup className="mb-3">
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-mobile-button" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="PIN de verificación"
+                        type="text"
+                        name="pin"
+                        value={pinData.pin}
+                        onChange={handlePinChange}
+                        required
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <div className="text-center">
+                    <Button
+                      className="my-4"
+                      color="primary"
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? 'Verificando...' : 'Verificar PIN'}
                     </Button>
                   </div>
                 </Form>

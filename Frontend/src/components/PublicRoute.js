@@ -1,9 +1,10 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -15,10 +16,12 @@ const PublicRoute = ({ children }) => {
     );
   }
 
+  // Si hay un usuario válido, redirigir al dashboard
   if (user) {
     return <Navigate to="/admin/index" replace />;
   }
 
+  // Si no hay usuario, permitir acceso a las rutas públicas (login, register)
   return children;
 };
 

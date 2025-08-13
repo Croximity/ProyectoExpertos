@@ -55,31 +55,62 @@ const Profile = () => {
     cargarDatosUsuario();
   }, [user]);
 
+  // Validar que persona sea siempre un objeto válido o null
+  useEffect(() => {
+    if (persona && typeof persona !== 'object') {
+      console.warn('⚠️ Profile - persona no es un objeto válido:', persona);
+      setPersona(null);
+    } else if (persona) {
+      console.log('✅ Profile - Estado persona válido:', persona);
+      console.log('🔍 Profile - persona.Direccion:', persona.Direccion);
+    }
+  }, [persona]);
+
   const cargarDatosUsuario = async () => {
     try {
       setLoading(true);
       const usuarioCompleto = await authService.obtenerUsuarioActual();
       
-      console.log('Usuario completo recibido:', usuarioCompleto);
+      console.log('🔍 Profile - cargarDatosUsuario - Usuario completo recibido:', usuarioCompleto);
+      console.log('🔍 Profile - cargarDatosUsuario - usuarioCompleto.idPersona:', usuarioCompleto?.idPersona);
+      console.log('🔍 Profile - cargarDatosUsuario - tipo de idPersona:', typeof usuarioCompleto?.idPersona);
       
-      if (usuarioCompleto && usuarioCompleto.persona) {
-        // Si tiene persona asociada, cargar los datos de la persona
-        setPersona(usuarioCompleto.persona);
+      if (usuarioCompleto && usuarioCompleto.idPersona && typeof usuarioCompleto.idPersona === 'object') {
+        // Si tiene persona asociada y los datos están populados, usar directamente
+        const personaData = usuarioCompleto.idPersona;
+        console.log('✅ Profile - cargarDatosUsuario - Usando datos populados de persona:', personaData);
+        console.log('🔍 Profile - cargarDatosUsuario - personaData.Direccion:', personaData.Direccion);
+        
+        setPersona(personaData);
         setFormData({
-          Pnombre: usuarioCompleto.persona.Pnombre || '',
-          Snombre: usuarioCompleto.persona.Snombre || '',
-          Papellido: usuarioCompleto.persona.Papellido || '',
-          Sapellido: usuarioCompleto.persona.Sapellido || '',
-          Direccion: usuarioCompleto.persona.Direccion || '',
-          DNI: usuarioCompleto.persona.DNI || '',
-          correo: usuarioCompleto.persona.correo || '',
-          fechaNacimiento: usuarioCompleto.persona.fechaNacimiento ? usuarioCompleto.persona.fechaNacimiento.split('T')[0] : '',
-          genero: usuarioCompleto.persona.genero || 'M'
+          Pnombre: personaData.Pnombre || '',
+          Snombre: personaData.Snombre || '',
+          Papellido: personaData.Papellido || '',
+          Sapellido: personaData.Sapellido || '',
+          Direccion: personaData.Direccion || '',
+          DNI: personaData.DNI || '',
+          correo: personaData.correo || '',
+          fechaNacimiento: personaData.fechaNacimiento ? personaData.fechaNacimiento.split('T')[0] : '',
+          genero: personaData.genero || 'M'
+        });
+        
+        console.log('✅ Profile - cargarDatosUsuario - FormData establecido:', {
+          Pnombre: personaData.Pnombre || '',
+          Snombre: personaData.Snombre || '',
+          Papellido: personaData.Papellido || '',
+          Sapellido: personaData.Sapellido || '',
+          Direccion: personaData.Direccion || '',
+          DNI: personaData.DNI || '',
+          correo: personaData.correo || '',
+          fechaNacimiento: personaData.fechaNacimiento ? personaData.fechaNacimiento.split('T')[0] : '',
+          genero: personaData.genero || 'M'
         });
       } else if (usuarioCompleto && usuarioCompleto.idPersona) {
         // Si tiene idPersona pero no los datos completos, intentar obtener la persona
+        console.log('⚠️ Profile - cargarDatosUsuario - Intentando obtener persona por ID:', usuarioCompleto.idPersona);
         try {
           const response = await personaService.obtenerPersonaPorId(usuarioCompleto.idPersona);
+          console.log('✅ Profile - cargarDatosUsuario - Persona obtenida por ID:', response);
           setPersona(response);
           setFormData({
             Pnombre: response.Pnombre || '',
@@ -93,15 +124,16 @@ const Profile = () => {
             genero: response.genero || 'M'
           });
         } catch (personaError) {
-          console.error('Error al obtener persona por ID:', personaError);
+          console.error('❌ Profile - cargarDatosUsuario - Error al obtener persona por ID:', personaError);
           setPersona(null);
         }
       } else {
         // Si no tiene persona asociada, mostrar mensaje
+        console.log('⚠️ Profile - cargarDatosUsuario - No se encontró persona asociada');
         setPersona(null);
       }
     } catch (error) {
-      console.error('Error al cargar datos del usuario:', error);
+      console.error('❌ Profile - cargarDatosUsuario - Error al cargar datos del usuario:', error);
       showError('Error al cargar los datos del usuario');
       setPersona(null);
     } finally {
@@ -154,7 +186,23 @@ const Profile = () => {
       }
 
       const usuarioCompleto = await authService.obtenerUsuarioActual();
-      await personaService.actualizarPersona(usuarioCompleto.idPersona, formData);
+      
+      // Obtener el ID de la persona correctamente
+      let personaId;
+      if (usuarioCompleto.idPersona && typeof usuarioCompleto.idPersona === 'object') {
+        // Si idPersona es un objeto populado, usar su _id
+        personaId = usuarioCompleto.idPersona._id;
+      } else {
+        // Si idPersona es solo un ID
+        personaId = usuarioCompleto.idPersona;
+      }
+      
+      if (!personaId) {
+        showError('No se pudo identificar la persona a actualizar');
+        return;
+      }
+      
+      await personaService.actualizarPersona(personaId, formData);
       showSuccess('Perfil actualizado exitosamente');
       setEditing(false);
       await cargarDatosUsuario(); // Recargar datos
@@ -197,12 +245,12 @@ const Profile = () => {
   };
 
   const getNombreCompleto = () => {
-    if (!persona) return 'Cargando...';
-    return `${persona.Pnombre} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim();
+    if (!persona || typeof persona !== 'object') return 'Cargando...';
+    return `${persona.Pnombre || ''} ${persona.Snombre || ''} ${persona.Papellido || ''} ${persona.Sapellido || ''}`.trim();
   };
 
   const getEdad = () => {
-    if (!persona?.fechaNacimiento) return '';
+    if (!persona || typeof persona !== 'object' || !persona.fechaNacimiento) return '';
     const fechaNac = new Date(persona.fechaNacimiento);
     const hoy = new Date();
     const edad = hoy.getFullYear() - fechaNac.getFullYear();
@@ -258,7 +306,7 @@ const Profile = () => {
               <strong>Información del usuario:</strong><br />
               Nombre de usuario: {user?.Nombre_Usuario}<br />
               ID de usuario: {user?.idUsuario}<br />
-              ID de persona: {user?.idPersona || 'No asociado'}
+              ID de persona: {user?.idPersona ? (typeof user.idPersona === 'object' ? user.idPersona._id : user.idPersona) : 'No asociado'}
             </p>
             <hr />
             <p className="mb-0">
@@ -303,22 +351,6 @@ const Profile = () => {
               </Row>
               <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
                 <div className="d-flex justify-content-between">
-                  <Button
-                    className="mr-4"
-                    color="info"
-                    size="sm"
-                    disabled
-                  >
-                    Conectar
-                  </Button>
-                  <Button
-                    className="float-right"
-                    color="default"
-                    size="sm"
-                    disabled
-                  >
-                    Mensaje
-                  </Button>
                 </div>
               </CardHeader>
               <CardBody className="pt-0 pt-md-6">
@@ -329,7 +361,7 @@ const Profile = () => {
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    {persona?.Direccion || 'Dirección no especificada'}
+                    {persona && typeof persona === 'object' ? (persona.Direccion || 'Dirección no especificada') : 'Dirección no especificada'}
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
@@ -337,11 +369,11 @@ const Profile = () => {
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
-                    DNI: {persona?.DNI || 'No especificado'}
+                    DNI: {persona && typeof persona === 'object' ? (persona.DNI || 'No especificado') : 'No especificado'}
                   </div>
                   <hr className="my-4" />
                   <p>
-                    {persona?.correo && (
+                    {persona && typeof persona === 'object' && persona.correo && (
                       <a href={`mailto:${persona.correo}`} className="text-primary">
                         {persona.correo}
                       </a>

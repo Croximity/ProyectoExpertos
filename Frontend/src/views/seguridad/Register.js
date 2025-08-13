@@ -50,11 +50,13 @@ const Register = () => {
   useEffect(() => {
     const loadRoles = async () => {
       try {
+        console.log('Register - useEffect: Cargando roles...');
         const rolesData = await rolService.obtenerRoles();
-        console.log('Roles obtenidos:', rolesData); // Para debug
-        setRoles(rolesData); // Mostrar todos los roles disponibles
+        console.log('Register - useEffect: Roles obtenidos:', rolesData);
+        console.log('Register - useEffect: Estructura del primer rol:', rolesData[0]);
+        setRoles(rolesData);
       } catch (error) {
-        console.error('Error al cargar roles:', error);
+        console.error('Register - useEffect: Error al cargar roles:', error);
         showError('Error al cargar los roles');
       }
     };
@@ -97,14 +99,16 @@ const Register = () => {
     }
 
     try {
-      console.log('Enviando registro con datos:', formData);
+      console.log('Register - handleSubmit: Enviando registro con datos:', formData);
+      console.log('Register - handleSubmit: idrol seleccionado:', formData.idrol);
+      console.log('Register - handleSubmit: Tipo de idrol:', typeof formData.idrol);
       await authService.register(formData);
       showSuccess('Usuario registrado exitosamente. Serás redirigido al login.');
       setTimeout(() => {
         navigate('/auth/login');
       }, 2000);
     } catch (error) {
-      console.error('Error en Register.js:', error);
+      console.error('Register - handleSubmit: Error en Register.js:', error);
       showError(error.message || 'Error al registrar el usuario');
     } finally {
       setLoading(false);
@@ -239,7 +243,7 @@ const Register = () => {
                   <Input type="select" name="idrol" value={formData.idrol} onChange={handleChange} required>
                     <option value="">Seleccionar Rol</option>
                     {roles.map(rol => (
-                      <option key={rol.idrol} value={rol.idrol}>{rol.nombre}</option>
+                      <option key={rol._id} value={rol._id}>{rol.nombre}</option>
                     ))}
                   </Input>
                 </InputGroup>

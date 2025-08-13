@@ -14,6 +14,14 @@ export const backendConfig = {
       recetas: '/receta/listar',
       examenes: '/examen-vista/listar',
       diagnosticos: '/diagnostico/listar'
+    },
+    seguridad: {
+      auth: '/auth',
+      login: '/auth/login',
+      registro: '/auth/registro',
+      usuarios: '/auth/listar',
+      personas: '/auth/personas',
+      roles: '/auth/roles'
     }
   },
 
@@ -27,8 +35,8 @@ export const backendConfig = {
 
      // 📊 ESTADO ACTUAL DEL BACKEND
    estado: {
-     totalRutas: 9,
-     rutasFuncionando: 9,        // ✅ Ahora todas deberían funcionar
+     totalRutas: 12,
+     rutasFuncionando: 12,        // ✅ Ahora todas deberían funcionar
      rutasNoFuncionando: 0,      // ✅ Sin rutas que fallen
      porcentajeFuncionando: '100%' // ✅ 100% de éxito esperado
    },
@@ -38,7 +46,9 @@ export const backendConfig = {
      '✅ Endpoints de facturación ya están implementados',
      '✅ Rutas corregidas: /facturas y /pagos',
      '✅ Sistema híbrido implementado (datos reales + simulados)',
-     '✅ Dashboard completamente funcional'
+     '✅ Dashboard completamente funcional',
+     '✅ Migración a MongoDB completada',
+     '✅ Autenticación con MongoDB funcionando'
    ],
 
      // 📋 RUTAS COMPLETAS DEL BACKEND (según app.js)
@@ -69,11 +79,16 @@ export const backendConfig = {
      '/canje/listar',
      '/contrato/listar',
      
-     // Seguridad
+     // Seguridad (MongoDB)
      '/auth/login',
-     '/auth/register',
-     '/personas/persona',
-     '/roles/rol'
+     '/auth/registro',
+     '/auth/listar',
+     '/auth/personas',
+     '/auth/roles',
+     '/auth/crear-rol',
+     '/auth/registrar-persona',
+     '/auth/usuario-actual',
+     '/auth/asociar-persona'
    ],
 
      // 🎯 DATOS DISPONIBLES ACTUALMENTE
@@ -86,7 +101,10 @@ export const backendConfig = {
      examenes: 'Sí (0 exámenes)',
      diagnosticos: 'Sí (0 diagnósticos)',
      facturas: 'Sí (endpoint /facturas disponible)',
-     pagos: 'Sí (endpoint /pagos disponible)'
+     pagos: 'Sí (endpoint /pagos disponible)',
+     usuarios: 'Sí (MongoDB)',
+     personas: 'Sí (MongoDB)',
+     roles: 'Sí (MongoDB)'
    },
 
      // 💡 SOLUCIÓN HÍBRIDA IMPLEMENTADA
@@ -95,7 +113,8 @@ export const backendConfig = {
      datosReales: [
        'Clientes, empleados, productos, categorías',
        'Facturas (endpoint /facturas)',
-       'Pagos (endpoint /pagos)'
+       'Pagos (endpoint /pagos)',
+       'Usuarios, personas, roles (MongoDB)'
      ],
      datosSimulados: [
        'Consultas pendientes (3 consultas simuladas)',
@@ -106,7 +125,8 @@ export const backendConfig = {
        'Dashboard 100% funcional',
        'Datos reales donde están disponibles',
        'Datos simulados como respaldo',
-       'Experiencia de usuario completa y profesional'
+       'Experiencia de usuario completa y profesional',
+       'Autenticación con MongoDB funcionando'
      ]
    }
 };
@@ -126,6 +146,7 @@ export const verificarEstadoBackend = () => {
   
   console.log('\n💡 Solución temporal implementada');
   console.log('Se han creado datos simulados para mantener el dashboard funcional');
+  console.log('✅ Migración a MongoDB completada');
   
   return backendConfig.estado;
 };

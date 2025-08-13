@@ -1,5 +1,5 @@
 const { body, validationResult } = require('express-validator');
-const Rol = require('../../modelos/seguridad/Rol');
+const Rol = require('../../modelos/seguridad/RolMongo');
 
 // === VALIDACIONES PERSONALIZADAS ===
 const reglasCrearRol = [

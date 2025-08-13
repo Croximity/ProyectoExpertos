@@ -58,20 +58,31 @@ const AdminNavbar = (props) => {
   const getUserRole = () => {
     if (!user) return '';
     
-    if (user.rol) {
-      return user.rol.Nombre || user.rol.nombre || '';
+    console.log('🔍 AdminNavbar - getUserRole - user:', user);
+    console.log('🔍 AdminNavbar - getUserRole - user.idrol:', user.idrol);
+    console.log('🔍 AdminNavbar - getUserRole - tipo de user.idrol:', typeof user.idrol);
+    
+    // Si idrol es un objeto populado (contiene los datos del rol)
+    if (user.idrol && typeof user.idrol === 'object') {
+      const roleName = user.idrol.nombre || user.idrol.Nombre || '';
+      console.log('✅ AdminNavbar - getUserRole - Rol encontrado (objeto):', roleName);
+      return roleName;
     }
     
+    // Si idrol es solo un ID (fallback)
     if (user.idrol) {
       // Mapear IDs de rol a nombres (ajustar según tu sistema)
       const roleNames = {
         1: 'Administrador',
         2: 'Usuario',
-        3: 'Vendedor'
+        3: 'Empleado'
       };
-      return roleNames[user.idrol] || `Rol ${user.idrol}`;
+      const roleName = roleNames[user.idrol] || `Rol ${user.idrol}`;
+      console.log('✅ AdminNavbar - getUserRole - Rol encontrado (ID):', roleName);
+      return roleName;
     }
     
+    console.log('⚠️ AdminNavbar - getUserRole - No se encontró rol');
     return '';
   };
 
@@ -86,18 +97,7 @@ const AdminNavbar = (props) => {
             {props.brandText}
           </Link>
           
-          <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-            <FormGroup className="mb-0">
-              <InputGroup className="input-group-alternative">
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fas fa-search" />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input placeholder="Buscar..." type="text" />
-              </InputGroup>
-            </FormGroup>
-          </Form>
+
           
           <Nav className="align-items-center d-none d-md-flex" navbar>
             <UncontrolledDropdown nav>
@@ -146,20 +146,7 @@ const AdminNavbar = (props) => {
                   <span>Mi perfil</span>
                 </DropdownItem>
                 
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-settings-gear-65" />
-                  <span>Configuraciones</span>
-                </DropdownItem>
                 
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-calendar-grid-58" />
-                  <span>Actividad</span>
-                </DropdownItem>
-                
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-support-16" />
-                  <span>Ayuda</span>
-                </DropdownItem>
                 
                 <DropdownItem divider />
                 

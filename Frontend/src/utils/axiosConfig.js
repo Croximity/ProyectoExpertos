@@ -16,8 +16,13 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    console.log('🔐 Axios Interceptor - Token encontrado:', token ? 'Sí' : 'No');
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('🔐 Axios Interceptor - Headers configurados:', config.headers);
+    } else {
+      console.log('⚠️ Axios Interceptor - No hay token disponible');
     }
     
     // Si es FormData, no establecer Content-Type para que el navegador lo maneje
@@ -28,6 +33,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('❌ Axios Interceptor - Error en request:', error);
     return Promise.reject(error);
   }
 );

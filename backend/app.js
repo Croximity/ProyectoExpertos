@@ -4,6 +4,10 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const db = require('./configuraciones/db');
+const connectMongoDB = require('./configuraciones/mongodb');
+
+// Importar configuración de passport
+const { validarAutenticacion } = require('./configuraciones/passport');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./configuraciones/swagger.js'); // ajusta según tu ruta
@@ -38,11 +42,13 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use(passport.initialize());
 
+
+
 // rutas de documentación Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
-/* ========== RUTAS DE SEGURIDAD ========== */
+/* ========== RUTAS DE SEGURIDAD (MongoDB) ========== */
 const authRoutes = require('./rutas/seguridad/authRoutes');
 const personaRutas = require('./rutas/seguridad/personaRutas');
 const rolRutas = require('./rutas/seguridad/rolRutas');
@@ -105,7 +111,7 @@ app.use('/api/optica', express.static('uploads'));
 // Servir archivos estáticos desde la carpeta uploads
 app.use('/uploads', express.static('uploads'));
 
-// Usar rutas
+// Usar rutas de autenticación MongoDB
 app.use('/api/optica/auth', authRoutes);
 app.use('/api/optica/personas', personaRutas);
 app.use('/api/optica/roles', rolRutas);
@@ -155,14 +161,44 @@ const ProductoAtributo = require('./modelos/productos/ProductoAtributo');
 
 const startServer = async () => {
   try {
+    // Conectar a MySQL
     await db.authenticate();
-    console.log('✅ Conexión a la base de datos establecida correctamente.');
+    console.log('✅ Conexión a MySQL establecida correctamente.');
+    
+    // Conectar a MongoDB
+    await connectMongoDB();
+    console.log('✅ Conexión a MongoDB establecida correctamente.');
     
     // Sincronizar modelos de seguridad
     await Persona.sync();
     await Rol.sync();
     await Usuario.sync();
     console.log('✅ Modelos de seguridad sincronizados.');
+
+    // Verificar y crear roles por defecto si no existen
+    try {
+      const rolesExistentes = await require('./modelos/seguridad/RolMongo').find();
+      if (rolesExistentes.length === 0) {
+        console.log('⚠️ No se encontraron roles, creando roles por defecto...');
+        
+        const rolesPorDefecto = [
+          { nombre: 'Administrador', descripcion: 'Rol con acceso completo al sistema' },
+          { nombre: 'Usuario', descripcion: 'Rol de usuario estándar' },
+          { nombre: 'Empleado', descripcion: 'Rol para empleados del negocio' }
+        ];
+
+        for (const rolData of rolesPorDefecto) {
+          const nuevoRol = await require('./modelos/seguridad/RolMongo').create(rolData);
+          console.log(`✅ Rol creado: ${nuevoRol.nombre} (ID: ${nuevoRol._id})`);
+        }
+        
+        console.log('✅ Roles por defecto creados exitosamente.');
+      } else {
+        console.log(`✅ Se encontraron ${rolesExistentes.length} roles existentes.`);
+      }
+    } catch (error) {
+      console.error('❌ Error al verificar/crear roles por defecto:', error);
+    }
 
     await Empleado.sync();
     await Cliente.sync();

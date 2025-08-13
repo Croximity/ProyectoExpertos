@@ -2,15 +2,21 @@ import axiosInstance from '../../utils/axiosConfig';
 
 export const authService = {
   login: async (credentials) => {
-    console.log('authService - login: Iniciando login con credenciales');
+    console.log('🔐 authService - login: Iniciando login con credenciales');
     const response = await axiosInstance.post('/auth/login', credentials);
     
+    console.log('🔐 authService - login: Respuesta del servidor:', response.data);
+    
     if (response.data.token) {
-      console.log('authService - login: Token recibido, guardando en localStorage');
+      console.log('🔐 authService - login: Token recibido, guardando en localStorage');
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('usuario', JSON.stringify(response.data.user));
+      
+      console.log('🔐 authService - login: Token guardado:', response.data.token ? 'Sí' : 'No');
+      console.log('🔐 authService - login: Usuario guardado:', response.data.user ? 'Sí' : 'No');
+      console.log('🔐 authService - login: Usuario guardado:', response.data.user);
     } else {
-      console.log('authService - login: No se recibió token en la respuesta');
+      console.log('⚠️ authService - login: No se recibió token en la respuesta');
     }
     
     return response.data;
@@ -37,15 +43,20 @@ export const authService = {
       const personaResponse = await axiosInstance.post('/auth/registrar-persona', personaData);
       console.log('authService - register: Respuesta de persona:', personaResponse.data);
       
-      // Paso 2: Registrar el usuario con el idPersona obtenido
+      // Paso 2: Registrar el usuario con el idPersona obtenido (ahora es ObjectId)
       const usuarioData = {
         Nombre_Usuario: userData.Nombre_Usuario,
-        contraseña: userData.contraseña, // Con ñ
-        idPersona: personaResponse.data.idPersona,
-        idrol: parseInt(userData.idrol) // Asegurar que sea número
+        contraseña: userData.contraseña,
+        idPersona: personaResponse.data.persona._id, // Usar _id de MongoDB
+        idrol: userData.idrol // Mantener como string, el backend lo manejará
       };
       
       console.log('authService - register: Enviando datos de usuario:', usuarioData);
+      console.log('authService - register: Tipo de idPersona:', typeof usuarioData.idPersona);
+      console.log('authService - register: Tipo de idrol:', typeof usuarioData.idrol);
+      console.log('authService - register: idPersona valor:', usuarioData.idPersona);
+      console.log('authService - register: idrol valor:', usuarioData.idrol);
+      
       const usuarioResponse = await axiosInstance.post('/auth/registro', usuarioData);
       console.log('authService - register: Respuesta de usuario:', usuarioResponse.data);
       
@@ -54,11 +65,13 @@ export const authService = {
       console.error('authService - register: Error detallado en registro:', error);
       if (error.response) {
         console.error('authService - register: Error response data:', error.response.data);
+        console.error('authService - register: Error response status:', error.response.status);
+        console.error('authService - register: Error response headers:', error.response.headers);
         const serverError = new Error(error.response.data.mensaje || error.response.data.errores?.[0]?.msg || 'Error en el servidor');
         serverError.response = error.response;
         throw serverError;
       }
-      throw error; // Relanzar el error si no es de respuesta del servidor
+      throw error;
     }
   },
 

@@ -1,5 +1,5 @@
 const { body, validationResult } = require('express-validator');
-const Persona = require('../../modelos/seguridad/Persona');
+const Persona = require('../../modelos/seguridad/PersonaMongo');
 
 // === VALIDACIONES PERSONALIZADAS ===
 const reglasCrear = [
